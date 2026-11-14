@@ -258,6 +258,18 @@ a.btn { display: block; text-decoration: none; text-align: center; }
 .langbig[aria-pressed="true"] { border-color: var(--gold); background: rgba(240,198,116,0.14); }
 .onb-moon { width: 96px; height: 96px; margin: 0 auto; }
 .left { text-align: left; }
+/* Wave 2: quiz + draw */
+.choice.partner-choice { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }
+.choice:disabled { cursor: default; }
+#dr-canvas { width: 100%; aspect-ratio: 1; background: #fbf7ef; border-radius: 16px; touch-action: none; display: block; }
+.dr-tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.swatch { width: 34px; height: 34px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; padding: 0; }
+.swatch[aria-pressed="true"] { border-color: var(--gold); }
+.dr-tools .btn { width: auto; padding: 9px 14px; font-size: 0.9rem; }
+.wordhint { letter-spacing: 0.35em; font-family: var(--display); font-size: 1.4rem; color: var(--gold); }
+.guessrow { display: flex; gap: 8px; }
+.guessrow .txt { flex: 1; }
+.guessrow .btn { width: auto; padding: 12px 18px; }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -327,6 +339,8 @@ a.btn { display: block; text-decoration: none; text-align: center; }
     <div class="modes" role="group">
       <button class="modetile" id="mode-mission" type="button"><b data-i="mMission"></b><span data-i="mMissionD"></span></button>
       <button class="modetile" id="mode-sync" type="button"><b data-i="mSync"></b><span data-i="mSyncD"></span></button>
+      <button class="modetile" id="mode-quiz" type="button"><b data-i="mQuiz"></b><span data-i="mQuizD"></span></button>
+      <button class="modetile" id="mode-draw" type="button"><b data-i="mDraw"></b><span data-i="mDrawD"></span></button>
     </div>
     <div class="card">
       <ol class="rules" id="rules"></ol>
@@ -541,6 +555,57 @@ a.btn { display: block; text-decoration: none; text-align: center; }
       <button class="btn btn-gold" id="y-next" data-i="syncNext" hidden></button>
     </div>
     <button class="linkbtn" id="y-quit" data-i="quit"></button>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="s-quiz" class="screen stack" hidden>
+    <div class="meta"><span id="qz-q"></span><span id="qz-score"></span></div>
+    <div class="card">
+      <span class="pill" id="qz-about" style="align-self:center"></span>
+      <h2 class="center" id="qz-text"></h2>
+      <p class="small center" id="qz-hint"></p>
+      <div class="choices" id="qz-opts"></div>
+      <p class="small center" id="qz-status" aria-live="polite"></p>
+      <div class="stack" id="qz-manual" hidden>
+        <p class="small center" data-i="syncManual"></p>
+        <div class="btnrow"><button class="btn btn-gold" id="qz-same" data-i="same"></button><button class="btn btn-ghost" id="qz-diff" data-i="diff"></button></div>
+      </div>
+      <p class="result center" id="qz-result" hidden></p>
+      <button class="btn btn-gold" id="qz-next" data-i="syncNext" hidden></button>
+    </div>
+    <button class="linkbtn" id="qz-quit" data-i="quit"></button>
+  </section>
+
+  <!-- DRAW -->
+  <section id="s-draw" class="screen stack" hidden>
+    <div class="meta"><span id="dr-r"></span><span id="dr-score"></span></div>
+    <div class="card" id="dr-offline" hidden>
+      <p data-i="drOffline"></p>
+      <button class="btn btn-ghost" id="dr-home" data-i="back"></button>
+    </div>
+    <div class="card" id="dr-main">
+      <p class="center" id="dr-role" style="margin:0"></p>
+      <h2 class="center" id="dr-word"></h2>
+      <canvas id="dr-canvas" width="600" height="600" aria-label="Dessin"></canvas>
+      <div class="dr-tools" id="dr-tools">
+        <button class="swatch" data-c="#1b1630" style="background:#1b1630" aria-label="Noir" aria-pressed="true"></button>
+        <button class="swatch" data-c="#e2445c" style="background:#e2445c" aria-label="Rouge" aria-pressed="false"></button>
+        <button class="swatch" data-c="#2f6fe4" style="background:#2f6fe4" aria-label="Bleu" aria-pressed="false"></button>
+        <button class="swatch" data-c="#2a9d5c" style="background:#2a9d5c" aria-label="Vert" aria-pressed="false"></button>
+        <button class="swatch" data-c="#e0a526" style="background:#e0a526" aria-label="Or" aria-pressed="false"></button>
+        <button class="btn btn-ghost" id="dr-clear" data-i="drClear"></button>
+        <button class="btn btn-ghost" id="dr-pass" data-i="drPass"></button>
+      </div>
+      <div class="guessrow" id="dr-guessrow">
+        <label for="dr-guess" class="small" style="position:absolute;left:-9999px" data-i="drGuessPh"></label>
+        <input id="dr-guess" class="txt" maxlength="30" autocomplete="off" autocapitalize="off">
+        <button class="btn btn-gold" id="dr-send" data-i="drSend"></button>
+      </div>
+      <p class="small center" id="dr-status" aria-live="polite"></p>
+      <p class="result center" id="dr-result" hidden></p>
+      <button class="btn btn-gold" id="dr-next" data-i="nextRound" hidden></button>
+    </div>
+    <button class="linkbtn" id="dr-quit" data-i="quit"></button>
   </section>
 
   <!-- REVEAL -->
@@ -953,7 +1018,20 @@ a.btn { display: block; text-decoration: none; text-align: center; }
       pinForgotT: "Sans le code, il faut effacer les données de Noche Duo dans Chrome : ⋮ → Paramètres → Paramètres des sites → Toutes les données → payasec.github.io. Ta progression sur ce téléphone sera perdue.",
       onbLang: "Choisis ta langue", onb2Title: "Qui joue ?", onb3Title: "Invite ton amour",
       onb3Text: "Reliez vos deux téléphones pour jouer ensemble, vous envoyer des pensées et vous dire bonne nuit.",
-      onbNext: "Continuer", onbLater: "Plus tard", onbStart: "Commencer"
+      onbNext: "Continuer", onbLater: "Plus tard", onbStart: "Commencer",
+      mQuiz: "❓ Tu me connais ?", mQuizD: "Devine les réponses de ton amour",
+      mDraw: "✏️ Dessine et devine", mDrawD: "Le dessin apparaît en direct chez l'autre",
+      q1: "À chaque question, l'un répond pour lui-même et l'autre devine sa réponse.", q2: "Les rôles s'inversent à chaque question.", q3: "Votre score de complicité grimpe à chaque bonne réponse.",
+      d1: "L'un dessine un mot secret : le dessin apparaît en direct chez l'autre.", d2: "L'autre tape ses propositions jusqu'à trouver.", d3: "Vos téléphones doivent être reliés en ligne.",
+      qzAboutMe: "À propos de toi", qzAboutLove: function (n) { return "À propos de " + n; },
+      qzHintMe: "Réponds pour toi, en secret.", qzHintGuess: function (n) { return "Devine ce que " + n + " va répondre."; },
+      qzScore: function (a, b) { return "Complicité " + a + " / " + b; },
+      qzRight: "Bien deviné ! 💞", qzWrongG: function (n, x) { return "Raté… " + n + " a répondu « " + x + " »"; }, qzWrongS: function (n, x) { return n + " pensait « " + x + " »"; }, qzWrongOff: "Raté…",
+      drOffline: "Ce jeu demande que vos téléphones soient reliés en ligne. Crée votre lien depuis l'accueil, puis appuie sur Jouer ensemble.",
+      drYouDraw: "C'est toi qui dessines !", drWordIs: function (w) { return "Dessine : " + w; }, drGuessRole: function (n) { return n + " dessine… devine le mot !"; },
+      drGuessPh: "Ta réponse", drSend: "Valider", drClear: "Effacer", drPass: "Passer", drWrong: "Non… essaie encore !",
+      drTheyTry: function (n, x) { return n + " propose : « " + x + " »"; }, drFound: function (w) { return "Trouvé ! Le mot était « " + w + " » 🎉"; }, drSkipped: function (w) { return "Passé. Le mot était « " + w + " »"; },
+      drScore: function (n) { return "Trouvés : " + n; }, drWaitDraw: "Le dessin arrive…"
     },
     kr: {
       modeLabel: "Mòd · Misyon Sekrè",
@@ -1112,7 +1190,20 @@ a.btn { display: block; text-decoration: none; text-align: center; }
       pinForgotT: "San kòd la, fòk ou efase done Noche Duo nan Chrome : ⋮ → Paramèt → Paramèt sit yo → Tout done yo → payasec.github.io. Pwogrè w sou telefòn sa a ap pèdi.",
       onbLang: "Chwazi lang ou", onb2Title: "Kiyès k ap jwe ?", onb3Title: "Envite lanmou w",
       onb3Text: "Konekte de telefòn nou yo pou nou jwe ansanm, voye panse epi di bòn nwit.",
-      onbNext: "Kontinye", onbLater: "Pita", onbStart: "Kòmanse"
+      onbNext: "Kontinye", onbLater: "Pita", onbStart: "Kòmanse",
+      mQuiz: "❓ Ou konnen m ?", mQuizD: "Devine repons lanmou w",
+      mDraw: "✏️ Desinen epi devine", mDrawD: "Desen an parèt an dirèk lakay lòt la",
+      q1: "Chak kesyon, youn reponn pou tèt li epi lòt la devine repons li.", q2: "Wòl yo chanje chak kesyon.", q3: "Pwen konplisite nou monte chak bon repons.",
+      d1: "Youn desinen yon mo sekrè : desen an parèt an dirèk lakay lòt la.", d2: "Lòt la tape sa l panse jiskaske l jwenn.", d3: "Telefòn nou yo dwe konekte an liy.",
+      qzAboutMe: "Sou ou menm", qzAboutLove: function (n) { return "Sou " + n; },
+      qzHintMe: "Reponn pou tèt ou, an sekrè.", qzHintGuess: function (n) { return "Devine sa " + n + " ap reponn."; },
+      qzScore: function (a, b) { return "Konplisite " + a + " / " + b; },
+      qzRight: "Ou jwenn li ! 💞", qzWrongG: function (n, x) { return "Rate… " + n + " te reponn « " + x + " »"; }, qzWrongS: function (n, x) { return n + " te panse « " + x + " »"; }, qzWrongOff: "Rate…",
+      drOffline: "Jwèt sa a mande pou telefòn nou yo konekte an liy. Kreye lyen nou an nan paj akèy la, epi peze Jwe ansanm.",
+      drYouDraw: "Se ou k ap desinen !", drWordIs: function (w) { return "Desinen : " + w; }, drGuessRole: function (n) { return n + " ap desinen… devine mo a !"; },
+      drGuessPh: "Repons ou", drSend: "Voye", drClear: "Efase", drPass: "Pase", drWrong: "Non… eseye ankò !",
+      drTheyTry: function (n, x) { return n + " di : « " + x + " »"; }, drFound: function (w) { return "Jwenn ! Mo a se te « " + w + " » 🎉"; }, drSkipped: function (w) { return "Pase. Mo a se te « " + w + " »"; },
+      drScore: function (n) { return "Jwenn : " + n; }, drWaitDraw: "Desen an ap vini…"
     },
     en: {
       modeLabel: "Mode · Secret Mission",
@@ -1271,7 +1362,20 @@ a.btn { display: block; text-decoration: none; text-align: center; }
       pinForgotT: "Without the code, you need to clear Noche Duo's data in Chrome: ⋮ → Settings → Site settings → All site data → payasec.github.io. Your progress on this phone will be lost.",
       onbLang: "Choose your language", onb2Title: "Who's playing?", onb3Title: "Invite your love",
       onb3Text: "Link your two phones to play together, send thoughts and say goodnight.",
-      onbNext: "Continue", onbLater: "Later", onbStart: "Let's go"
+      onbNext: "Continue", onbLater: "Later", onbStart: "Let's go",
+      mQuiz: "❓ Do you know me?", mQuizD: "Guess your love's answers",
+      mDraw: "✏️ Draw and guess", mDrawD: "The drawing appears live on their phone",
+      q1: "Each question, one answers about themselves and the other guesses.", q2: "Roles swap every question.", q3: "Your connection score climbs with every right guess.",
+      d1: "One draws a secret word: the drawing appears live on the other's phone.", d2: "The other types guesses until they find it.", d3: "Your phones must be linked online.",
+      qzAboutMe: "About you", qzAboutLove: function (n) { return "About " + n; },
+      qzHintMe: "Answer for yourself, in secret.", qzHintGuess: function (n) { return "Guess what " + n + " will answer."; },
+      qzScore: function (a, b) { return "Connection " + a + " / " + b; },
+      qzRight: "Spot on! 💞", qzWrongG: function (n, x) { return "Missed… " + n + " answered “" + x + "”"; }, qzWrongS: function (n, x) { return n + " guessed “" + x + "”"; }, qzWrongOff: "Missed…",
+      drOffline: "This game needs your phones linked online. Create your link from the home screen, then tap Play together.",
+      drYouDraw: "You're drawing!", drWordIs: function (w) { return "Draw: " + w; }, drGuessRole: function (n) { return n + " is drawing… guess the word!"; },
+      drGuessPh: "Your answer", drSend: "Send", drClear: "Clear", drPass: "Skip", drWrong: "Nope… try again!",
+      drTheyTry: function (n, x) { return n + " tried: “" + x + "”"; }, drFound: function (w) { return "Got it! The word was “" + w + "” 🎉"; }, drSkipped: function (w) { return "Skipped. The word was “" + w + "”"; },
+      drScore: function (n) { return "Found: " + n; }, drWaitDraw: "The drawing is coming…"
     }
   };
 
@@ -1488,6 +1592,8 @@ a.btn { display: block; text-decoration: none; text-align: center; }
     if (current === "home") { renderProfile(); renderOnline(); renderCallCard(); renderModes(); renderDaily(); renderStory(); renderInstall(); }
     if (current === "settings") { renderSettingsExtra(); renderSettingsW1(); }
     if (current === "sync") renderSync();
+    if (current === "quiz") renderQuiz();
+    if (current === "draw") renderDraw();
     if (current === "settings") renderSettings();
     renderCallbar();
     if (!S.code) return;
@@ -1863,6 +1969,8 @@ a.btn { display: block; text-decoration: none; text-align: center; }
       watch(base + "/live/call", function (s) { onCall(s.val()); });
       watch(base + "/live/shared/syncN", function (s) { onSharedSync(s.val()); });
       watch(base + "/live/shared/photo", function (s) { onSharedPhoto(s.val()); });
+      watch(base + "/live/shared/quizN", function (s) { onSharedQz(s.val()); });
+      watch(base + "/live/shared/drawN", function (s) { onSharedDr(s.val()); });
       watch(base + "/live/shared/dates", function (s) { onSharedDates(s.val()); });
       watch(base + "/live/callIce/" + otherSlot(), function (s) { onRemoteIce(s.val()); });
       olAnnounce(); pubGame();
@@ -1887,7 +1995,7 @@ a.btn { display: block; text-decoration: none; text-align: center; }
     if (OL.basePulse !== undefined && pn && pn !== OL.basePulse && v.pulse.at && srvNow() - v.pulse.at < 120000) receivePulse();
     OL.basePulse = pn;
     OL.partner = v;
-    checkGN(); checkSync(); renderOnlineSafe(); renderPartnerGame();
+    checkGN(); checkSync(); checkQz(); onPartnerDraw(v); renderOnlineSafe(); renderPartnerGame();
   }
   function onSharedRound(r) {
     OL.sharedRound = r;
@@ -2022,6 +2130,8 @@ a.btn { display: block; text-decoration: none; text-align: center; }
     if (!same || S.round !== r) { S.round = r; newRoundState(); }
     if (!same) resetSyncAll();
     if (OL.sharedSyncN && OL.sharedSyncN > (S.syncN || 1)) { S.syncN = OL.sharedSyncN; resetSyncQ(); }
+    if (OL.sharedQzN && OL.sharedQzN > (S.qzN || 1)) { S.qzN = OL.sharedQzN; resetQzQ(); }
+    if (OL.sharedDrN && OL.sharedDrN > (S.drN || 1)) { S.drN = OL.sharedDrN; resetDrQ(); }
     if (!OL.sharedSyncN && OL.db) OL.db.ref(olBase() + "/live/shared/syncN").transaction(function (c) { return c || 1; }).catch(function () {});
     save(); pubGame(); pubSync(); goMode();
   }
@@ -2251,12 +2361,11 @@ a.btn { display: block; text-decoration: none; text-align: center; }
   }
 
   /* ================= Modes ================= */
-  function goMode() { show(S.mode === "sync" ? "sync" : (S.validated ? "reveal" : "mission")); }
+  function goMode() { show(S.mode === "sync" ? "sync" : S.mode === "quiz" ? "quiz" : S.mode === "draw" ? "draw" : (S.validated ? "reveal" : "mission")); }
   function renderModes() {
-    var m = S.mode === "sync" ? "sync" : "mission";
-    $("mode-mission").setAttribute("aria-pressed", m === "mission");
-    $("mode-sync").setAttribute("aria-pressed", m === "sync");
-    var keys = m === "sync" ? ["s1", "s2", "s3"] : ["r1", "r2", "r3"];
+    var m = ["sync", "quiz", "draw"].indexOf(S.mode) >= 0 ? S.mode : "mission";
+    ["mission", "sync", "quiz", "draw"].forEach(function (k) { $("mode-" + k).setAttribute("aria-pressed", m === k); });
+    var keys = { mission: ["r1", "r2", "r3"], sync: ["s1", "s2", "s3"], quiz: ["q1", "q2", "q3"], draw: ["d1", "d2", "d3"] }[m];
     var ol = $("rules"); ol.innerHTML = "";
     keys.forEach(function (k, i) {
       var li = document.createElement("li"), b = document.createElement("b"), sp = document.createElement("span");
@@ -2265,6 +2374,8 @@ a.btn { display: block; text-decoration: none; text-align: center; }
   }
   $("mode-mission").addEventListener("click", function () { S.mode = "mission"; save(); sfx("tap"); renderModes(); });
   $("mode-sync").addEventListener("click", function () { S.mode = "sync"; save(); sfx("tap"); renderModes(); });
+  $("mode-quiz").addEventListener("click", function () { S.mode = "quiz"; save(); sfx("tap"); renderModes(); });
+  $("mode-draw").addEventListener("click", function () { S.mode = "draw"; save(); sfx("tap"); renderModes(); });
 
   /* ================= Daily challenge ================= */
   function dayIndex() { var d = new Date(); return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000); }
@@ -2356,7 +2467,7 @@ a.btn { display: block; text-decoration: none; text-align: center; }
 
   /* ================= Synchro ================= */
   function resetSyncQ() { S.syncPick = null; S.syncDone = false; S.syncMatch = null; }
-  function resetSyncAll() { S.syncN = 1; S.streak = 0; resetSyncQ(); }
+  function resetSyncAll() { S.syncN = 1; S.streak = 0; resetSyncQ(); resetQzAll(); resetDrAll(); }
   function syncQ() {
     var order = shuffled(PAIRS.map(function (_, i) { return i; }), rng(hash("sync|" + S.code)));
     return PAIRS[order[((S.syncN || 1) - 1) % order.length]];
@@ -2683,6 +2794,209 @@ a.btn { display: block; text-decoration: none; text-align: center; }
   $("onb-later").addEventListener("click", function () { finishOnb(); });
   $("onb-create").addEventListener("click", function () { finishOnb(); olCreate(); setTimeout(function () { $("online-card").scrollIntoView({ block: "center" }); }, 100); });
   $("onb-join").addEventListener("click", function () { finishOnb(); $("ol-joinbox").hidden = false; setTimeout(function () { $("online-card").scrollIntoView({ block: "center" }); $("ol-code").focus(); }, 100); });
+
+  /* ================= Wave 2: "Do you know me?" quiz ================= */
+  var QZ = [
+    { fr: ["Plat préféré ?", "Griot", "Diri kole ak pwa", "Lambi", "Pizza"], kr: ["Manje pi renmen ?", "Griyo", "Diri kole ak pwa", "Lanbi", "Pitza"], en: ["Favorite dish?", "Griot", "Rice and beans", "Conch", "Pizza"] },
+    { fr: ["Moment préféré de la journée ?", "Le matin", "L'après-midi", "Le soir", "La nuit"], kr: ["Moman pi renmen nan jounen an ?", "Maten", "Apremidi", "Aswè", "Lannwit"], en: ["Favorite time of day?", "Morning", "Afternoon", "Evening", "Night"] },
+    { fr: ["Sortie idéale ?", "La plage", "Un restaurant", "Le cinéma", "Une soirée à la maison"], kr: ["Sòti ideyal ?", "Lanmè", "Restoran", "Sinema", "Yon aswè lakay"], en: ["Ideal date?", "The beach", "A restaurant", "The movies", "A night in"] },
+    { fr: ["Musique préférée ?", "Kompa", "Rap", "Gospel", "Zouk"], kr: ["Mizik pi renmen ?", "Konpa", "Rap", "Gospel", "Zouk"], en: ["Favorite music?", "Kompa", "Rap", "Gospel", "Zouk"] },
+    { fr: ["Plus grande peur ?", "Les insectes", "Le noir", "Le vide", "Les serpents"], kr: ["Pi gwo laperèz ?", "Ensèk", "Fènwa", "Wotè", "Koulèv"], en: ["Biggest fear?", "Bugs", "The dark", "Heights", "Snakes"] },
+    { fr: ["Super-pouvoir rêvé ?", "Voler", "Être invisible", "Lire les pensées", "Se téléporter"], kr: ["Pouvwa ou ta renmen genyen ?", "Vole", "Envizib", "Li panse moun", "Teleporte"], en: ["Dream superpower?", "Flying", "Invisibility", "Reading minds", "Teleporting"] },
+    { fr: ["Après une dispute ?", "Je parle tout de suite", "J'ai besoin de temps", "Je fais une blague", "J'envoie un message"], kr: ["Apre yon diskisyon ?", "M pale touswit", "M bezwen tan", "M fè yon blag", "M voye yon mesaj"], en: ["After an argument?", "I talk right away", "I need time", "I make a joke", "I send a text"] },
+    { fr: ["Cadeau qui fait le plus plaisir ?", "Des fleurs", "Un parfum", "Un bon repas", "Une lettre"], kr: ["Kado ki pi fè w plezi ?", "Flè", "Pafen", "Yon bon manje", "Yon lèt"], en: ["Favorite kind of gift?", "Flowers", "Perfume", "A good meal", "A letter"] },
+    { fr: ["Destination de rêve ?", "Paris", "Miami", "Labadie", "Tokyo"], kr: ["Kote ou reve ale ?", "Pari", "Miyami", "Labadi", "Tokyo"], en: ["Dream destination?", "Paris", "Miami", "Labadee", "Tokyo"] },
+    { fr: ["Boisson préférée ?", "Jus de fruit", "Café", "Soda", "Thé"], kr: ["Bwason pi renmen ?", "Ji fwi", "Kafe", "Kola", "Te"], en: ["Favorite drink?", "Fruit juice", "Coffee", "Soda", "Tea"] },
+    { fr: ["Première chose le matin ?", "Le téléphone", "Prier", "La douche", "Manger"], kr: ["Premye bagay le maten ?", "Telefòn", "Priye", "Benyen", "Manje"], en: ["First thing in the morning?", "My phone", "Pray", "Shower", "Eat"] },
+    { fr: ["Ce qu'on remarque en premier ?", "Le sourire", "Les yeux", "L'humour", "Le style"], kr: ["Premye bagay ou remake ?", "Souri", "Je", "Imè", "Estil"], en: ["First thing you notice?", "The smile", "The eyes", "Humor", "Style"] },
+    { fr: ["Film du vendredi soir ?", "Action", "Comédie", "Romance", "Horreur"], kr: ["Fim vandredi swa ?", "Aksyon", "Komedi", "Romans", "Laperèz"], en: ["Friday night movie?", "Action", "Comedy", "Romance", "Horror"] },
+    { fr: ["Animal préféré ?", "Chien", "Chat", "Oiseau", "Poisson"], kr: ["Bèt ou pi renmen ?", "Chen", "Chat", "Zwazo", "Pwason"], en: ["Favorite animal?", "Dog", "Cat", "Bird", "Fish"] },
+    { fr: ["Pour se détendre ?", "Dormir", "Regarder des vidéos", "Sortir", "Écouter de la musique"], kr: ["Pou w detann ou ?", "Dòmi", "Gade videyo", "Sòti", "Koute mizik"], en: ["To relax?", "Sleep", "Watch videos", "Go out", "Listen to music"] },
+    { fr: ["Fruit préféré ?", "Mangue", "Ananas", "Banane", "Corossol"], kr: ["Fwi pi renmen ?", "Mango", "Zannanna", "Fig", "Kowosòl"], en: ["Favorite fruit?", "Mango", "Pineapple", "Banana", "Soursop"] },
+    { fr: ["Ce qui rend le plus heureux ?", "Un câlin", "Un compliment", "Un cadeau", "Du temps ensemble"], kr: ["Sa k pi fè w kontan ?", "Yon kalin", "Yon konpliman", "Yon kado", "Tan ansanm"], en: ["What makes you happiest?", "A hug", "A compliment", "A gift", "Time together"] },
+    { fr: ["Couleur préférée ?", "Rouge", "Bleu", "Noir", "Blanc"], kr: ["Koulè pi renmen ?", "Wouj", "Ble", "Nwa", "Blan"], en: ["Favorite color?", "Red", "Blue", "Black", "White"] }
+  ];
+  function qzQ() { var order = shuffled(QZ.map(function (_, i) { return i; }), rng(hash("quiz|" + S.code))); return QZ.at(order.at(((S.qzN || 1) - 1) % order.length)); }
+  function qzRow(q) { return q[S.lang] || q.fr; }
+  function qzSubjectIsMe() { return S.role === ((S.qzN || 1) % 2 === 1 ? "A" : "B"); }
+  function resetQzQ() { S.qzPick = null; S.qzDone = false; S.qzMatch = null; }
+  function resetQzAll() { S.qzN = 1; S.qzOk = 0; S.qzCount = 0; resetQzQ(); }
+  function pubQz() { if (coupleMode() && OL.db) myLive().child("quiz").set({ n: S.qzN || 1, pick: typeof S.qzPick === "number" ? S.qzPick : null }).catch(function () {}); }
+  function partnerQzPick() { var q = OL.partner && OL.partner.quiz; return q && q.n === (S.qzN || 1) && typeof q.pick === "number" ? q.pick : null; }
+  function resolveQz(match) {
+    if (S.qzDone) return;
+    S.qzDone = true; S.qzMatch = match; S.qzCount = (S.qzCount || 0) + 1; touchDay();
+    if (match) { S.qzOk = (S.qzOk || 0) + 1; addXP(1); stat("quiz"); sfx("badge"); confetti(false); buzz(40); } else { sfx("lose"); buzz(120); }
+    save(); if (current === "quiz") renderQuiz();
+  }
+  function checkQz() {
+    if (!onlineSync() || S.qzDone || typeof S.qzPick !== "number") { if (current === "quiz") renderQuiz(); return; }
+    var pp = partnerQzPick(); if (pp !== null) resolveQz(pp === S.qzPick);
+  }
+  function onSharedQz(n) {
+    OL.sharedQzN = n;
+    if (coupleMode() && n && n > (S.qzN || 1)) { S.qzN = n; resetQzQ(); save(); pubQz(); if (current === "quiz") renderQuiz(); }
+  }
+  function renderQuiz() {
+    if (!S.code) return;
+    var row = qzRow(qzQ()), me = qzSubjectIsMe(), n = nameStart(), online = onlineSync(), picked = typeof S.qzPick === "number";
+    $("qz-q").textContent = t("qLabel")(S.qzN || 1);
+    $("qz-score").textContent = t("qzScore")(S.qzOk || 0, S.qzCount || 0);
+    $("qz-about").textContent = me ? t("qzAboutMe") : t("qzAboutLove")(nameMid());
+    $("qz-text").textContent = row.at(0);
+    $("qz-hint").textContent = me ? t("qzHintMe") : t("qzHintGuess")(n);
+    var box = $("qz-opts"); box.innerHTML = "";
+    var pp = S.qzDone && online ? partnerQzPick() : null;
+    [1, 2, 3, 4].forEach(function (k) {
+      var b = document.createElement("button"); b.type = "button"; b.className = "choice" + (pp === k - 1 ? " partner-choice" : "");
+      b.textContent = row.at(k); b.setAttribute("aria-pressed", S.qzPick === k - 1); b.disabled = picked;
+      b.addEventListener("click", function () { if (typeof S.qzPick === "number" || S.qzDone) return; S.qzPick = k - 1; sfx("tap"); buzz(25); save(); pubQz(); checkQz(); renderQuiz(); });
+      box.appendChild(b);
+    });
+    var st = "";
+    if (!S.qzDone) { if (!picked) st = online && partnerQzPick() !== null ? t("syncPChose")(n) : ""; else if (online) st = t("syncWaitP")(nameMid()); }
+    $("qz-status").textContent = st;
+    $("qz-manual").hidden = online || !picked || S.qzDone;
+    $("qz-result").hidden = !S.qzDone;
+    if (S.qzDone) $("qz-result").textContent = S.qzMatch ? t("qzRight") : (online && pp !== null ? (me ? t("qzWrongS") : t("qzWrongG"))(n, row.at(pp + 1)) : t("qzWrongOff"));
+    $("qz-next").hidden = !S.qzDone;
+  }
+  $("qz-same").addEventListener("click", function () { resolveQz(true); });
+  $("qz-diff").addEventListener("click", function () { resolveQz(false); });
+  $("qz-next").addEventListener("click", function () {
+    sfx("tap");
+    function local() { S.qzN = (S.qzN || 1) + 1; resetQzQ(); save(); pubQz(); renderQuiz(); }
+    if (onlineSync()) {
+      var target = S.qzN || 1;
+      OL.db.ref(olBase() + "/live/shared/quizN").transaction(function (c) { c = c || 1; return c === target ? target + 1 : c; })
+        .then(function () { setTimeout(function () { if ((S.qzN || 1) === target) local(); }, 4000); }).catch(local);
+    } else local();
+  });
+  $("qz-quit").addEventListener("click", function () { S.code = null; S.role = null; newRoundState(); resetSyncAll(); save(); show("home"); });
+
+  /* ================= Wave 2: draw and guess (live strokes through Firebase) ================= */
+  var WORDS = [["soleil", "solèy", "sun"], ["lune", "lalin", "moon"], ["maison", "kay", "house"], ["cœur", "kè", "heart"], ["chat", "chat", "cat"], ["voiture", "machin", "car"], ["arbre", "pyebwa", "tree"], ["poisson", "pwason", "fish"], ["mangue", "mango", "mango"], ["avion", "avyon", "plane"], ["fleur", "flè", "flower"], ["téléphone", "telefòn", "phone"], ["guitare", "gita", "guitar"], ["plage", "plaj", "beach"], ["bateau", "bato", "boat"], ["étoile", "zetwal", "star"], ["pizza", "pitza", "pizza"], ["chaussure", "soulye", "shoe"], ["parapluie", "parapli", "umbrella"], ["montagne", "mòn", "mountain"], ["lunettes", "linèt", "glasses"], ["gâteau", "gato", "cake"], ["ballon", "balon", "ball"], ["papillon", "papiyon", "butterfly"], ["clé", "kle", "key"], ["livre", "liv", "book"], ["chapeau", "chapo", "hat"], ["banane", "fig", "banana"], ["oiseau", "zwazo", "bird"], ["bague", "bag", "ring"]];
+  var DR = { color: "#1b1630", mine: [], cur: null, their: null, status: "", lastPub: 0, clearedN: null, lastGuess: null };
+  function drRow() { var order = shuffled(WORDS.map(function (_, i) { return i; }), rng(hash("draw|" + S.code))); return WORDS.at(order.at(((S.drN || 1) - 1) % order.length)); }
+  function drWord() { return drRow().at({ fr: 0, kr: 1, en: 2 }[S.lang] || 0); }
+  function iDraw() { return S.role === ((S.drN || 1) % 2 === 1 ? "A" : "B"); }
+  function normW(x) { return (x || "").toLowerCase().replace(/œ/g, "oe").normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]/g, ""); }
+  function resetDrQ() { S.drDone = false; S.drFound = false; DR.mine = []; DR.cur = null; DR.their = null; DR.status = ""; DR.lastGuess = null; }
+  function resetDrAll() { S.drN = 1; S.drScore = 0; resetDrQ(); }
+  function enc(pts) { return pts.map(function (q) { return (q[0] / 600).toFixed(3) + "," + (q[1] / 600).toFixed(3); }).join(";"); }
+  function dec(str) { return (str || "").split(";").filter(Boolean).map(function (q) { var a = q.split(","); return [Number(a[0]) * 600, Number(a[1]) * 600]; }); }
+  var dcv = $("dr-canvas"), dcx = dcv.getContext("2d");
+  function strokeOn(st) {
+    var pts = st.pts || dec(st.p); if (!pts.length) return;
+    dcx.strokeStyle = st.c || "#1b1630"; dcx.fillStyle = st.c || "#1b1630"; dcx.lineWidth = 9; dcx.lineCap = "round"; dcx.lineJoin = "round";
+    if (pts.length === 1) { dcx.beginPath(); dcx.arc(pts[0][0], pts[0][1], 4.5, 0, 7); dcx.fill(); return; }
+    dcx.beginPath(); dcx.moveTo(pts[0][0], pts[0][1]); for (var i = 1; i < pts.length; i++) dcx.lineTo(pts[i][0], pts[i][1]); dcx.stroke();
+  }
+  function redrawCanvas() {
+    dcx.fillStyle = "#fbf7ef"; dcx.fillRect(0, 0, 600, 600);
+    if (iDraw()) { DR.mine.forEach(strokeOn); if (DR.cur) strokeOn(DR.cur); }
+    else if (DR.their) {
+      var sObj = DR.their.s || {};
+      Object.keys(sObj).sort().forEach(function (k) { strokeOn(sObj[k]); });
+      if (DR.their.cur) strokeOn(DR.their.cur);
+    }
+  }
+  function drPos(e) { var r = dcv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * 600, (e.clientY - r.top) / r.height * 600]; }
+  function canDraw() { return onlineSync() && iDraw() && !S.drDone; }
+  dcv.addEventListener("pointerdown", function (e) {
+    if (!canDraw()) return; e.preventDefault(); dcv.setPointerCapture(e.pointerId);
+    DR.cur = { c: DR.color, pts: [drPos(e)] }; redrawCanvas();
+  });
+  dcv.addEventListener("pointermove", function (e) {
+    if (!DR.cur) return; e.preventDefault();
+    var p = drPos(e), last = DR.cur.pts.at(-1);
+    if (Math.abs(p[0] - last[0]) + Math.abs(p[1] - last[1]) < 3) return;
+    DR.cur.pts.push(p); redrawCanvas();
+    if (Date.now() - DR.lastPub > 140) { DR.lastPub = Date.now(); myLive().child("draw/cur").set({ c: DR.cur.c, p: enc(DR.cur.pts) }).catch(function () {}); }
+  });
+  function endStroke() {
+    if (!DR.cur) return;
+    var st = DR.cur; DR.cur = null; DR.mine.push(st);
+    var key = "k" + String(DR.mine.length).padStart(4, "0");
+    myLive().child("draw/s/" + key).set({ c: st.c, p: enc(st.pts) }).catch(function () {});
+    myLive().child("draw/cur").set(null).catch(function () {});
+    redrawCanvas();
+  }
+  dcv.addEventListener("pointerup", endStroke); dcv.addEventListener("pointercancel", endStroke); dcv.addEventListener("pointerleave", endStroke);
+  document.querySelectorAll(".swatch").forEach(function (b) {
+    b.addEventListener("click", function () { DR.color = b.getAttribute("data-c"); document.querySelectorAll(".swatch").forEach(function (x) { x.setAttribute("aria-pressed", x === b); }); sfx("tap"); });
+  });
+  $("dr-clear").addEventListener("click", function () { if (!canDraw()) return; DR.mine = []; DR.cur = null; myLive().child("draw").set({ n: S.drN || 1 }).catch(function () {}); redrawCanvas(); sfx("tap"); });
+  $("dr-pass").addEventListener("click", function () {
+    if (!canDraw()) return;
+    S.drDone = true; S.drFound = false; save();
+    myLive().update({ drawWin: { n: S.drN || 1, w: false } }).catch(function () {}); sfx("lose"); renderDraw();
+  });
+  function sendGuess() {
+    if (!onlineSync() || iDraw() || S.drDone) return;
+    var g = $("dr-guess").value.trim(); if (!g) return;
+    var ok = drRow().some(function (w) { var a = normW(w), b = normW(g); return a === b || a + "s" === b || a === b + "s"; });
+    $("dr-guess").value = "";
+    if (ok) {
+      S.drDone = true; S.drFound = true; S.drScore = (S.drScore || 0) + 1; addXP(2); stat("draw"); touchDay(); save();
+      myLive().update({ drawWin: { n: S.drN || 1, w: true } }).catch(function () {});
+      confetti(true); sfx("win"); buzz([60, 40, 120]);
+    } else {
+      DR.status = t("drWrong"); sfx("lose"); buzz(80);
+      myLive().child("guess").set({ n: S.drN || 1, t: g.slice(0, 30) }).catch(function () {});
+    }
+    renderDraw();
+  }
+  $("dr-send").addEventListener("click", sendGuess);
+  $("dr-guess").addEventListener("keydown", function (e) { if (e.key === "Enter") sendGuess(); });
+  function onPartnerDraw(v) {
+    if (!coupleMode()) return;
+    var n = S.drN || 1;
+    if (!iDraw()) { DR.their = v.draw && v.draw.n === n ? v.draw : null; }
+    else { var g = v.guess; if (g && g.n === n && g.t && g.t !== DR.lastGuess) { DR.lastGuess = g.t; DR.status = t("drTheyTry")(nameStart(), g.t); } }
+    var w = v.drawWin;
+    if (w && w.n === n && !S.drDone) {
+      S.drDone = true; S.drFound = !!w.w;
+      if (w.w) { S.drScore = (S.drScore || 0) + 1; addXP(2); stat("draw"); touchDay(); confetti(true); sfx("win"); buzz([60, 40, 120]); } else sfx("lose");
+      save();
+    }
+    if (current === "draw") renderDraw();
+  }
+  function onSharedDr(n) {
+    OL.sharedDrN = n;
+    if (coupleMode() && n && n > (S.drN || 1)) { S.drN = n; resetDrQ(); save(); if (current === "draw") renderDraw(); }
+  }
+  function renderDraw() {
+    var online = onlineSync();
+    $("dr-offline").hidden = online; $("dr-main").hidden = !online;
+    $("dr-r").textContent = t("round") + " " + (S.drN || 1);
+    $("dr-score").textContent = t("drScore")(S.drScore || 0);
+    if (!online) return;
+    var me = iDraw(), word = drWord();
+    if (me && DR.clearedN !== (S.drN || 1) && !S.drDone) { DR.clearedN = S.drN || 1; DR.mine = []; myLive().child("draw").set({ n: S.drN || 1 }).catch(function () {}); }
+    $("dr-role").textContent = me ? t("drYouDraw") : t("drGuessRole")(nameStart());
+    $("dr-word").className = me ? "center" : "center wordhint";
+    $("dr-word").textContent = S.drDone ? word.toUpperCase() : me ? t("drWordIs")(word.toUpperCase()) : Array.from(word).map(function (ch) { return ch === " " ? " " : "_"; }).join(" ");
+    $("dr-tools").hidden = !me || S.drDone;
+    $("dr-guessrow").hidden = me || S.drDone;
+    $("dr-guess").placeholder = t("drGuessPh");
+    $("dr-status").textContent = S.drDone ? "" : (DR.status || (!me && !DR.their ? t("drWaitDraw") : ""));
+    $("dr-result").hidden = !S.drDone;
+    if (S.drDone) $("dr-result").textContent = S.drFound ? t("drFound")(word) : t("drSkipped")(word);
+    $("dr-next").hidden = !S.drDone;
+    redrawCanvas();
+  }
+  $("dr-next").addEventListener("click", function () {
+    sfx("tap");
+    function local() { S.drN = (S.drN || 1) + 1; resetDrQ(); save(); renderDraw(); }
+    if (onlineSync()) {
+      var target = S.drN || 1;
+      OL.db.ref(olBase() + "/live/shared/drawN").transaction(function (c) { c = c || 1; return c === target ? target + 1 : c; })
+        .then(function () { setTimeout(function () { if ((S.drN || 1) === target) local(); }, 4000); }).catch(local);
+    } else local();
+  });
+  $("dr-home").addEventListener("click", function () { show("home"); });
+  $("dr-quit").addEventListener("click", function () { S.code = null; S.role = null; newRoundState(); resetSyncAll(); save(); show("home"); });
 
   /* ================= Night sky with shooting stars ================= */
   var cv = $("stars"), cx = cv.getContext("2d"), stars = [], shoot = null, nextShoot = 2500;
