@@ -327,6 +327,44 @@ body.tabs .wrap { padding-bottom: 100px; }
 body.tabs.incall .wrap { padding-bottom: 180px; }
 body.tabs .callbar { bottom: calc(78px + env(safe-area-inset-bottom)); }
 body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
+/* Chat */
+.tabbar { grid-template-columns: repeat(5, 1fr); }
+#s-chat { display: flex; flex-direction: column; gap: 10px; }
+#s-chat[hidden] { display: none !important; }
+.chat-head { display: flex; align-items: center; gap: 12px; padding: 4px 2px 8px; border-bottom: 1px solid rgba(240,198,116,0.15); }
+.chat-head b { display: block; font-family: var(--display); font-weight: 500; font-size: 1.15rem; }
+.chat-head small { color: var(--muted); font-size: 0.8rem; }
+.chat-head small.typing { color: var(--gold); }
+.cphoto.sm { width: 42px; height: 42px; }
+.cphoto.ph { display: grid; place-items: center; background: rgba(240,198,116,0.12); font-size: 1.2rem; }
+.chat-list { display: flex; flex-direction: column; gap: 6px; padding-bottom: 150px; }
+.daysep { align-self: center; font-size: 0.75rem; color: var(--muted); background: rgba(255,255,255,0.06); border-radius: 999px; padding: 3px 12px; margin: 8px 0 4px; }
+.msg { display: flex; flex-direction: column; max-width: 80%; }
+.msg.mine { align-self: flex-end; align-items: flex-end; }
+.msg.theirs { align-self: flex-start; align-items: flex-start; }
+.bubble { position: relative; padding: 9px 13px; border-radius: 18px; line-height: 1.4; font-size: 0.98rem; white-space: pre-wrap; overflow-wrap: anywhere; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.msg.mine .bubble { background: var(--gold); color: #1c1631; border-bottom-right-radius: 6px; }
+.msg.theirs .bubble { background: rgba(255,255,255,0.09); color: var(--ink); border-bottom-left-radius: 6px; }
+.bubble img { display: block; max-width: 220px; max-height: 260px; border-radius: 12px; cursor: zoom-in; }
+.bubble audio { display: block; width: 220px; max-width: 100%; height: 36px; }
+.bubble.media { padding: 4px; }
+.heart { position: absolute; bottom: -10px; font-size: 0.9rem; background: #241e48; border-radius: 999px; padding: 1px 5px; border: 1px solid var(--line); }
+.msg.mine .heart { left: -8px; } .msg.theirs .heart { right: -8px; }
+.mmeta { font-size: 0.7rem; color: var(--muted); margin: 3px 6px 0; font-variant-numeric: tabular-nums; }
+.mmeta .rd { color: var(--gold); }
+.msg.pop .bubble { animation: popin .25s ease; }
+@keyframes popin { from { transform: scale(0.85); opacity: 0; } to { transform: none; opacity: 1; } }
+.mact { display: flex; gap: 6px; margin-top: 6px; }
+.mact .btn { width: auto; padding: 6px 12px; font-size: 0.82rem; }
+.composer { position: fixed; left: 0; right: 0; bottom: calc(70px + env(safe-area-inset-bottom)); z-index: 61; max-width: 480px; margin: 0 auto; display: flex; align-items: flex-end; gap: 8px; padding: 8px 12px; background: rgba(16,13,38,0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(240,198,116,0.15); }
+.composer textarea { flex: 1; resize: none; max-height: 120px; min-height: 42px; border-radius: 21px; padding: 10px 14px; background: rgba(255,255,255,0.07); border: 1px solid var(--line); color: var(--ink); font: 400 1rem var(--body); line-height: 1.35; }
+.composer textarea:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+.composer .icon-btn { width: 42px; height: 42px; flex: none; font-size: 1.1rem; }
+.composer .send { background: var(--gold); color: var(--sky); border-color: var(--gold); }
+.composer .rec { background: var(--bad); color: #fff; border-color: var(--bad); animation: pulse 1s ease-in-out infinite; }
+.recbar { flex: 1; align-self: center; color: var(--bad); font-weight: 500; font-variant-numeric: tabular-nums; }
+body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
+#img-view img { max-width: 100%; max-height: 75vh; border-radius: 14px; margin: 0 auto; display: block; }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -456,6 +494,23 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
     <button class="btn btn-ghost" id="go-join" data-i="join"></button>
     <button class="btn btn-ghost" id="go-resume" data-i="resume2" hidden></button>
     <p class="small center" data-i="howTo"></p>
+  </section>
+
+  <section id="s-chat" class="screen" hidden>
+    <div class="chat-head"><img id="ch-photo" class="cphoto sm" alt="" hidden><span id="ch-ph" class="cphoto sm ph" aria-hidden="true">💞</span><div><b id="ch-name"></b><small id="ch-status"></small></div></div>
+    <div class="card" id="chat-empty" hidden>
+      <p class="tag" data-i="chEmpty" style="margin:0"></p>
+      <button class="btn btn-gold" id="ch-link" data-i="linkCreate"></button>
+    </div>
+    <div class="chat-list" id="chat-list" aria-live="polite"></div>
+    <div class="composer" id="composer" hidden>
+      <button class="icon-btn" id="ch-img" aria-label="Photo">📷</button>
+      <input type="file" id="ch-file" accept="image/*" hidden>
+      <textarea id="ch-input" rows="1" maxlength="2000" aria-label="Message"></textarea>
+      <span class="recbar" id="ch-recbar" hidden></span>
+      <button class="icon-btn" id="ch-mic" aria-label="Message vocal">🎙️</button>
+      <button class="icon-btn send" id="ch-send" aria-label="Envoyer" hidden>➤</button>
+    </div>
   </section>
 
   <section id="s-us" class="screen stack" hidden>
@@ -794,6 +849,7 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
 <nav class="tabbar" id="tabbar" aria-label="Navigation">
   <button data-tab="home" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span data-i="tabHome"></span></button>
   <button data-tab="play" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="11" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 10.5v4M6 12.5h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="15.5" cy="11.5" r="1.1" fill="currentColor"/><circle cx="17.5" cy="14" r="1.1" fill="currentColor"/></svg><span data-i="tabPlay"></span></button>
+  <button data-tab="chat" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4h0A1.5 1.5 0 0 1 4 14.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span data-i="tabChat"></span><i class="dotnew" id="chat-dot" hidden></i></button>
   <button data-tab="us" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.3-8.9-8.6C1.7 8.2 3.7 4.7 7.1 4.7c2 0 3.3 1.1 4.9 2.9 1.6-1.8 2.9-2.9 4.9-2.9 3.4 0 5.4 3.5 4 6.7C19 15.7 12 20 12 20z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span data-i="tabUs"></span></button>
   <button data-tab="together" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><rect x="3" y="14" width="4.5" height="6" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="16.5" y="14" width="4.5" height="6" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span data-i="tabTogether"></span></button>
 </nav>
@@ -801,6 +857,7 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.2 0 3.6 1.2 5.3 3.1 1.7-1.9 3.1-3.1 5.3-3.1 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z" fill="#ff7a93"/></svg>
   <p id="heartfx-t"></p>
 </div></div>
+<div class="ovl" id="img-view" hidden role="dialog" aria-modal="true"><div class="ovl-in"><img id="iv-img" alt=""><button class="btn btn-gold" id="iv-close" data-i="close"></button></div></div>
 <div class="ovl" id="lt-view" hidden role="dialog" aria-modal="true" aria-labelledby="lv-from">
   <div class="ovl-in">
     <svg viewBox="0 0 24 24" aria-hidden="true" style="width:56px;height:56px;margin:0 auto"><rect x="3" y="6" width="18" height="12" rx="1.5" fill="none" stroke="#f0c674" stroke-width="1.3"/><path d="M3.5 6.8l8.5 6.4 8.5-6.4" fill="none" stroke="#f0c674" stroke-width="1.3" stroke-linejoin="round"/><circle cx="12" cy="13" r="2.2" fill="#ff7a93"/></svg>
@@ -1236,7 +1293,11 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
       accErrProvider: "La connexion Google n'est pas encore activée dans Firebase.", accErr: "La connexion Google n'a pas abouti. Réessaie.",
       delTitle: "Supprimer nos données", delBtn: "🗑️ Supprimer définitivement",
       delNote: "Supprime votre couple, vos lettres, vos rêves, vos photos et ta progression, sur ce téléphone et en ligne. C'est définitif.",
-      delSure: "Touche encore pour confirmer : tout sera effacé", delDone: "Données supprimées."
+      delSure: "Touche encore pour confirmer : tout sera effacé", delDone: "Données supprimées.",
+      tabChat: "Messages", chEmpty: "Reliez vos deux téléphones pour discuter en privé.", chFirst: "Dis-lui quelque chose de doux 💬",
+      chPh: "Écris un message…", chTyping: function (n) { return n + " écrit…"; }, chToday: "Aujourd'hui", chYesterday: "Hier",
+      chPhoto: "📷 Photo", chVoice: "🎙️ Message vocal", chRec: "Enregistrement… touche ➤ pour envoyer", chDel: "Supprimer", chCancel: "Annuler",
+      chTooBig: "Fichier trop lourd.", chNew: function (n) { return "Message de " + n; }, chHint: "Touche deux fois un message pour ❤️"
     },
     kr: {
       modeLabel: "Mòd · Misyon Sekrè",
@@ -1449,7 +1510,11 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
       accErrProvider: "Koneksyon Google poko aktive nan Firebase.", accErr: "Koneksyon Google la pa mache. Eseye ankò.",
       delTitle: "Efase done nou yo", delBtn: "🗑️ Efase nèt",
       delNote: "Sa efase koup nou, lèt nou, rèv nou, foto nou ak pwogrè w, sou telefòn sa a ak an liy. Ou pa ka retounen.",
-      delSure: "Peze ankò pou konfime : tout ap efase", delDone: "Done yo efase."
+      delSure: "Peze ankò pou konfime : tout ap efase", delDone: "Done yo efase.",
+      tabChat: "Mesaj", chEmpty: "Konekte de telefòn nou yo pou nou pale an prive.", chFirst: "Di l yon bagay dous 💬",
+      chPh: "Ekri yon mesaj…", chTyping: function (n) { return n + " ap ekri…"; }, chToday: "Jodi a", chYesterday: "Yè",
+      chPhoto: "📷 Foto", chVoice: "🎙️ Mesaj vokal", chRec: "M ap anrejistre… peze ➤ pou voye", chDel: "Efase", chCancel: "Anile",
+      chTooBig: "Fichye a twò lou.", chNew: function (n) { return "Mesaj nan men " + n; }, chHint: "Peze yon mesaj de fwa pou ❤️"
     },
     en: {
       modeLabel: "Mode · Secret Mission",
@@ -1662,7 +1727,11 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
       accErrProvider: "Google sign-in isn't turned on in Firebase yet.", accErr: "Google sign-in didn't go through. Try again.",
       delTitle: "Delete our data", delBtn: "🗑️ Delete permanently",
       delNote: "Deletes your couple, letters, dreams, photos and progress, on this phone and online. This can't be undone.",
-      delSure: "Tap again to confirm: everything will be erased", delDone: "Data deleted."
+      delSure: "Tap again to confirm: everything will be erased", delDone: "Data deleted.",
+      tabChat: "Messages", chEmpty: "Link your two phones to chat privately.", chFirst: "Say something sweet 💬",
+      chPh: "Write a message…", chTyping: function (n) { return n + " is typing…"; }, chToday: "Today", chYesterday: "Yesterday",
+      chPhoto: "📷 Photo", chVoice: "🎙️ Voice message", chRec: "Recording… tap ➤ to send", chDel: "Delete", chCancel: "Cancel",
+      chTooBig: "File too large.", chNew: function (n) { return "Message from " + n; }, chHint: "Double-tap a message to ❤️"
     }
   };
 
@@ -1876,7 +1945,8 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
 
   function render() {
     applyText(); updateChrome();
-    if (isTab()) { renderProfile(); renderOnline(); renderCallCard(); renderModes(); renderDaily(); renderStory(); renderInstall(); renderLetters(); renderDreams(); renderWeather(); renderMusic(); renderGreet(); renderTogether(); }
+    if (isTab()) { renderProfile(); renderOnline(); renderCallCard(); renderModes(); renderDaily(); renderStory(); renderInstall(); renderLetters(); renderDreams(); renderWeather(); renderMusic(); renderGreet(); renderTogether(); renderChatDot(); }
+    if (current === "chat") renderChat(true);
     if (current === "letter") renderLetterForm();
     if (current === "settings") renderWxSettings();
     if (current === "settings") { renderSettingsExtra(); renderSettingsW1(); renderAccount(); }
@@ -2266,6 +2336,7 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
       watch(base + "/live/shared/quizN", function (s) { onSharedQz(s.val()); });
       watch(base + "/live/shared/dreams", function (s) { onSharedDreams(s.val()); });
       watch(base + "/live/shared/music", function (s) { onSharedMusic(s.val()); });
+      (function () { var r = OL.db.ref(base + "/live/chat"); if (r.limitToLast) r = r.limitToLast(200); var cb = r.on("value", function (s) { onChat(s.val()); }, olPermErr); OL.refs.push([r, cb]); })();
       watch(base + "/live/" + mySlot() + "/letters", function (s) { OL.myLetters = s.val() || {}; if (isTab()) renderLetters(); });
       watch(base + "/live/shared/drawN", function (s) { onSharedDr(s.val()); });
       watch(base + "/live/shared/dates", function (s) { onSharedDates(s.val()); });
@@ -2293,7 +2364,7 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
     if (OL.basePulse !== undefined && pn && pn !== OL.basePulse && v.pulse.at && srvNow() - v.pulse.at < 120000) receivePulse();
     OL.basePulse = pn;
     OL.partner = v;
-    checkGN(); checkSync(); checkQz(); onPartnerDraw(v); checkNewLetters(v); renderOnlineSafe(); renderPartnerGame();
+    checkGN(); checkSync(); checkQz(); onPartnerDraw(v); checkNewLetters(v); if (current === "chat") { if ((v.chatRead || 0) !== CH.lastRead) { CH.lastRead = v.chatRead || 0; renderChat(false); } else renderChatHead(); } renderOnlineSafe(); renderPartnerGame();
   }
   function onSharedRound(r) {
     OL.sharedRound = r;
@@ -3613,7 +3684,7 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
   $("mu-stop").addEventListener("click", function () { OL.db.ref(olBase() + "/live/shared/music").set(null).catch(function () {}); sfx("tap"); });
 
   /* ================= Navigation: tabs, header, phone back button ================= */
-  var TABS = ["home", "play", "us", "together"];
+  var TABS = ["home", "play", "chat", "us", "together"];
   var NAV = { lastTab: "home", guarded: false, ignorePop: false };
   function isTab(n) { return TABS.indexOf(n || current) >= 0; }
   var PARENT = { letter: "us", created: "play", join: "play", mission: "play", reveal: "play", accuse: "mission", sync: "play", quiz: "play", draw: "play" };
@@ -3623,6 +3694,9 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
   }
   function updateChrome() {
     var tab = isTab();
+    $("composer").hidden = current !== "chat" || !chatOnline();
+    if (current === "chat") { markRead(); }
+    if (current !== "chat" && CH.rec) stopRec(false);
     document.body.classList.toggle("tabs", tab);
     $("tabbar").hidden = !tab;
     $("hdr-back").hidden = tab; $("brand").hidden = !tab;
@@ -3635,7 +3709,7 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
   }
   function closeTopOverlay() {
     if (lockSt && lockSt.mode) { if (lockSt.mode !== "unlock") closeLock(); return true; }
-    var ids = ["modal", "lt-view", "moonx", "moonfx", "heartfx"];
+    var ids = ["img-view", "modal", "lt-view", "moonx", "moonfx", "heartfx"];
     for (var i = 0; i < ids.length; i++) { if (!$(ids[i]).hidden) { $(ids[i]).hidden = true; return true; } }
     if (!$("onb").hidden) return true;
     if (!$("ol-moodbox").hidden) { $("ol-moodbox").hidden = true; return true; }
@@ -3749,6 +3823,170 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
     });
   });
   $("go-settings").addEventListener("click", function () { delArmed = false; });
+
+  /* ================= Private chat: text, photos, voice notes, read receipts, typing, hearts ================= */
+  var CH = { msgs: {}, keys: [], sel: null, lastTyping: 0, rec: null, recT: null, recStart: 0, seenKeys: null, lastTap: {} };
+  function chatOnline() { return !!(P.couple && OL.db && OL.partnerJoined); }
+  function chatPath() { return olBase() + "/live/chat"; }
+  function msgKey() { return "m" + String(srvNow()).padStart(14, "0") + Math.random().toString(36).slice(2, 6); }
+  function onChat(v) {
+    CH.msgs = v || {};
+    CH.keys = Object.keys(CH.msgs).sort();
+    var added = CH.seenKeys ? CH.keys.filter(function (k) { return CH.seenKeys.indexOf(k) < 0; }) : [];
+    var fresh = added.filter(function (k) { return CH.msgs[k].from !== mySlot(); });
+    CH.seenKeys = CH.keys.slice();
+    if (fresh.length) {
+      var last = CH.msgs[fresh.at(-1)], prev = last.t ? last.t.slice(0, 60) : last.img ? t("chPhoto") : t("chVoice");
+      if (current !== "chat" || document.hidden) {
+        sfx("tap"); buzz(30);
+        if (current !== "chat") toast("💬", t("chNew")(nameStart()), prev);
+        notifyIfHidden("💬 " + nameStart(), prev, "chat");
+      }
+    }
+    if (current === "chat") { renderChat(added.length > 0); markRead(); } else renderChatDot();
+  }
+  function unreadCount() {
+    var readAt = P.chatReadAt || 0;
+    return CH.keys.filter(function (k) { var m = CH.msgs[k]; return m.from !== mySlot() && (m.at || 0) > readAt; }).length;
+  }
+  function renderChatDot() { var dot = $("chat-dot"); if (dot) dot.hidden = !(P.couple && unreadCount() > 0); }
+  function markRead() {
+    if (!chatOnline() || document.hidden) return;
+    var lastAt = 0; CH.keys.forEach(function (k) { var m = CH.msgs[k]; if (m.from !== mySlot() && (m.at || 0) > lastAt) lastAt = m.at; });
+    if (lastAt > (P.chatReadAt || 0)) { P.chatReadAt = lastAt; save(); myLive().child("chatRead").set(lastAt).catch(function () {}); }
+    renderChatDot();
+  }
+  document.addEventListener("visibilitychange", function () { if (!document.hidden && current === "chat") markRead(); });
+  function hhmm(ms) { var d = new Date(ms); return (d.getHours() < 10 ? "0" : "") + d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes(); }
+  function dayLabel(ms) {
+    var d = new Date(ms), n = new Date(), y = new Date(); y.setDate(n.getDate() - 1);
+    if (d.toDateString() === n.toDateString()) return t("chToday");
+    if (d.toDateString() === y.toDateString()) return t("chYesterday");
+    return d.toLocaleDateString({ fr: "fr-FR", kr: "fr-FR", en: "en-US" }[S.lang] || "fr-FR", { weekday: "long", day: "numeric", month: "long" });
+  }
+  function renderChatHead() {
+    $("ch-name").textContent = nameStart();
+    $("ch-photo").hidden = !photoURL; $("ch-ph").hidden = !!photoURL; if (photoURL) $("ch-photo").src = photoURL;
+    var p = OL.partner || {}, st = $("ch-status");
+    var typing = p.typing && srvNow() - p.typing < 6000;
+    st.className = typing ? "typing" : "";
+    st.textContent = typing ? t("chTyping")(nameStart()) : !OL.partnerJoined ? "" : p.online ? t("online")("").trim() || "●" : (p.lastSeen ? t("seen")("", Math.round((srvNow() - p.lastSeen) / 60000)).trim() : "");
+  }
+  function renderChat(scroll) {
+    var on = chatOnline();
+    $("chat-empty").hidden = on; $("composer").hidden = !on || current !== "chat";
+    $("ch-input").placeholder = t("chPh");
+    renderChatHead();
+    var list = $("chat-list"); list.innerHTML = "";
+    if (!on) return;
+    if (!CH.keys.length) { var e = document.createElement("p"); e.className = "small center"; e.textContent = t("chFirst") + " · " + t("chHint"); list.appendChild(e); }
+    var readTheirs = (OL.partner && OL.partner.chatRead) || 0, lastDay = "";
+    CH.keys.forEach(function (k, idx) {
+      var m = CH.msgs[k], mine = m.from === mySlot(), at = m.at || 0, dl = dayLabel(at);
+      if (dl !== lastDay) { lastDay = dl; var sep = document.createElement("div"); sep.className = "daysep"; sep.textContent = dl.charAt(0).toUpperCase() + dl.slice(1); list.appendChild(sep); }
+      var row = document.createElement("div"); row.className = "msg " + (mine ? "mine" : "theirs") + (idx === CH.keys.length - 1 && scroll ? " pop" : "");
+      var b = document.createElement("div"); b.className = "bubble" + (m.img || m.aud ? " media" : "");
+      if (m.img) { var im = document.createElement("img"); im.src = m.img; im.alt = t("chPhoto"); im.addEventListener("click", function (ev) { ev.stopPropagation(); $("iv-img").src = m.img; $("iv-close").textContent = t("close"); $("img-view").hidden = false; }); b.appendChild(im); }
+      else if (m.aud) { var au = document.createElement("audio"); au.controls = true; au.preload = "none"; au.src = m.aud; b.appendChild(au); }
+      else b.textContent = m.t || "";
+      if (m.heart) { var h = document.createElement("span"); h.className = "heart"; h.textContent = "❤️"; b.appendChild(h); }
+      b.addEventListener("click", function () {
+        var now = Date.now(), last = CH.lastTap[k] || 0; CH.lastTap[k] = now;
+        if (now - last < 350) { OL.db.ref(chatPath() + "/" + k + "/heart").set(m.heart ? null : true).catch(function () {}); if (!m.heart) { sfx("badge"); buzz(25); } }
+      });
+      if (mine) {
+        var pt = null;
+        b.addEventListener("pointerdown", function () { pt = setTimeout(function () { CH.sel = k; buzz(40); renderChat(false); }, 550); });
+        ["pointerup", "pointerleave", "pointercancel"].forEach(function (ev) { b.addEventListener(ev, function () { clearTimeout(pt); }); });
+        b.addEventListener("contextmenu", function (ev) { ev.preventDefault(); CH.sel = k; renderChat(false); });
+      }
+      row.appendChild(b);
+      var meta = document.createElement("div"); meta.className = "mmeta"; meta.textContent = hhmm(at);
+      if (mine) { var rd = document.createElement("span"); var seen = readTheirs >= at; rd.className = seen ? "rd" : ""; rd.textContent = seen ? " ✓✓" : " ✓"; meta.appendChild(rd); }
+      row.appendChild(meta);
+      if (CH.sel === k) {
+        var act = document.createElement("div"); act.className = "mact";
+        var del = document.createElement("button"); del.className = "btn btn-ghost"; del.textContent = t("chDel"); del.style.color = "var(--bad)";
+        del.addEventListener("click", function () { OL.db.ref(chatPath() + "/" + k).remove().catch(function () {}); CH.sel = null; sfx("tap"); });
+        var cc = document.createElement("button"); cc.className = "btn btn-ghost"; cc.textContent = t("chCancel");
+        cc.addEventListener("click", function () { CH.sel = null; renderChat(false); });
+        act.appendChild(del); act.appendChild(cc); row.appendChild(act);
+      }
+      list.appendChild(row);
+    });
+    if (scroll) requestAnimationFrame(function () { window.scrollTo({ top: document.body.scrollHeight, behavior: reduce ? "auto" : "smooth" }); });
+  }
+  function sendMsg(rec) {
+    if (!chatOnline()) return Promise.resolve();
+    rec.from = mySlot(); rec.at = TS();
+    stat("msgs"); save();
+    return OL.db.ref(chatPath() + "/" + msgKey()).set(rec).then(function () { myLive().child("typing").set(null).catch(function () {}); }, function () { toast("⚠️", t("tabChat"), t("linkNet")); });
+  }
+  function updateComposer() {
+    var hasText = $("ch-input").value.trim().length > 0, recording = !!CH.rec;
+    $("ch-send").hidden = !hasText && !recording; $("ch-mic").hidden = hasText || recording;
+    $("ch-input").hidden = recording; $("ch-recbar").hidden = !recording; $("ch-img").hidden = recording;
+    var ta = $("ch-input"); ta.style.height = "auto"; ta.style.height = Math.min(120, ta.scrollHeight) + "px";
+  }
+  $("ch-input").addEventListener("input", function () {
+    updateComposer();
+    if (chatOnline() && Date.now() - CH.lastTyping > 2500) { CH.lastTyping = Date.now(); myLive().child("typing").set(TS()).catch(function () {}); }
+  });
+  $("ch-input").addEventListener("keydown", function (e) { if (e.key === "Enter" && !e.shiftKey && window.matchMedia("(pointer: fine)").matches) { e.preventDefault(); $("ch-send").click(); } });
+  $("ch-send").addEventListener("click", function () {
+    if (CH.rec) { stopRec(true); return; }
+    var v = $("ch-input").value.trim(); if (!v) return;
+    $("ch-input").value = ""; updateComposer(); sfx("tap");
+    sendMsg({ t: v.slice(0, 2000) }); $("ch-input").focus();
+  });
+  $("ch-img").addEventListener("click", function () { $("ch-file").click(); });
+  $("ch-file").addEventListener("change", function () {
+    var f = this.files && this.files[0]; this.value = ""; if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function () {
+      var img = new Image();
+      img.onload = function () {
+        var max = P.lite ? 640 : 1000, sc = Math.min(1, max / Math.max(img.width, img.height));
+        var c = document.createElement("canvas"); c.width = Math.round(img.width * sc); c.height = Math.round(img.height * sc);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        var url = c.toDataURL("image/jpeg", P.lite ? 0.6 : 0.72);
+        if (url.length > 390000) url = c.toDataURL("image/jpeg", 0.5);
+        if (url.length > 390000) { toast("⚠️", t("tabChat"), t("chTooBig")); return; }
+        sendMsg({ img: url }); sfx("tap");
+      };
+      img.src = rd.result;
+    };
+    rd.readAsDataURL(f);
+  });
+  function startRec() {
+    if (!window.MediaRecorder || !navigator.mediaDevices) { toast("⚠️", t("tabChat"), t("callNoSupport")); return; }
+    navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }).then(function (st) {
+      var types = ["audio/webm;codecs=opus", "audio/mp4", "audio/ogg;codecs=opus", "audio/webm"], mt = types.filter(function (x) { return MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(x); })[0];
+      var mr = new MediaRecorder(st, mt ? { mimeType: mt, audioBitsPerSecond: 24000 } : { audioBitsPerSecond: 24000 }), chunks = [];
+      mr.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+      mr.onstop = function () {
+        st.getTracks().forEach(function (tr) { tr.stop(); });
+        if (!mr.__send) return;
+        var blob = new Blob(chunks, { type: mr.mimeType || mt || "audio/webm" }), fr = new FileReader();
+        fr.onload = function () { if (fr.result.length > 690000) { toast("⚠️", t("tabChat"), t("chTooBig")); return; } sendMsg({ aud: fr.result, dur: Math.round((Date.now() - CH.recStart) / 1000) }); };
+        fr.readAsDataURL(blob);
+      };
+      CH.rec = mr; CH.recStart = Date.now(); mr.start(); sfx("tap"); buzz(30);
+      $("ch-mic").classList.add("rec");
+      clearInterval(CH.recT); CH.recT = setInterval(function () { var sec = Math.floor((Date.now() - CH.recStart) / 1000); $("ch-recbar").textContent = "● " + Math.floor(sec / 60) + ":" + (sec % 60 < 10 ? "0" : "") + (sec % 60) + " · " + t("chRec"); if (sec >= 60) stopRec(true); }, 250);
+      updateComposer();
+    }).catch(function () { toast("⚠️", t("tabChat"), t("micDenied")); });
+  }
+  function stopRec(send) {
+    if (!CH.rec) return;
+    var mr = CH.rec; CH.rec = null; clearInterval(CH.recT); mr.__send = send;
+    try { mr.stop(); } catch (e) {}
+    $("ch-mic").classList.remove("rec"); updateComposer(); if (send) sfx("tap");
+  }
+  $("ch-mic").addEventListener("click", function () { if (CH.rec) stopRec(true); else startRec(); });
+  $("iv-close").addEventListener("click", function () { $("img-view").hidden = true; });
+  $("ch-link").addEventListener("click", function () { show("home"); setTimeout(function () { $("online-card").scrollIntoView({ block: "center" }); }, 80); });
+  setInterval(function () { if (current === "chat") renderChatHead(); }, 2000);
 
   /* ================= Night sky with shooting stars ================= */
   var cv = $("stars"), cx = cv.getContext("2d"), stars = [], shoot = null, nextShoot = 2500;

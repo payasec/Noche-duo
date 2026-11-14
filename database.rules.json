@@ -12,13 +12,36 @@
         "live": {
           ".write": "auth != null && (root.child('couples').child($code).child('members/a').val() === auth.uid || root.child('couples').child($code).child('members/b').val() === auth.uid)",
           "shared": {
-            "photo": { ".validate": "newData.isString() && newData.val().length < 200000" },
-            "dreams": { "$id": { ".validate": "newData.child('t').isString() && newData.child('t').val().length <= 120" } },
-            "music": { ".validate": "newData.child('id').isString() && newData.child('id').val().length === 11" }
+            "photo": {
+              ".validate": "newData.isString() && newData.val().length < 200000"
+            },
+            "dreams": {
+              "$id": {
+                ".validate": "newData.child('t').isString() && newData.child('t').val().length <= 120"
+              }
+            },
+            "music": {
+              ".validate": "newData.child('id').isString() && newData.child('id').val().length === 11"
+            }
+          },
+          "chat": {
+            "$id": {
+              ".validate": "newData.child('from').isString() && (!newData.child('t').exists() || (newData.child('t').isString() && newData.child('t').val().length <= 2000)) && (!newData.child('img').exists() || (newData.child('img').isString() && newData.child('img').val().length < 400000)) && (!newData.child('aud').exists() || (newData.child('aud').isString() && newData.child('aud').val().length < 700000))"
+            }
           },
           "$slot": {
-            "letters": { "$id": { ".validate": "newData.child('type').isString() && (!newData.child('text').exists() || (newData.child('text').isString() && newData.child('text').val().length <= 1600))" } },
-            "draw": { "s": { "$k": { ".validate": "newData.child('p').isString() && newData.child('p').val().length < 30000" } } }
+            "letters": {
+              "$id": {
+                ".validate": "newData.child('type').isString() && (!newData.child('text').exists() || (newData.child('text').isString() && newData.child('text').val().length <= 1600))"
+              }
+            },
+            "draw": {
+              "s": {
+                "$k": {
+                  ".validate": "newData.child('p').isString() && newData.child('p').val().length < 30000"
+                }
+              }
+            }
           }
         }
       }
@@ -30,8 +53,20 @@
       }
     },
     "stats": {
-      "days": { "$day": { "$uid": { ".write": "auth != null && auth.uid === $uid", ".validate": "newData.isBoolean()" } } },
-      "couples": { "$code": { ".write": "auth != null && !data.exists()", ".validate": "newData.isNumber()" } }
+      "days": {
+        "$day": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid",
+            ".validate": "newData.isBoolean()"
+          }
+        }
+      },
+      "couples": {
+        "$code": {
+          ".write": "auth != null && !data.exists()",
+          ".validate": "newData.isNumber()"
+        }
+      }
     }
   }
 }
