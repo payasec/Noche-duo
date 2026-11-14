@@ -549,6 +549,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
 .callb.missed b { color: #ff4d5e; }
 .msg.mine .callb.missed b { color: #b3122a; }
 .callb .recall { margin-left: auto; background: #2fbf63; color: #062611; border: 0; border-radius: 999px; padding: 6px 12px; font: 500 0.82rem var(--body); cursor: pointer; }
+#greet:empty::before, #greet-date:empty::before { content: "\00a0"; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .mph { width: 200px; height: 200px; border-radius: 12px; display: grid; place-items: center; font-size: 2rem; background: linear-gradient(110deg, rgba(255,255,255,0.05) 30%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.05) 70%); background-size: 200% 100%; animation: mshim 1.4s linear infinite; }
 @keyframes mshim { from { background-position: 100% 0; } to { background-position: -100% 0; } }
@@ -922,7 +923,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
     </div>
     <button class="btn btn-gold" id="settings-done" data-i="done"></button>
     <div class="card"><button class="btn btn-ghost" id="share-app" data-i="shareApp"></button></div>
-    <p class="small center" id="app-version">Noche Duo · version 26 · <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--muted)">Confidentialité</a> · <a href="delete.html" target="_blank" rel="noopener" style="color:var(--muted)">Supprimer mon compte</a></p>
+    <p class="small center" id="app-version">Noche Duo · version 27 · <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--muted)">Confidentialité</a> · <a href="delete.html" target="_blank" rel="noopener" style="color:var(--muted)">Supprimer mon compte</a></p>
   </section>
 
   <!-- CREATED -->
