@@ -22,6 +22,13 @@
             },
             "music": {
               ".validate": "newData.child('id').isString() && newData.child('id').val().length === 11"
+            },
+            "garden": {
+              "$day": {
+                "$slot": {
+                  ".validate": "newData.isNumber() && ($slot === 'a' || $slot === 'b')"
+                }
+              }
             }
           },
           "chat": {
@@ -41,6 +48,9 @@
                   ".validate": "newData.child('p').isString() && newData.child('p').val().length < 30000"
                 }
               }
+            },
+            "touch": {
+              ".validate": "newData.isNumber()"
             }
           }
         }

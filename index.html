@@ -365,6 +365,44 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
 .recbar { flex: 1; align-self: center; color: var(--bad); font-weight: 500; font-variant-numeric: tabular-nums; }
 body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
 #img-view img { max-width: 100%; max-height: 75vh; border-radius: 14px; margin: 0 auto; display: block; }
+/* Wave 6: touch, garden, reunion, invite */
+.touchpad { position: relative; display: grid; place-items: center; width: 180px; height: 180px; margin: 10px auto; border-radius: 50%; border: 2px solid var(--line); background: radial-gradient(circle, rgba(255,122,147,0.18), rgba(255,122,147,0.03) 70%); touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; cursor: pointer; transition: box-shadow .3s, border-color .3s, transform .2s, background .3s; color: inherit; font: inherit; padding: 0; }
+.touchpad .tp-heart { font-size: 4.2rem; color: var(--rose); line-height: 1; pointer-events: none; }
+.touchpad.me { border-color: var(--gold); box-shadow: 0 0 0 6px rgba(240,198,116,0.15), 0 0 40px rgba(240,198,116,0.35); transform: scale(0.97); }
+.touchpad.partner { border-color: var(--rose); box-shadow: 0 0 0 6px rgba(255,122,147,0.15), 0 0 50px rgba(255,122,147,0.45); }
+.touchpad.both { border-color: var(--rose); background: radial-gradient(circle, rgba(255,122,147,0.5), rgba(255,122,147,0.05) 70%); box-shadow: 0 0 0 10px rgba(255,122,147,0.18), 0 0 90px rgba(255,122,147,0.75); }
+.touchpad.beat .tp-heart { animation: hbeat .6s ease; }
+@keyframes hbeat { 0% { transform: scale(1); } 15% { transform: scale(1.28); } 30% { transform: scale(1.05); } 45% { transform: scale(1.2); } 100% { transform: scale(1); } }
+.tp-ring { position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--rose); opacity: 0; pointer-events: none; }
+.touchpad.partner .tp-ring, .touchpad.both .tp-ring { animation: tpring 1.8s ease-out infinite; }
+.touchpad .tp-ring.r2 { animation-delay: .9s; }
+@keyframes tpring { from { transform: scale(1); opacity: .7; } to { transform: scale(1.4); opacity: 0; } }
+.tc-status { text-align: center; font-weight: 500; min-height: 1.4em; margin: 0; }
+.reu-clock { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; }
+.reu-clock div { background: rgba(255,255,255,0.05); border: 1px solid var(--line); border-radius: 14px; padding: 10px 2px 6px; }
+.reu-clock b { display: block; font-family: var(--display); font-weight: 500; font-size: 1.9rem; color: var(--gold); line-height: 1.05; font-variant-numeric: tabular-nums; }
+.reu-clock small { color: var(--muted); font-size: 0.72rem; }
+.reu-track { position: relative; height: 34px; margin: 2px 4px 0; }
+.reu-track::before { content: ""; position: absolute; left: 0; right: 24px; top: 50%; border-top: 2px dashed rgba(240,198,116,0.35); }
+.reu-track i { position: absolute; left: 0; top: calc(50% - 1px); height: 2px; width: 0; background: linear-gradient(90deg, var(--rose), var(--gold)); }
+.reu-plane { position: absolute; top: 50%; left: 0; transform: translate(-50%, -58%); font-size: 1.35rem; }
+.reu-heart { position: absolute; right: 0; top: 50%; transform: translateY(-50%); font-size: 1.2rem; }
+.reu-today { font-family: var(--display); font-size: 1.45rem; text-align: center; color: var(--gold); margin: 4px 0; }
+.gd-scene { position: relative; height: 180px; overflow: hidden; border-radius: 16px; background: radial-gradient(120% 90% at 50% 100%, rgba(111,207,151,0.14), rgba(255,255,255,0) 62%); }
+#gd-svg { position: absolute; inset: 0; }
+.gd-scene svg { display: block; width: 100%; height: 100%; }
+.gd-plant { transform-box: view-box; transform-origin: 100px 147px; animation: gdsway 6s ease-in-out infinite; }
+.gd-scene.thirsty .gd-plant { animation: none; transform: rotate(-5deg); filter: saturate(0.6); }
+.gd-scene.grow .gd-plant { animation: gdgrow .9s ease, gdsway 6s ease-in-out .9s infinite; }
+@keyframes gdsway { 0%, 100% { transform: rotate(-1.6deg); } 50% { transform: rotate(1.6deg); } }
+@keyframes gdgrow { 0% { transform: scale(1); } 40% { transform: scale(1.1); } 100% { transform: scale(1); } }
+.gdrop { position: absolute; top: -14px; width: 7px; height: 11px; border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; background: #7cc7ff; opacity: .9; animation: gdrop 1.05s ease-in forwards; pointer-events: none; }
+@keyframes gdrop { to { transform: translateY(150px); opacity: 0; } }
+.gd-who { display: flex; justify-content: space-between; gap: 10px; font-size: 0.9rem; color: var(--muted); }
+.gd-who .ok { color: #7cc7ff; font-weight: 500; }
+.invite-card { text-align: center; border-color: var(--rose); box-shadow: 0 0 40px -10px rgba(255,122,147,0.6); }
+.invite-card h2 { margin: 0; }
+.inv-ic { font-size: 2.6rem; margin: 0; line-height: 1; }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -396,6 +434,13 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
   <!-- HOME -->
   <section id="s-home" class="screen stack">
     <div class="greet"><p class="small" id="greet-date"></p><h1 id="greet"></h1></div>
+    <div class="card invite-card" id="invite-card" hidden>
+      <p class="inv-ic" aria-hidden="true">💌</p>
+      <h2 id="inv-title"></h2>
+      <p class="small" data-i="invText" style="margin:0"></p>
+      <button class="btn btn-gold" id="inv-join" data-i="invJoin"></button>
+      <p class="err" id="inv-err" aria-live="polite"></p>
+    </div>
     <div class="card" id="install-card" hidden>
       <b data-i="installTitle"></b>
       <p class="small" id="install-text"></p>
@@ -434,6 +479,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
         <div id="ol-waiting" class="stack" hidden>
           <p class="small" data-i="linkCodeTitle"></p>
           <div class="code" id="ol-code-show" style="font-size:2.3rem"></div>
+          <button class="btn btn-rose" id="ol-invite" data-i="invSend"></button>
           <p class="small center" data-i="linkSend"></p>
         </div>
         <div class="status"><span class="dot" id="ol-dot"></span><span id="ol-status"></span></div>
@@ -459,6 +505,37 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
         </div>
         <p class="small center" id="ol-note" aria-live="polite"></p>
       </div>
+    </div>
+    <div class="card" id="reu-card" hidden>
+      <div class="rowb"><h3 id="reu-title"></h3><span class="small" id="reu-date"></span></div>
+      <div id="reu-live" class="stack" style="gap:10px" hidden>
+        <div class="reu-clock" id="reu-clock">
+          <div><b id="reu-d">0</b><small data-i="reuD"></small></div><div><b id="reu-h">0</b><small data-i="reuH"></small></div>
+          <div><b id="reu-m">0</b><small data-i="reuM"></small></div><div><b id="reu-s">0</b><small data-i="reuS"></small></div>
+        </div>
+        <p class="reu-today" id="reu-today" hidden></p>
+        <div class="reu-track" aria-hidden="true"><i id="reu-fill"></i><span class="reu-plane" id="reu-plane">✈️</span><span class="reu-heart">💞</span></div>
+        <p class="small center" id="reu-line" style="margin:0"></p>
+        <button class="linkbtn" id="reu-edit" data-i="reuEdit"></button>
+      </div>
+      <div id="reu-set" class="stack" style="gap:10px" hidden>
+        <div class="guessrow">
+          <label for="reu-in" class="small" style="position:absolute;left:-9999px" data-i="reunionLabel"></label>
+          <input id="reu-in" class="txt" type="date">
+          <button class="btn btn-gold" id="reu-save" data-i="reuSave"></button>
+        </div>
+        <p class="small" data-i="reuHint" style="margin:0"></p>
+        <p class="err" id="reu-err" aria-live="polite"></p>
+      </div>
+    </div>
+    <div class="card" id="garden-card" hidden>
+      <div class="rowb"><h3 data-i="gdTitle"></h3><span class="pill" id="gd-stage"></span></div>
+      <div class="gd-scene" id="gd-scene"><div id="gd-svg"></div></div>
+      <div class="bar"><i id="gd-bar"></i></div>
+      <p class="small" id="gd-next" style="margin:0"></p>
+      <div class="gd-who"><span id="gd-me"></span><span id="gd-love"></span></div>
+      <button class="btn btn-gold" id="gd-water"></button>
+      <p class="small center" id="gd-note" style="margin:0"></p>
     </div>
     <div class="card" id="wx-card" hidden>
       <h3 data-i="wxTitle"></h3>
@@ -542,6 +619,13 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
     <div class="card" id="tg-empty" hidden>
       <p class="tag" data-i="tgEmpty" style="margin:0"></p>
       <button class="btn btn-gold" id="tg-link" data-i="linkCreate"></button>
+    </div>
+    <div class="card" id="touch-card" hidden>
+      <h3 data-i="tcTitle"></h3>
+      <p class="small" id="tc-hint" style="margin:0"></p>
+      <button class="touchpad" id="touch-pad" type="button"><span class="tp-ring"></span><span class="tp-ring r2"></span><span class="tp-heart">♥</span></button>
+      <p class="tc-status" id="tc-status" aria-live="polite"></p>
+      <p class="small center" id="tc-time" style="margin:0"></p>
     </div>
     <div class="card" id="call-card" hidden>
       <h3 data-i="callTitle"></h3>
@@ -649,6 +733,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       <button class="btn btn-ghost" id="del-all" style="border-color:var(--bad);color:var(--bad)"></button>
     </div>
     <button class="btn btn-gold" id="settings-done" data-i="done"></button>
+    <div class="card"><button class="btn btn-ghost" id="share-app" data-i="shareApp"></button></div>
   </section>
 
   <!-- CREATED -->
@@ -1077,7 +1162,9 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
     { id: "flame3", ic: "🔥", fr: "Flamme de 3 jours",  kr: "Flanm 3 jou", en: "3-day Flame" },
     { id: "r10",    ic: "👑", fr: "10 manches jouées",  kr: "10 manch jwe", en: "10 rounds played" },
     { id: "daily",  ic: "🎯", fr: "Défi du jour relevé", kr: "Defi jou a reyalize", en: "Daily challenge done" },
-    { id: "sync5",  ic: "⚡", fr: "Synchro parfaite",    kr: "Synchro pafè", en: "Perfect Synchro" }
+    { id: "sync5",  ic: "⚡", fr: "Synchro parfaite",    kr: "Synchro pafè", en: "Perfect Synchro" },
+    { id: "touch",  ic: "💓", fr: "Toucher à distance",  kr: "Manyen a distans", en: "Remote touch" },
+    { id: "tree",   ic: "🌳", fr: "Arbre de l'amour",    kr: "Pyebwa lanmou", en: "Love tree" }
   ];
 
   /* ================= Text ================= */
@@ -1294,6 +1381,22 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       delTitle: "Supprimer nos données", delBtn: "🗑️ Supprimer définitivement",
       delNote: "Supprime votre couple, vos lettres, vos rêves, vos photos et ta progression, sur ce téléphone et en ligne. C'est définitif.",
       delSure: "Touche encore pour confirmer : tout sera effacé", delDone: "Données supprimées.",
+      invSend: "💌 Envoyer l'invitation (WhatsApp…)", invMsg: function (n) { return (n ? n + " t'invite" : "Je t'invite") + " sur Noche Duo 🌙💞 Touche le lien pour relier nos téléphones :"; },
+      invTitle: function (n) { return n ? n + " t'invite 💞" : "Ton amour t'invite 💞"; }, invText: "Touche le bouton pour relier vos deux téléphones. C'est tout !", invJoin: "Rejoindre mon amour",
+      shareApp: "📣 Inviter un couple ami", shareAppMsg: "Découvre Noche Duo 🌙 le jeu des couples, même à distance :",
+      reuAsk: "✈️ Quand vous revoyez-vous ?", reuTitle: function (n) { return "✈️ Avant de retrouver " + n; }, reuSave: "Lancer", reuEdit: "Changer la date",
+      reuD: "jours", reuH: "heures", reuM: "min", reuS: "sec", reuNights: function (n) { return n <= 1 ? "🌙 Plus qu'une nuit !" : "🌙 Plus que " + n + " nuits"; },
+      reuToday: "🎉 C'est aujourd'hui ! Profitez de chaque seconde.", reuPast: "Choisis une date à venir.", reuHint: "Le compte à rebours s'affiche aussi chez ton amour.",
+      gdTitle: "🌱 Notre jardin", gdWater: "💧 Arroser notre arbre", gdDone: "✓ Arrosé aujourd'hui", gdMe: "Toi",
+      gdNext: function (st, n) { return "Encore " + n + (n > 1 ? " gouttes" : " goutte") + " avant : " + st; }, gdMax: "Votre arbre de lune est au sommet 🌕",
+      gdThirsty: "🥀 Votre arbre a soif… arrosez-le !", gdBoth: "Arrosez tous les deux le même jour : il pousse plus vite 💧",
+      gdPartner: function (n) { return "💧 " + n + " a arrosé votre arbre"; }, gdYourTurn: "À ton tour !", gdStageUp: "Votre arbre a grandi !",
+      gdStreak: function (n) { return "🔥 " + n + " jours de suite à deux"; },
+      tcTitle: "💓 Toucher à distance", tcHint: "Posez chacun un doigt sur le cœur en même temps : vos téléphones battent ensemble.", tcIOS: "Sur iPhone, ce sont le son et la lumière qui battent.",
+      tcIdle: "Pose ton doigt et garde-le appuyé", tcWait: function (n) { return "Ton doigt est posé… attends que " + n + " pose le sien"; },
+      tcPartner: function (n) { return n + " a posé son doigt 👆 Pose le tien !"; }, tcBoth: "💞 Vous vous touchez… ressens son cœur",
+      tcAskT: function (n) { return n + " te tend la main 👆"; }, tcAsk: "Va dans Ensemble et pose ton doigt sur le cœur.",
+      tcOff: function (n) { return n + " n'est pas dans l'appli. Envoie-lui un message 💬"; }, tcSecs: function (x) { return x + " s ensemble"; },
       tabChat: "Messages", chEmpty: "Reliez vos deux téléphones pour discuter en privé.", chFirst: "Dis-lui quelque chose de doux 💬",
       chPh: "Écris un message…", chTyping: function (n) { return n + " écrit…"; }, chToday: "Aujourd'hui", chYesterday: "Hier",
       chPhoto: "📷 Photo", chVoice: "🎙️ Message vocal", chRec: "Enregistrement… touche ➤ pour envoyer", chDel: "Supprimer", chCancel: "Annuler",
@@ -1511,6 +1614,22 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       delTitle: "Efase done nou yo", delBtn: "🗑️ Efase nèt",
       delNote: "Sa efase koup nou, lèt nou, rèv nou, foto nou ak pwogrè w, sou telefòn sa a ak an liy. Ou pa ka retounen.",
       delSure: "Peze ankò pou konfime : tout ap efase", delDone: "Done yo efase.",
+      invSend: "💌 Voye envitasyon an (WhatsApp…)", invMsg: function (n) { return (n ? n + " envite w" : "M envite w") + " sou Noche Duo 🌙💞 Peze lyen an pou n konekte telefòn nou yo :"; },
+      invTitle: function (n) { return n ? n + " envite w 💞" : "Lanmou w envite w 💞"; }, invText: "Peze bouton an pou konekte de telefòn nou yo. Se tout !", invJoin: "Rejwenn lanmou m",
+      shareApp: "📣 Envite yon koup zanmi", shareAppMsg: "Dekouvri Noche Duo 🌙 jwèt pou koup yo, menm a distans :",
+      reuAsk: "✈️ Ki lè n ap wè ankò ?", reuTitle: function (n) { return "✈️ Anvan w wè " + n; }, reuSave: "Lanse", reuEdit: "Chanje dat la",
+      reuD: "jou", reuH: "èdtan", reuM: "min", reuS: "seg", reuNights: function (n) { return n <= 1 ? "🌙 Rete yon sèl nwit !" : "🌙 Rete " + n + " nwit"; },
+      reuToday: "🎉 Se jodi a ! Pwofite chak segonn.", reuPast: "Chwazi yon dat ki poko rive.", reuHint: "Kont a rebou a ap parèt sou telefòn lanmou w tou.",
+      gdTitle: "🌱 Jaden nou", gdWater: "💧 Wouze pyebwa nou", gdDone: "✓ Wouze jodi a", gdMe: "Ou",
+      gdNext: function (st, n) { return "Rete " + n + " gout anvan : " + st; }, gdMax: "Pyebwa lalin nou an rive nan tèt 🌕",
+      gdThirsty: "🥀 Pyebwa nou an swaf… wouze l !", gdBoth: "Lè nou tou de wouze menm jou a, li grandi pi vit 💧",
+      gdPartner: function (n) { return "💧 " + n + " wouze pyebwa nou an"; }, gdYourTurn: "Se tou pa w !", gdStageUp: "Pyebwa nou an grandi !",
+      gdStreak: function (n) { return "🔥 " + n + " jou youn dèyè lòt ansanm"; },
+      tcTitle: "💓 Manyen a distans", tcHint: "Chak moun mete yon dwèt sou kè a an menm tan : telefòn nou yo ap bat ansanm.", tcIOS: "Sou iPhone, se son ak limyè a ki bat.",
+      tcIdle: "Mete dwèt ou epi kenbe l", tcWait: function (n) { return "Dwèt ou la… tann " + n + " mete pa l"; },
+      tcPartner: function (n) { return n + " mete dwèt li 👆 Mete pa w !"; }, tcBoth: "💞 N ap manyen youn lòt… santi kè l",
+      tcAskT: function (n) { return n + " lonje men l ba ou 👆"; }, tcAsk: "Ale nan Ansanm epi mete dwèt ou sou kè a.",
+      tcOff: function (n) { return n + " pa nan aplikasyon an. Voye yon mesaj ba li 💬"; }, tcSecs: function (x) { return x + " seg ansanm"; },
       tabChat: "Mesaj", chEmpty: "Konekte de telefòn nou yo pou nou pale an prive.", chFirst: "Di l yon bagay dous 💬",
       chPh: "Ekri yon mesaj…", chTyping: function (n) { return n + " ap ekri…"; }, chToday: "Jodi a", chYesterday: "Yè",
       chPhoto: "📷 Foto", chVoice: "🎙️ Mesaj vokal", chRec: "M ap anrejistre… peze ➤ pou voye", chDel: "Efase", chCancel: "Anile",
@@ -1728,6 +1847,22 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       delTitle: "Delete our data", delBtn: "🗑️ Delete permanently",
       delNote: "Deletes your couple, letters, dreams, photos and progress, on this phone and online. This can't be undone.",
       delSure: "Tap again to confirm: everything will be erased", delDone: "Data deleted.",
+      invSend: "💌 Send the invitation (WhatsApp…)", invMsg: function (n) { return (n ? n + " invites you" : "I'm inviting you") + " to Noche Duo 🌙💞 Tap the link to connect our phones:"; },
+      invTitle: function (n) { return n ? n + " invites you 💞" : "Your love invites you 💞"; }, invText: "Tap the button to connect your two phones. That's it!", invJoin: "Join my love",
+      shareApp: "📣 Invite a couple you know", shareAppMsg: "Discover Noche Duo 🌙 the couples game, even long distance:",
+      reuAsk: "✈️ When will you see each other?", reuTitle: function (n) { return "✈️ Until you see " + n; }, reuSave: "Start", reuEdit: "Change the date",
+      reuD: "days", reuH: "hours", reuM: "min", reuS: "sec", reuNights: function (n) { return n <= 1 ? "🌙 Just one more night!" : "🌙 Only " + n + " nights to go"; },
+      reuToday: "🎉 It's today! Enjoy every second.", reuPast: "Pick a date in the future.", reuHint: "The countdown also shows on your love's phone.",
+      gdTitle: "🌱 Our garden", gdWater: "💧 Water our tree", gdDone: "✓ Watered today", gdMe: "You",
+      gdNext: function (st, n) { return n + (n > 1 ? " more drops" : " more drop") + " until: " + st; }, gdMax: "Your moon tree is fully grown 🌕",
+      gdThirsty: "🥀 Your tree is thirsty… water it!", gdBoth: "Water it both on the same day: it grows faster 💧",
+      gdPartner: function (n) { return "💧 " + n + " watered your tree"; }, gdYourTurn: "Your turn!", gdStageUp: "Your tree has grown!",
+      gdStreak: function (n) { return "🔥 " + n + " days in a row together"; },
+      tcTitle: "💓 Remote touch", tcHint: "Each put a finger on the heart at the same time: your phones beat together.", tcIOS: "On iPhone, the sound and the light do the beating.",
+      tcIdle: "Put your finger down and hold it", tcWait: function (n) { return "Your finger is down… wait for " + n + " to put theirs"; },
+      tcPartner: function (n) { return n + " is touching the heart 👆 Put yours!"; }, tcBoth: "💞 You're touching… feel their heartbeat",
+      tcAskT: function (n) { return n + " is reaching out to you 👆"; }, tcAsk: "Go to Together and put your finger on the heart.",
+      tcOff: function (n) { return n + " isn't in the app. Send a message 💬"; }, tcSecs: function (x) { return x + " s together"; },
       tabChat: "Messages", chEmpty: "Link your two phones to chat privately.", chFirst: "Say something sweet 💬",
       chPh: "Write a message…", chTyping: function (n) { return n + " is typing…"; }, chToday: "Today", chYesterday: "Yesterday",
       chPhoto: "📷 Photo", chVoice: "🎙️ Voice message", chRec: "Recording… tap ➤ to send", chDel: "Delete", chCancel: "Cancel",
@@ -1945,7 +2080,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
 
   function render() {
     applyText(); updateChrome();
-    if (isTab()) { renderProfile(); renderOnline(); renderCallCard(); renderModes(); renderDaily(); renderStory(); renderInstall(); renderLetters(); renderDreams(); renderWeather(); renderMusic(); renderGreet(); renderTogether(); renderChatDot(); }
+    if (isTab()) { renderProfile(); renderOnline(); renderCallCard(); renderModes(); renderDaily(); renderStory(); renderInstall(); renderLetters(); renderDreams(); renderWeather(); renderMusic(); renderGreet(); renderTogether(); renderChatDot(); renderInvite(); renderReunion(); renderGarden(); renderTouch(); }
     if (current === "chat") renderChat(true);
     if (current === "letter") renderLetterForm();
     if (current === "settings") renderWxSettings();
@@ -2244,7 +2379,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
   $("laugh-remove").addEventListener("click", function () { laughURL = null; lsDel("nd-laugh"); renderSettings(); });
   $("reset").addEventListener("click", function () {
     if (!resetArmed) { resetArmed = true; renderSettings(); buzz(60); return; }
-    P = { me: P.me, love: P.love, sound: P.sound, couple: P.couple, gnShown: P.gnShown, lovePhone: P.lovePhone, since: P.since, reunion: P.reunion, bdayLove: P.bdayLove, bdayMe: P.bdayMe, notif: P.notif, xp: 0, rounds: 0, flame: 0, lastDay: null, badges: [], syncBest: 0 };
+    P = { me: P.me, love: P.love, sound: P.sound, couple: P.couple, gnShown: P.gnShown, lovePhone: P.lovePhone, since: P.since, reunion: P.reunion, reunionFrom: P.reunionFrom, bdayLove: P.bdayLove, bdayMe: P.bdayMe, notif: P.notif, xp: 0, rounds: 0, flame: 0, lastDay: null, badges: [], syncBest: 0 };
     resetArmed = false; save(); renderSettings(); sfx("tap");
   });
 
@@ -2308,7 +2443,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
     $("ol-err").textContent = "";
     if (code.length !== 6) { $("ol-err").textContent = t("linkBad"); buzz(80); return; }
     $("ol-join-go").disabled = true;
-    olInit().then(function () { return OL.db.ref("couples/" + code + "/members/b").set(OL.uid); }).then(function () {
+    return olInit().then(function () { return OL.db.ref("couples/" + code + "/members/b").set(OL.uid); }).then(function () {
       P.couple = { code: code, slot: "b" }; OL.lost = false; save(); olAttach(); saveUserDoc(); sfx("win"); confetti(true); buzz([60, 40, 120]);
       toast("💞", t("onlineTitle"), t("linked")); render();
     }).catch(function (e) { $("ol-err").textContent = isPerm(e) ? t("linkBad") : t("linkNet"); buzz(120); })
@@ -2340,6 +2475,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       watch(base + "/live/" + mySlot() + "/letters", function (s) { OL.myLetters = s.val() || {}; if (isTab()) renderLetters(); });
       watch(base + "/live/shared/drawN", function (s) { onSharedDr(s.val()); });
       watch(base + "/live/shared/dates", function (s) { onSharedDates(s.val()); });
+      watch(base + "/live/shared/garden", function (s) { onGarden(s.val()); });
       watch(base + "/live/callIce/" + otherSlot(), function (s) { onRemoteIce(s.val()); });
       olAnnounce(); pubGame();
     }).catch(function () { renderOnlineSafe(); });
@@ -2465,7 +2601,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
     Array.prototype.forEach.call($("moods").children, function (b, i) { b.setAttribute("aria-pressed", OL.moodPick === i); });
     $("ol-musicfield").hidden = OL.moodPick !== 5;
   }
-  function renderOnlineSafe() { if (isTab()) { renderProfile(); renderOnline(); renderCallCard(); renderDaily(); renderStory(); renderLetters(); renderDreams(); renderWeather(); renderMusic(); renderTogether(); } if (current === "sync") renderSync(); renderCallMission(); }
+  function renderOnlineSafe() { if (isTab()) { renderProfile(); renderOnline(); renderCallCard(); renderDaily(); renderStory(); renderLetters(); renderDreams(); renderWeather(); renderMusic(); renderTogether(); renderReunion(); renderGarden(); renderTouch(); } if (current === "sync") renderSync(); renderCallMission(); }
 
   function renderPartnerGame() {
     var pg = $("partner-game"), duel = $("duel");
@@ -2852,12 +2988,13 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
     var ch = false;
     if (v.since && v.since !== P.since) { P.since = v.since; ch = true; }
     if (v.reunion !== undefined && v.reunion !== P.reunion) { P.reunion = v.reunion || ""; ch = true; }
-    if (ch) { save(); if (isTab()) renderStory(); if (current === "settings") renderSettingsExtra(); }
+    if (v.from && v.from !== P.reunionFrom) { P.reunionFrom = v.from; ch = true; }
+    if (ch) { save(); if (isTab()) { renderStory(); renderReunion(); } if (current === "settings") renderSettingsExtra(); }
   }
-  function pubDates() { if (P.couple && OL.db) OL.db.ref(olBase() + "/live/shared/dates").update({ since: P.since || null, reunion: P.reunion || null }).catch(function () {}); }
+  function pubDates() { if (P.couple && OL.db) OL.db.ref(olBase() + "/live/shared/dates").update({ since: P.since || null, reunion: P.reunion || null, from: P.reunionFrom || null }).catch(function () {}); }
   [["in-since", "since", true], ["in-reunion", "reunion", true], ["in-bday-love", "bdayLove", false], ["in-bday-me", "bdayMe", false]].forEach(function (f) {
     $(f[0]).addEventListener("change", function () {
-      P[f[1]] = this.value || ""; save();
+      P[f[1]] = this.value || ""; if (f[1] === "reunion") P.reunionFrom = Date.now(); save();
       if (f[2]) pubDates();
       if (f[1] === "bdayMe" && P.couple && OL.db) myLive().update({ bday: P.bdayMe || null }).catch(function () {});
     });
@@ -3987,6 +4124,254 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
   $("iv-close").addEventListener("click", function () { $("img-view").hidden = true; });
   $("ch-link").addEventListener("click", function () { show("home"); setTimeout(function () { $("online-card").scrollIntoView({ block: "center" }); }, 80); });
   setInterval(function () { if (current === "chat") renderChatHead(); }, 2000);
+
+  /* ================= Wave 6: invite link, reunion countdown, shared garden, remote touch ================= */
+  /* --- Magic invite link: ?join=CODE&from=Name --- */
+  var INV = (function () {
+    try {
+      var q = new URLSearchParams(location.search), c = (q.get("join") || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+      if (q.has("join")) history.replaceState(history.state, "", location.pathname);
+      return c.length === 6 ? { code: c, from: (q.get("from") || "").slice(0, 30) } : null;
+    } catch (e) { return null; }
+  })();
+  function appURL() { return location.origin + location.pathname; }
+  function shareOrWa(title, text, url) {
+    if (navigator.share) { navigator.share({ title: title, text: text, url: url }).catch(function () {}); return; }
+    window.open("https://wa.me/?text=" + encodeURIComponent(text + " " + url), "_blank", "noopener");
+  }
+  function renderInvite() {
+    if (INV && P.couple && P.couple.code === INV.code) INV = null;
+    var on = !!(INV && !P.couple && olAvailable());
+    $("invite-card").hidden = !on; if (!on) return;
+    $("inv-title").textContent = t("invTitle")(INV.from);
+  }
+  $("inv-join").addEventListener("click", function () {
+    if (!INV) return;
+    var inv = INV;
+    $("inv-err").textContent = ""; $("ol-code").value = inv.code; this.disabled = true;
+    var btn = this, pr = olJoin();
+    (pr || Promise.resolve()).then(function () {
+      btn.disabled = false;
+      if (P.couple) { if (inv.from && !P.love) { P.love = inv.from; save(); } INV = null; render(); }
+      else $("inv-err").textContent = $("ol-err").textContent || t("linkNet");
+    });
+  });
+  $("ol-invite").addEventListener("click", function () {
+    if (!P.couple) return; sfx("tap");
+    shareOrWa("Noche Duo", t("invMsg")(P.me), appURL() + "?join=" + P.couple.code + (P.me ? "&from=" + encodeURIComponent(P.me.slice(0, 30)) : ""));
+  });
+  $("share-app").addEventListener("click", function () { sfx("tap"); shareOrWa("Noche Duo", t("shareAppMsg"), appURL()); });
+
+  /* --- Reunion countdown --- */
+  var REU = { edit: false, fired: "" };
+  function reuTarget() { var r = P.reunion; if (!r || !/^\d{4}-\d{2}-\d{2}$/.test(r)) return null; var p = r.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]).getTime(); }
+  function renderReunion() {
+    if (!REU) return;
+    var tg = reuTarget(), linked = !!(P.couple && OL.partnerJoined);
+    var startToday = new Date(); startToday.setHours(0, 0, 0, 0);
+    var future = tg !== null && tg >= startToday.getTime();
+    var on = linked || future;
+    $("reu-card").hidden = !on; if (!on) return;
+    var editing = REU.edit || !future;
+    $("reu-set").hidden = !editing; $("reu-live").hidden = !future || editing;
+    $("reu-title").textContent = future && !editing ? t("reuTitle")(nameMid()) : t("reuAsk");
+    var loc = { fr: "fr-FR", kr: "fr-FR", en: "en-US" }[S.lang] || "fr-FR";
+    $("reu-date").textContent = future ? new Date(tg).toLocaleDateString(loc, { day: "numeric", month: "short" }) : "";
+    if (editing) { $("reu-in").min = dayISO(new Date()); if (P.reunion && !$("reu-in").value) $("reu-in").value = P.reunion; }
+    renderReuClock();
+  }
+  function dayISO(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function renderReuClock() {
+    var tg = reuTarget(); if (tg === null || $("reu-live").hidden) return;
+    var now = Date.now(), diff = tg - now, isToday = diff <= 0;
+    $("reu-clock").hidden = isToday; $("reu-today").hidden = !isToday;
+    if (isToday) {
+      $("reu-today").textContent = t("reuToday"); $("reu-line").textContent = "";
+      if (REU.fired !== P.reunion) { REU.fired = P.reunion; setTimeout(function () { confetti(true); sfx("win"); }, 300); }
+    } else {
+      var sec = Math.floor(diff / 1000);
+      $("reu-d").textContent = Math.floor(sec / 86400); $("reu-h").textContent = Math.floor(sec % 86400 / 3600);
+      $("reu-m").textContent = Math.floor(sec % 3600 / 60); $("reu-s").textContent = sec % 60;
+      var st = new Date(); st.setHours(0, 0, 0, 0);
+      $("reu-line").textContent = t("reuNights")(Math.round((tg - st.getTime()) / 86400000));
+    }
+    var from = P.reunionFrom && P.reunionFrom < tg ? P.reunionFrom : tg - 30 * 86400000;
+    var pct = isToday ? 1 : Math.max(0.02, Math.min(1, (now - from) / (tg - from)));
+    $("reu-fill").style.width = "calc((100% - 24px) * " + pct.toFixed(4) + ")";
+    $("reu-plane").style.left = "calc((100% - 24px) * " + pct.toFixed(4) + ")";
+  }
+  setInterval(function () { if (current === "home" && !$("reu-card").hidden) renderReuClock(); }, 1000);
+  $("reu-edit").addEventListener("click", function () { REU.edit = true; $("reu-in").value = P.reunion || ""; renderReunion(); });
+  $("reu-save").addEventListener("click", function () {
+    var v = $("reu-in").value; $("reu-err").textContent = "";
+    if (!v) return;
+    if (v < dayISO(new Date())) { $("reu-err").textContent = t("reuPast"); buzz(80); return; }
+    P.reunion = v; P.reunionFrom = Date.now(); REU.edit = false; save(); pubDates();
+    sfx("win"); confetti(false); buzz([40, 60, 40]);
+    if ($("in-reunion")) $("in-reunion").value = v;
+    renderReunion(); renderStory();
+  });
+
+  /* --- Shared garden: a tree that grows when you water it, together --- */
+  var GDT = [0, 3, 9, 18, 33, 54, 90];
+  var GDS = [
+    { fr: "Graine", kr: "Grenn", en: "Seed" }, { fr: "Pousse", kr: "Ti plant", en: "Sprout" }, { fr: "Jeune plante", kr: "Jèn plant", en: "Young plant" },
+    { fr: "Arbuste", kr: "Ti pyebwa", en: "Shrub" }, { fr: "Arbre", kr: "Pyebwa", en: "Tree" },
+    { fr: "Arbre en fleurs", kr: "Pyebwa ki fleri", en: "Blossoming tree" }, { fr: "Arbre de lune", kr: "Pyebwa lalin", en: "Moon tree" }
+  ];
+  var GD = { days: {}, loaded: false, svgKey: "" };
+  function gdPoints(days) { var pts = 0; Object.keys(days || {}).forEach(function (k) { var d = days[k] || {}, n = (d.a ? 1 : 0) + (d.b ? 1 : 0); pts += n === 2 ? 3 : n; }); return pts; }
+  function gdStage(pts) { var st = 0; GDT.forEach(function (th, i) { if (pts >= th) st = i; }); return st; }
+  function dkOff(n) { var d = new Date(); d.setDate(d.getDate() - n); return dayKey(d); }
+  function gdDaysSince() {
+    for (var i = 0; i < 400; i++) { var d = GD.days[dkOff(i)]; if (d && (d.a || d.b)) return i; }
+    return Object.keys(GD.days).length ? 400 : -1;
+  }
+  function gdStreak() {
+    function both(i) { var d = GD.days[dkOff(i)]; return !!(d && d.a && d.b); }
+    var i = both(0) ? 0 : 1, n = 0; while (both(i)) { n++; i++; } return n;
+  }
+  function gdSVG(st, thirsty) {
+    var leaf = thirsty ? "#c2b071" : "#6fcf97", leaf2 = thirsty ? "#94824e" : "#3fa36b", trunk = "#8a5a3c";
+    var o = '<svg viewBox="0 0 200 170" role="img" aria-label="' + L(GDS[st]) + '"><defs><radialGradient id="gdglow"><stop offset="0" stop-color="#f0c674" stop-opacity=".5"/><stop offset="1" stop-color="#f0c674" stop-opacity="0"/></radialGradient></defs>';
+    if (st >= 6) o += '<circle cx="100" cy="70" r="85" fill="url(#gdglow)"/>';
+    o += '<ellipse cx="100" cy="153" rx="78" ry="12" fill="#231d47"/><ellipse cx="100" cy="149" rx="48" ry="8" fill="#4a3426"/><g class="gd-plant">';
+    if (st === 0) {
+      o += '<ellipse cx="100" cy="145" rx="8" ry="5.5" fill="#c08a5a"/><path d="M101 140 q2 -7 8 -9" stroke="' + leaf + '" stroke-width="2.4" fill="none" stroke-linecap="round"/>';
+    } else if (st <= 2) {
+      var h = st === 1 ? 28 : 52, top = 147 - h;
+      o += '<path d="M100 147 C 97 ' + (147 - h / 2) + ', 103 ' + (147 - h / 2) + ', 100 ' + top + '" stroke="' + leaf2 + '" stroke-width="3.2" fill="none" stroke-linecap="round"/>';
+      var lv = st === 1 ? [[top + 3, -1], [top + 3, 1]] : [[top + 3, -1], [top + 3, 1], [top + 20, -1], [top + 32, 1], [top + 42, -1]];
+      lv.forEach(function (l) { var cx = 100 + l[1] * 10; o += '<ellipse cx="' + cx + '" cy="' + l[0] + '" rx="10" ry="5" fill="' + leaf + '" transform="rotate(' + (l[1] * -28) + ' ' + cx + ' ' + l[0] + ')"/>'; });
+    } else {
+      var big = st >= 4, ty = big ? 80 : 104, tw = big ? 9 : 5.5;
+      o += '<path d="M' + (100 - tw) + ' 148 Q 101 ' + (ty + 32) + ' ' + (100 - tw / 3) + ' ' + ty + ' L ' + (100 + tw / 3) + ' ' + ty + ' Q 99 ' + (ty + 32) + ' ' + (100 + tw) + ' 148 Z" fill="' + trunk + '"/>';
+      var C = big ? [[72, 80, 26, 2], [128, 80, 26, 2], [100, 64, 36, 1], [80, 52, 24, 1], [120, 52, 24, 1], [100, 36, 22, 1]]
+                  : [[85, 100, 16, 2], [115, 100, 16, 2], [100, 92, 22, 1], [100, 76, 16, 1]];
+      C.forEach(function (c) { o += '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="' + c[2] + '" fill="' + (c[3] === 2 ? leaf2 : leaf) + '"/>'; });
+      if (st >= 5) [[86, 52], [113, 44], [128, 74], [72, 76], [100, 66], [116, 88], [84, 92], [100, 32], [62, 88], [138, 88]].forEach(function (q) { o += '<circle cx="' + q[0] + '" cy="' + q[1] + '" r="4.2" fill="#ff9fb4"/><circle cx="' + q[0] + '" cy="' + q[1] + '" r="1.6" fill="#fff3c4"/>'; });
+      if (st >= 6) [[92, 56], [122, 62], [78, 86], [110, 82], [100, 44]].forEach(function (q) { o += '<circle cx="' + q[0] + '" cy="' + q[1] + '" r="5.5" fill="#f0c674"/><circle cx="' + (q[0] + 2.6) + '" cy="' + (q[1] - 1.6) + '" r="4.6" fill="' + leaf + '"/>'; });
+    }
+    return o + '</g></svg>';
+  }
+  function onGarden(v) {
+    var prev = GD.days || {}; GD.days = v || {};
+    var k = dayKey(), o = otherSlot(), me = mySlot();
+    if (GD.loaded && GD.days[k] && GD.days[k][o] && !(prev[k] && prev[k][o])) {
+      var mine = !!GD.days[k][me];
+      toast("💧", t("gdPartner")(nameStart()), mine ? "" : t("gdYourTurn")); buzz(30);
+      notifyIfHidden("💧 Noche Duo", t("gdPartner")(nameStart()), "garden");
+      if (current === "home") gdRain(6);
+    }
+    var st = gdStage(gdPoints(GD.days));
+    if (GD.loaded && typeof P.gdStage === "number" && st > P.gdStage) {
+      setTimeout(function () { toast("🌳", t("gdStageUp"), L(GDS[st])); confetti(true); sfx("win"); var sc = $("gd-scene"); sc.classList.remove("grow"); void sc.offsetWidth; sc.classList.add("grow"); }, 900);
+    }
+    GD.loaded = true;
+    if (st >= 4 && P.badges.indexOf("tree") < 0) award("tree");
+    if (P.gdStage !== st) { P.gdStage = st; save(); }
+    if (isTab()) renderGarden();
+  }
+  function renderGarden() {
+    if (!GD) return;
+    var on = chatOnline(); $("garden-card").hidden = !on; if (!on) return;
+    var pts = gdPoints(GD.days), st = gdStage(pts), today = GD.days[dayKey()] || {}, since = gdDaysSince(), thirsty = since >= 3;
+    var key = st + ":" + thirsty;
+    if (GD.svgKey !== key) { GD.svgKey = key; $("gd-svg").innerHTML = gdSVG(st, thirsty); }
+    $("gd-scene").classList.toggle("thirsty", thirsty);
+    $("gd-stage").textContent = L(GDS[st]);
+    if (st < GDT.length - 1) {
+      $("gd-bar").style.width = Math.round((pts - GDT[st]) / (GDT[st + 1] - GDT[st]) * 100) + "%";
+      $("gd-next").textContent = t("gdNext")(L(GDS[st + 1]), GDT[st + 1] - pts);
+    } else { $("gd-bar").style.width = "100%"; $("gd-next").textContent = t("gdMax"); }
+    var meDone = !!today[mySlot()], loveDone = !!today[otherSlot()];
+    $("gd-me").textContent = (meDone ? "💧 " : "○ ") + (P.me || t("gdMe")); $("gd-me").className = meDone ? "ok" : "";
+    $("gd-love").textContent = (loveDone ? "💧 " : "○ ") + nameStart(); $("gd-love").className = loveDone ? "ok" : "";
+    $("gd-water").disabled = meDone; $("gd-water").textContent = meDone ? t("gdDone") : t("gdWater");
+    $("gd-water").className = "btn " + (meDone ? "btn-ghost" : "btn-gold");
+    var streak = gdStreak();
+    $("gd-note").textContent = thirsty ? t("gdThirsty") : streak >= 2 ? t("gdStreak")(streak) : t("gdBoth");
+  }
+  function gdRain(n) {
+    if (reduce) return;
+    var sc = $("gd-scene");
+    for (var i = 0; i < (n || 12); i++) {
+      var d = document.createElement("i"); d.className = "gdrop";
+      d.style.left = (30 + Math.random() * 40) + "%"; d.style.animationDelay = (Math.random() * 0.5).toFixed(2) + "s";
+      sc.appendChild(d); setTimeout(function (el) { el.remove(); }.bind(null, d), 1700);
+    }
+    setTimeout(function () { sc.classList.remove("grow"); void sc.offsetWidth; sc.classList.add("grow"); }, 700);
+  }
+  $("gd-water").addEventListener("click", function () {
+    if (!chatOnline()) return;
+    var k = dayKey(), btn = this;
+    if (GD.days[k] && GD.days[k][mySlot()]) return;
+    btn.disabled = true; gdRain(14); sfx("reveal"); buzz([30, 40, 30]);
+    OL.db.ref(olBase() + "/live/shared/garden/" + k + "/" + mySlot()).set(TS()).then(function () {
+      addXP(2); stat("water"); touchDay(); save(); renderProfile();
+    }, function () { $("gd-note").textContent = t("linkNet"); btn.disabled = false; });
+  });
+
+  /* --- Remote touch: both fingers on the heart, phones beat together --- */
+  var TC = { me: false, iv: null, bothStart: 0, lastBeat: 0, awarded: false, askedFor: 0, wasPartner: false };
+  var canVibrate = !!navigator.vibrate;
+  function partnerTouching() { var p = OL.partner || {}; return !!(OL.partnerJoined && p.touch && srvNow() - p.touch < 4500); }
+  function tcSet(on) {
+    if (!chatOnline()) return;
+    var r = myLive().child("touch");
+    if (on) { r.set(TS()).catch(function () {}); try { r.onDisconnect().remove(); } catch (e) {} }
+    else r.set(null).catch(function () {});
+  }
+  function heartbeat() {
+    buzz([70, 110, 90]);
+    if (P.sound) { note(68, 0, 0.16, "sine", 0.4); note(58, 0.2, 0.18, "sine", 0.32); }
+    var pad = $("touch-pad"); pad.classList.remove("beat"); void pad.offsetWidth; pad.classList.add("beat");
+  }
+  function tcDown(e) {
+    if (!chatOnline()) return;
+    if (e && e.preventDefault) e.preventDefault();
+    try { if (e && e.pointerId !== undefined) this.setPointerCapture(e.pointerId); } catch (x) {}
+    if (TC.me) return;
+    TC.me = true; audio(); tcSet(true); buzz(20);
+    clearInterval(TC.iv); TC.iv = setInterval(function () { tcSet(true); }, 1500);
+    tcTick();
+  }
+  function tcUp() {
+    if (!TC.me) return;
+    TC.me = false; clearInterval(TC.iv); tcSet(false); tcTick();
+  }
+  var pad = $("touch-pad");
+  pad.addEventListener("pointerdown", tcDown);
+  ["pointerup", "pointercancel", "lostpointercapture"].forEach(function (ev) { pad.addEventListener(ev, tcUp); });
+  pad.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+  document.addEventListener("visibilitychange", function () { if (document.hidden) tcUp(); });
+  function tcTick() {
+    if (!P.couple) return;
+    var pt = partnerTouching(), both = TC.me && pt;
+    if (both) {
+      if (!TC.bothStart) { TC.bothStart = Date.now(); TC.lastBeat = 0; }
+      if (Date.now() - TC.lastBeat > 1000) { TC.lastBeat = Date.now(); heartbeat(); }
+      if (!TC.awarded && Date.now() - TC.bothStart >= 10000) { TC.awarded = true; award("touch"); addXP(3); stat("touches"); touchDay(); save(); }
+    } else if (TC.bothStart) { TC.bothStart = 0; TC.awarded = false; }
+    if (pt && !TC.wasPartner && !TC.me && current !== "together" && OL.partner.touch !== TC.askedFor) {
+      TC.askedFor = OL.partner.touch; toast("👆", t("tcAskT")(nameStart()), t("tcAsk")); buzz([40, 60, 40]);
+      notifyIfHidden("👆 Noche Duo", t("tcAskT")(nameStart()), "touch");
+    }
+    TC.wasPartner = pt;
+    if (current === "together") renderTouch();
+  }
+  setInterval(tcTick, 250);
+  function renderTouch() {
+    if (!TC) return;
+    var on = chatOnline(); $("touch-card").hidden = !on; if (!on) return;
+    var pt = partnerTouching(), both = TC.me && pt, p = OL.partner || {};
+    var pd = $("touch-pad");
+    pd.classList.toggle("me", TC.me && !pt); pd.classList.toggle("partner", pt && !TC.me); pd.classList.toggle("both", both);
+    pd.setAttribute("aria-label", t("tcTitle"));
+    $("tc-hint").textContent = t("tcHint") + (canVibrate ? "" : " " + t("tcIOS"));
+    $("tc-status").textContent = both ? t("tcBoth") : pt ? t("tcPartner")(nameStart()) : TC.me ? (p.online === false ? t("tcOff")(nameStart()) : t("tcWait")(nameStart())) : t("tcIdle");
+    $("tc-time").textContent = both ? t("tcSecs")(Math.floor((Date.now() - TC.bothStart) / 1000)) : "";
+  }
 
   /* ================= Night sky with shooting stars ================= */
   var cv = $("stars"), cx = cv.getContext("2d"), stars = [], shoot = null, nextShoot = 2500;
