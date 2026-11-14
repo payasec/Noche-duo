@@ -295,6 +295,20 @@ select.txt { appearance: auto; }
 #local-video { position: absolute; right: 12px; top: 12px; width: 96px; height: 136px; object-fit: cover; border-radius: 12px; border: 2px solid rgba(255,255,255,0.7); transform: scaleX(-1); background: #111; }
 #vlayer.mini #local-video, #vlayer.mini #v-size { display: none; }
 #v-size { position: absolute; left: 12px; top: 12px; width: auto; padding: 9px 14px; font-size: 0.85rem; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.4); color: #fff; }
+/* Weather + listen together */
+.wxgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.wxside { border: 1px solid var(--line); border-radius: 14px; padding: 12px 10px; text-align: center; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.wxside small { color: var(--muted); font-size: 0.78rem; overflow-wrap: anywhere; }
+.wxside .em { font-size: 2.1rem; display: inline-block; line-height: 1.2; }
+.wxside .tp { font-family: var(--display); font-size: 1.8rem; color: var(--gold); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.wxside .tp small { font-family: var(--body); }
+.wxside.hot { background: linear-gradient(160deg, rgba(255,154,60,0.24), rgba(255,122,147,0.06)); border-color: rgba(255,154,60,0.5); }
+.wxside.cold { background: linear-gradient(160deg, rgba(120,170,255,0.24), rgba(120,170,255,0.05)); border-color: rgba(120,170,255,0.5); }
+.em.sun { animation: spin 14s linear infinite; }
+.em.bob { animation: bob 2.6s ease-in-out infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.ytwrap { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; background: #000; }
+.ytwrap iframe, .ytwrap #yt-player { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -349,6 +363,11 @@ select.txt { appearance: auto; }
       <div class="badges" id="badges"></div>
       <p class="badge-names" id="badge-hint"></p>
       <button class="linkbtn" id="month-btn" data-i="monthBtn"></button>
+    </div>
+    <div class="card" id="wx-card" hidden>
+      <h3 data-i="wxTitle"></h3>
+      <div class="wxgrid"><div class="wxside" id="wx-me"></div><div class="wxside" id="wx-love"></div></div>
+      <p class="small" id="wx-line" hidden></p>
     </div>
     <div class="card" id="daily-card">
       <div class="rowb"><h3 data-i="dailyTitle"></h3><span class="small" id="daily-left"></span></div>
@@ -439,6 +458,24 @@ select.txt { appearance: auto; }
         <p class="small center" id="ol-note" aria-live="polite"></p>
       </div>
     </div>
+    <div class="card" id="music-card" hidden>
+      <h3 data-i="muTitle"></h3>
+      <div class="stack" id="mu-now" hidden style="gap:10px">
+        <p class="partner-line" id="mu-line"></p>
+        <button class="btn btn-rose" id="mu-join"></button>
+        <div class="stack" id="mu-box" hidden style="gap:10px">
+          <div class="ytwrap"><div id="yt-player"></div></div>
+          <div class="btnrow"><button class="btn btn-gold" id="mu-toggle"></button><button class="btn btn-ghost" id="mu-resync" data-i="muResync"></button></div>
+          <button class="linkbtn" id="mu-stop" data-i="muStop"></button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="mu-url" class="small" data-i="muLabel"></label>
+        <div class="guessrow"><input id="mu-url" class="txt" inputmode="url" autocomplete="off" placeholder="https://youtu.be/…"><button class="btn btn-gold" id="mu-start" data-i="muStart"></button></div>
+      </div>
+      <p class="small" data-i="muHint"></p>
+      <p class="err" id="mu-err" aria-live="polite"></p>
+    </div>
     <div class="card" id="call-card" hidden>
       <h3 data-i="callTitle"></h3>
       <button class="btn btn-rose" id="call-start" hidden></button>
@@ -478,6 +515,13 @@ select.txt { appearance: auto; }
       <div class="field"><label for="in-reunion" data-i="reunionLabel"></label><input id="in-reunion" class="txt" type="date"></div>
       <div class="field"><label for="in-bday-love" data-i="bdayLoveLabel"></label><input id="in-bday-love" class="txt" type="date"></div>
       <div class="field"><label for="in-bday-me" data-i="bdayMeLabel"></label><input id="in-bday-me" class="txt" type="date"></div>
+    </div>
+    <div class="card">
+      <h2 data-i="wxTitle"></h2>
+      <div class="field"><label for="in-city" data-i="wxCityLabel"></label><div class="guessrow"><input id="in-city" class="txt" maxlength="60" autocomplete="off" placeholder="Port-au-Prince"><button class="btn btn-gold" id="city-ok">OK</button></div></div>
+      <p class="small" id="city-msg" aria-live="polite"></p>
+      <div class="setrow"><span id="lbl-wx" data-i="wxShare"></span><button class="switch" id="sw-wx" role="switch" aria-checked="false" aria-labelledby="lbl-wx"></button></div>
+      <p class="small" data-i="wxNote"></p>
     </div>
     <div class="card">
       <div class="setrow"><span id="lbl-notif" data-i="notif"></span><button class="switch" id="sw-notif" role="switch" aria-checked="false" aria-labelledby="lbl-notif"></button></div>
@@ -1113,7 +1157,19 @@ select.txt { appearance: auto; }
       dreamsEmpty: "Ajoutez les choses à faire ensemble quand vous vous verrez.", dreamDone: "Rêve réalisé ! ✨",
       dreamBy: function (n) { return "ajouté par " + n; }, dreamDel: "Supprimer",
       callVideo: function (n) { return "📹 Appel vidéo avec " + n; }, callInVideo: function (n) { return n + " t'appelle en vidéo 📹"; },
-      camOff: "Caméra off", camOn: "Caméra on", vMin: "Réduire la vidéo", videoLite: "Coupe l'économie de données dans les réglages pour la vidéo."
+      camOff: "Caméra off", camOn: "Caméra on", vMin: "Réduire la vidéo", videoLite: "Coupe l'économie de données dans les réglages pour la vidéo.",
+      wxTitle: "Météo de nos deux villes", wxCityLabel: "Ta ville (pour la météo)", wxShare: "Partager ma météo",
+      wxNote: "Seuls le nom de ta ville et la température sont partagés, jamais ta position exacte.",
+      wxNotFound: "Ville introuvable. Essaie un autre nom.", wxFound: function (c) { return "Ville trouvée : " + c + " ✓"; },
+      wxMe: "Chez toi", wxLove: function (n) { return "Chez " + n; }, wxUnknown: "Pas encore de météo", wxAddCity: "Ajoute ta ville dans les réglages",
+      wxHot: function (n) { return "☀️ Il fait chaud chez " + n + " : rappelle-lui de boire de l'eau 😉"; },
+      wxCold: function (n) { return "❄️ Il fait frais chez " + n + " : envoie-lui une Pensée pour le ou la réchauffer 💓"; },
+      wxRain: function (n) { return "🌧️ Il pleut chez " + n + " : le moment parfait pour un appel 📞"; },
+      wxD: ["Ciel dégagé", "Quelques nuages", "Nuageux", "Brouillard", "Bruine", "Pluie", "Neige", "Averses", "Orage"],
+      muTitle: "🎧 Écouter ensemble", muLabel: "Lien YouTube de la chanson", muHint: "Dans YouTube : Partager → Copier le lien, puis colle-le ici. La chanson démarre au même moment chez vous deux.",
+      muStart: "Lancer", muBad: "Ce lien YouTube n'est pas reconnu.", muJoin: function (n) { return "🎧 Écouter avec " + n; },
+      muBy: function (n) { return "Lancé par " + n; }, muSong: "Chanson YouTube", muPlay: "▶ Lecture pour nous deux", muPause: "⏸ Pause pour nous deux",
+      muResync: "↻ Resynchroniser", muStop: "Arrêter la musique", muStarted: function (n) { return n + " lance une chanson 🎧"; }
     },
     kr: {
       modeLabel: "Mòd · Misyon Sekrè",
@@ -1302,7 +1358,19 @@ select.txt { appearance: auto; }
       dreamsEmpty: "Mete bagay nou vle fè ansanm lè nou wè.", dreamDone: "Rèv reyalize ! ✨",
       dreamBy: function (n) { return "se " + n + " ki mete l"; }, dreamDel: "Efase",
       callVideo: function (n) { return "📹 Apèl videyo ak " + n; }, callInVideo: function (n) { return n + " ap rele w an videyo 📹"; },
-      camOff: "Fèmen kamera", camOn: "Limen kamera", vMin: "Fè videyo a piti", videoLite: "Fèmen ekonomi done nan paramèt yo pou videyo."
+      camOff: "Fèmen kamera", camOn: "Limen kamera", vMin: "Fè videyo a piti", videoLite: "Fèmen ekonomi done nan paramèt yo pou videyo.",
+      wxTitle: "Tan ki fè nan de vil nou yo", wxCityLabel: "Vil ou (pou tan an)", wxShare: "Pataje tan ki fè lakay mwen",
+      wxNote: "Se sèlman non vil ou ak tanperati a yo pataje, pa janm kote egzak ou ye.",
+      wxNotFound: "Nou pa jwenn vil la. Eseye yon lòt non.", wxFound: function (c) { return "Vil la jwenn : " + c + " ✓"; },
+      wxMe: "Lakay ou", wxLove: function (n) { return "Lakay " + n; }, wxUnknown: "Poko gen tan", wxAddCity: "Mete vil ou nan paramèt yo",
+      wxHot: function (n) { return "☀️ Fè cho lakay " + n + " : raple l bwè dlo 😉"; },
+      wxCold: function (n) { return "❄️ Fè frèt lakay " + n + " : voye yon Panse pou chofe l 💓"; },
+      wxRain: function (n) { return "🌧️ Lapli ap tonbe lakay " + n + " : bon moman pou yon apèl 📞"; },
+      wxD: ["Syèl klè", "Kèk nwaj", "Nwaj", "Bwouya", "Ti lapli fen", "Lapli", "Nèj", "Gwo lapli", "Loraj"],
+      muTitle: "🎧 Koute ansanm", muLabel: "Lyen YouTube chante a", muHint: "Nan YouTube : Pataje → Kopye lyen an, epi kole l la a. Chante a kòmanse an menm tan lakay nou de.",
+      muStart: "Lanse", muBad: "Nou pa rekonèt lyen YouTube sa a.", muJoin: function (n) { return "🎧 Koute ak " + n; },
+      muBy: function (n) { return "Se " + n + " ki lanse l"; }, muSong: "Chante YouTube", muPlay: "▶ Jwe pou nou de", muPause: "⏸ Kanpe pou nou de",
+      muResync: "↻ Resenkronize", muStop: "Kanpe mizik la", muStarted: function (n) { return n + " lanse yon chante 🎧"; }
     },
     en: {
       modeLabel: "Mode · Secret Mission",
@@ -1491,7 +1559,19 @@ select.txt { appearance: auto; }
       dreamsEmpty: "Add the things to do together when you meet.", dreamDone: "Dream come true! ✨",
       dreamBy: function (n) { return "added by " + n; }, dreamDel: "Delete",
       callVideo: function (n) { return "📹 Video call with " + n; }, callInVideo: function (n) { return n + " is video calling you 📹"; },
-      camOff: "Camera off", camOn: "Camera on", vMin: "Shrink video", videoLite: "Turn off Data saver in Settings to use video."
+      camOff: "Camera off", camOn: "Camera on", vMin: "Shrink video", videoLite: "Turn off Data saver in Settings to use video.",
+      wxTitle: "Weather in our two cities", wxCityLabel: "Your city (for the weather)", wxShare: "Share my weather",
+      wxNote: "Only your city name and temperature are shared, never your exact location.",
+      wxNotFound: "City not found. Try another name.", wxFound: function (c) { return "City found: " + c + " ✓"; },
+      wxMe: "Your place", wxLove: function (n) { return n + "'s place"; }, wxUnknown: "No weather yet", wxAddCity: "Add your city in Settings",
+      wxHot: function (n) { return "☀️ It's hot at " + n + "'s: remind them to drink water 😉"; },
+      wxCold: function (n) { return "❄️ It's chilly at " + n + "'s: send a thought to warm them up 💓"; },
+      wxRain: function (n) { return "🌧️ It's raining at " + n + "'s: perfect time for a call 📞"; },
+      wxD: ["Clear sky", "Partly cloudy", "Cloudy", "Fog", "Drizzle", "Rain", "Snow", "Showers", "Thunderstorm"],
+      muTitle: "🎧 Listen together", muLabel: "YouTube link of the song", muHint: "In YouTube: Share → Copy link, then paste it here. The song starts at the same moment for both of you.",
+      muStart: "Play", muBad: "This YouTube link isn't recognized.", muJoin: function (n) { return "🎧 Listen with " + n; },
+      muBy: function (n) { return "Started by " + n; }, muSong: "YouTube song", muPlay: "▶ Play for both of us", muPause: "⏸ Pause for both of us",
+      muResync: "↻ Re-sync", muStop: "Stop the music", muStarted: function (n) { return n + " started a song 🎧"; }
     }
   };
 
@@ -1705,8 +1785,9 @@ select.txt { appearance: auto; }
 
   function render() {
     applyText();
-    if (current === "home") { renderProfile(); renderOnline(); renderCallCard(); renderModes(); renderDaily(); renderStory(); renderInstall(); renderLetters(); renderDreams(); }
+    if (current === "home") { renderProfile(); renderOnline(); renderCallCard(); renderModes(); renderDaily(); renderStory(); renderInstall(); renderLetters(); renderDreams(); renderWeather(); renderMusic(); }
     if (current === "letter") renderLetterForm();
+    if (current === "settings") renderWxSettings();
     if (current === "settings") { renderSettingsExtra(); renderSettingsW1(); }
     if (current === "sync") renderSync();
     if (current === "quiz") renderQuiz();
@@ -2088,6 +2169,7 @@ select.txt { appearance: auto; }
       watch(base + "/live/shared/photo", function (s) { onSharedPhoto(s.val()); });
       watch(base + "/live/shared/quizN", function (s) { onSharedQz(s.val()); });
       watch(base + "/live/shared/dreams", function (s) { onSharedDreams(s.val()); });
+      watch(base + "/live/shared/music", function (s) { onSharedMusic(s.val()); });
       watch(base + "/live/" + mySlot() + "/letters", function (s) { OL.myLetters = s.val() || {}; if (current === "home") renderLetters(); });
       watch(base + "/live/shared/drawN", function (s) { onSharedDr(s.val()); });
       watch(base + "/live/shared/dates", function (s) { onSharedDates(s.val()); });
@@ -2106,6 +2188,7 @@ select.txt { appearance: auto; }
     if (!P.couple || !OL.db) return;
     var ref = myLive();
     ref.update({ online: true, tz: -new Date().getTimezoneOffset(), name: P.me || null, bday: P.bdayMe || null, daily: P.dailyDone || null }).catch(function () {});
+    if (P.wxShare && P.wxNow) ref.child("wx").set(P.wxNow).catch(function () {});
     ref.onDisconnect().update({ online: false, lastSeen: TS() });
   }
 
@@ -2215,7 +2298,7 @@ select.txt { appearance: auto; }
     Array.prototype.forEach.call($("moods").children, function (b, i) { b.setAttribute("aria-pressed", OL.moodPick === i); });
     $("ol-musicfield").hidden = OL.moodPick !== 5;
   }
-  function renderOnlineSafe() { if (current === "home") { renderProfile(); renderOnline(); renderCallCard(); renderDaily(); renderStory(); renderLetters(); renderDreams(); } if (current === "sync") renderSync(); renderCallMission(); }
+  function renderOnlineSafe() { if (current === "home") { renderProfile(); renderOnline(); renderCallCard(); renderDaily(); renderStory(); renderLetters(); renderDreams(); renderWeather(); renderMusic(); } if (current === "sync") renderSync(); renderCallMission(); }
 
   function renderPartnerGame() {
     var pg = $("partner-game"), duel = $("duel");
@@ -3278,6 +3361,160 @@ select.txt { appearance: auto; }
   $("dream-add").addEventListener("click", addDream);
   $("dream-in").addEventListener("keydown", function (e) { if (e.key === "Enter") addDream(); });
 
+  /* ================= Weather in our two cities (Open-Meteo, city name only) ================= */
+  function wxKind(code) {
+    if (code === 0) return 0; if (code <= 2) return 1; if (code === 3) return 2; if (code === 45 || code === 48) return 3;
+    if (code >= 51 && code <= 57) return 4; if (code >= 61 && code <= 67) return 5; if ((code >= 71 && code <= 77) || code === 85 || code === 86) return 6;
+    if (code >= 80 && code <= 82) return 7; if (code >= 95) return 8; return 2;
+  }
+  function wxIcon(w) { var k = wxKind(w.c); if (k === 0) return w.d ? "☀️" : "🌙"; return ["☀️", w.d ? "🌤️" : "☁️", "☁️", "🌫️", "🌦️", "🌧️", "❄️", "🌧️", "⛈️"].at(k); }
+  function wxSide(el, label, w, hint) {
+    el.innerHTML = ""; el.className = "wxside";
+    var lb = document.createElement("small"); lb.textContent = label; el.appendChild(lb);
+    if (!w || typeof w.t !== "number") { var u = document.createElement("small"); u.textContent = hint; el.appendChild(u); return; }
+    if (w.t >= 30) el.classList.add("hot"); else if (w.t <= 15) el.classList.add("cold");
+    var em = document.createElement("span"); em.className = "em " + (wxKind(w.c) === 0 && w.d ? "sun" : "bob"); em.textContent = wxIcon(w); el.appendChild(em);
+    var tp = document.createElement("span"); tp.className = "tp"; tp.textContent = Math.round(w.t) + " °C"; el.appendChild(tp);
+    if (S.lang === "en") { var f = document.createElement("small"); f.textContent = Math.round(w.t * 9 / 5 + 32) + " °F"; el.appendChild(f); }
+    var ct = document.createElement("small"); ct.textContent = (w.city || "") + " · " + t("wxD").at(wxKind(w.c)); el.appendChild(ct);
+  }
+  function renderWeather() {
+    var mine = P.wxShare !== false && P.wxNow ? P.wxNow : null, theirs = OL.partner && OL.partner.wx, linked = !!(P.couple && OL.partnerJoined);
+    $("wx-card").hidden = !mine && !theirs && !linked;
+    if ($("wx-card").hidden) return;
+    wxSide($("wx-me"), t("wxMe"), mine, t("wxAddCity"));
+    wxSide($("wx-love"), t("wxLove")(nameMid()), theirs, t("wxUnknown"));
+    var line = "";
+    if (theirs && typeof theirs.t === "number") {
+      var k = wxKind(theirs.c);
+      if (k === 4 || k === 5 || k === 7 || k === 8) line = t("wxRain")(nameStart());
+      else if (theirs.t >= 30) line = t("wxHot")(nameStart());
+      else if (theirs.t <= 15) line = t("wxCold")(nameStart());
+    }
+    $("wx-line").hidden = !line; $("wx-line").textContent = line;
+  }
+  function fetchWeather() {
+    if (!P.wx || typeof P.wx.lat !== "number") return Promise.resolve();
+    var url = "https://api.open-meteo.com/v1/forecast?latitude=" + P.wx.lat.toFixed(3) + "&longitude=" + P.wx.lon.toFixed(3) + "&current=temperature_2m,weather_code,is_day";
+    return fetch(url).then(function (r) { return r.json(); }).then(function (j) {
+      var c = j && j.current; if (!c || typeof c.temperature_2m !== "number") return;
+      P.wxNow = { t: Math.round(c.temperature_2m * 10) / 10, c: c.weather_code, d: c.is_day === 1, city: P.wx.city, at: Date.now() }; save();
+      if (P.wxShare !== false && P.couple && OL.db) myLive().child("wx").set(P.wxNow).catch(function () {});
+      if (current === "home") renderWeather();
+    }).catch(function () {});
+  }
+  function findCity() {
+    var q = $("in-city").value.trim(); if (!q) return;
+    $("city-msg").textContent = "…";
+    var lang = { fr: "fr", kr: "fr", en: "en" }[S.lang] || "fr";
+    fetch("https://geocoding-api.open-meteo.com/v1/search?count=1&language=" + lang + "&name=" + encodeURIComponent(q)).then(function (r) { return r.json(); }).then(function (j) {
+      var r0 = j && j.results && j.results.at(0);
+      if (!r0) { $("city-msg").textContent = t("wxNotFound"); return; }
+      P.wx = { city: r0.name, country: r0.country || "", lat: r0.latitude, lon: r0.longitude };
+      if (P.wxShare === undefined) P.wxShare = true;
+      save(); $("in-city").value = r0.name;
+      $("city-msg").textContent = t("wxFound")(r0.name + (r0.country ? ", " + r0.country : ""));
+      renderWxSettings(); sfx("badge"); fetchWeather();
+    }).catch(function () { $("city-msg").textContent = t("linkNet"); });
+  }
+  function renderWxSettings() {
+    if (document.activeElement !== $("in-city") && P.wx) $("in-city").value = P.wx.city;
+    $("sw-wx").setAttribute("aria-checked", String(P.wxShare !== false && !!P.wx));
+  }
+  $("city-ok").addEventListener("click", findCity);
+  $("in-city").addEventListener("keydown", function (e) { if (e.key === "Enter") findCity(); });
+  $("sw-wx").addEventListener("click", function () {
+    P.wxShare = P.wxShare === false; save(); sfx("tap"); renderWxSettings();
+    if (P.couple && OL.db) myLive().child("wx").set(P.wxShare && P.wxNow ? P.wxNow : null).catch(function () {});
+  });
+  setInterval(fetchWeather, 30 * 60000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden && P.wxNow && Date.now() - P.wxNow.at > 30 * 60000) fetchWeather(); });
+
+  /* ================= Listen together (YouTube player kept in sync through Firebase) ================= */
+  var MU = { player: null, ready: false, joined: false, curId: null, ytP: null };
+  function ytId(url) {
+    var m = (url || "").match(/(?:youtu\.be\/|[?&]v=|\/shorts\/|\/embed\/|\/live\/)([A-Za-z0-9_-]{11})/);
+    if (m) return m[1];
+    return /^[A-Za-z0-9_-]{11}$/.test((url || "").trim()) ? url.trim() : null;
+  }
+  function loadYT() {
+    if (window.YT && window.YT.Player) return Promise.resolve();
+    if (MU.ytP) return MU.ytP;
+    MU.ytP = new Promise(function (res) { var prev = window.onYouTubeIframeAPIReady; window.onYouTubeIframeAPIReady = function () { if (prev) prev(); res(); }; loadScript("https://www.youtube.com/iframe_api").catch(function () {}); });
+    return MU.ytP;
+  }
+  function musicOnline() { return !!(P.couple && OL.db && OL.partnerJoined); }
+  function expectedPos(m) { return (m.pos || 0) + (m.state === "play" ? Math.max(0, (srvNow() - (m.at || srvNow())) / 1000) : 0); }
+  function ensurePlayer(id, start) {
+    return loadYT().then(function () {
+      return new Promise(function (res) {
+        if (MU.player && MU.ready) { MU.player.loadVideoById({ videoId: id, startSeconds: start }); res(); return; }
+        MU.player = new YT.Player("yt-player", {
+          videoId: id, playerVars: { start: Math.floor(start), autoplay: 1, controls: 1, playsinline: 1, rel: 0 },
+          events: { onReady: function () { MU.ready = true; MU.player.seekTo(start, true); MU.player.playVideo(); res(); }, onStateChange: muStateChange }
+        });
+      });
+    });
+  }
+  function muStateChange(e) {
+    var m = OL.music;
+    if (e && e.data === 1 && m && !m.title && m.bySlot === mySlot() && MU.player && MU.player.getVideoData) {
+      var ti = (MU.player.getVideoData() || {}).title; if (ti) OL.db.ref(olBase() + "/live/shared/music/title").set(ti.slice(0, 120)).catch(function () {});
+    }
+  }
+  function applyMusic(m, force) {
+    if (!MU.joined || !m) return;
+    if (!MU.player || !MU.ready || MU.curId !== m.id) {
+      MU.curId = m.id;
+      ensurePlayer(m.id, expectedPos(m)).then(function () { if (m.state === "pause") MU.player.pauseVideo(); });
+      return;
+    }
+    var exp = expectedPos(m), pos = MU.player.getCurrentTime ? MU.player.getCurrentTime() : 0;
+    if (m.state === "play") { if (force || Math.abs(pos - exp) > 2) MU.player.seekTo(exp, true); MU.player.playVideo(); }
+    else { MU.player.pauseVideo(); if (force || Math.abs(pos - (m.pos || 0)) > 1) MU.player.seekTo(m.pos || 0, true); }
+  }
+  function onSharedMusic(v) {
+    var prev = OL.music; OL.music = v || null;
+    if (!v) { if (MU.player && MU.ready) MU.player.stopVideo(); MU.joined = false; MU.curId = null; }
+    else if (MU.joined) applyMusic(v, false);
+    else if (v.bySlot !== mySlot() && (!prev || prev.id !== v.id) && OL.musicSeen) { toast("🎧", t("muTitle"), t("muStarted")(nameStart())); notifyIfHidden("🎧 Noche Duo", t("muStarted")(nameStart()), "music"); }
+    OL.musicSeen = true;
+    if (current === "home") renderMusic();
+  }
+  function renderMusic() {
+    var on = musicOnline();
+    $("music-card").hidden = !on;
+    if (!on) return;
+    var m = OL.music;
+    $("mu-now").hidden = !m;
+    if (m) {
+      var who = m.bySlot === mySlot() ? (P.me || t("me")) : nameStart();
+      $("mu-line").textContent = "🎵 " + (m.title || t("muSong")) + " · " + t("muBy")(who);
+      $("mu-join").hidden = MU.joined; $("mu-join").textContent = t("muJoin")(nameMid());
+      $("mu-box").hidden = !MU.joined;
+      $("mu-toggle").textContent = m.state === "play" ? t("muPause") : t("muPlay");
+    }
+  }
+  $("mu-start").addEventListener("click", function () {
+    var id = ytId($("mu-url").value); $("mu-err").textContent = "";
+    if (!id) { $("mu-err").textContent = t("muBad"); buzz(80); return; }
+    if (!musicOnline()) { $("mu-err").textContent = t("ltOffline"); return; }
+    MU.joined = true; MU.curId = id; stat("music"); save();
+    OL.db.ref(olBase() + "/live/shared/music").set({ id: id, state: "play", pos: 0, at: TS(), bySlot: mySlot() }).catch(function () {});
+    ensurePlayer(id, 0); $("mu-url").value = ""; sfx("tap"); renderMusic();
+  });
+  $("mu-join").addEventListener("click", function () { MU.joined = true; sfx("tap"); renderMusic(); applyMusic(OL.music, true); });
+  $("mu-toggle").addEventListener("click", function () {
+    var m = OL.music; if (!m || !MU.player || !MU.ready) return;
+    var pos = MU.player.getCurrentTime ? MU.player.getCurrentTime() : expectedPos(m);
+    var next = m.state === "play" ? "pause" : "play";
+    if (next === "play") MU.player.playVideo(); else MU.player.pauseVideo();
+    OL.db.ref(olBase() + "/live/shared/music").update({ state: next, pos: pos, at: TS() }).catch(function () {});
+    sfx("tap");
+  });
+  $("mu-resync").addEventListener("click", function () { sfx("tap"); applyMusic(OL.music, true); });
+  $("mu-stop").addEventListener("click", function () { OL.db.ref(olBase() + "/live/shared/music").set(null).catch(function () {}); sfx("tap"); });
+
   /* ================= Night sky with shooting stars ================= */
   var cv = $("stars"), cx = cv.getContext("2d"), stars = [], shoot = null, nextShoot = 2500;
   function sizeStars() {
@@ -3323,6 +3560,7 @@ select.txt { appearance: auto; }
   sealOpen = false;
   show("home");
   if (P.pinHash) openLock("unlock"); else if (!P.onboarded && !P.me) openOnb();
+  if (P.wx && (!P.wxNow || Date.now() - P.wxNow.at > 20 * 60000)) fetchWeather();
   if (P.couple && olAvailable()) olAttach();
 })();
 </script>

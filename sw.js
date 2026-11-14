@@ -1,5 +1,5 @@
 /* Noche Duo service worker: offline app shell + notification clicks */
-const CACHE = "noche-duo-v12";
+const CACHE = "noche-duo-v13";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 
 self.addEventListener("install", (e) => {
