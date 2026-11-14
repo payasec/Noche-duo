@@ -610,6 +610,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
           <button class="btn btn-rose" id="ol-pulse" data-i="pulseBtn"></button>
           <button class="btn btn-ghost" id="ol-gn" data-i="gnBtn"></button>
         </div>
+        <button class="btn btn-rose" id="ol-hug">🤗 <span data-i="hugMsg"></span></button>
         <button class="btn btn-ghost" id="ol-mood-btn" data-i="moodBtn"></button>
         <div id="ol-moodbox" class="stack" hidden>
           <p class="small" data-i="moodTitle"></p>
@@ -874,6 +875,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
     </div>
     <button class="btn btn-gold" id="settings-done" data-i="done"></button>
     <div class="card"><button class="btn btn-ghost" id="share-app" data-i="shareApp"></button></div>
+    <p class="small center" id="app-version">Noche Duo · version 22</p>
   </section>
 
   <!-- CREATED -->
@@ -2763,7 +2765,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
     $("ol-listen").hidden = !p.music;
     if (p.music) { $("ol-listen").href = "https://www.youtube.com/results?search_query=" + encodeURIComponent(p.music); $("ol-listen").textContent = t("listenToo"); }
     var dis = !OL.partnerJoined;
-    $("ol-pulse").disabled = dis; $("ol-gn").disabled = dis;
+    $("ol-pulse").disabled = dis; $("ol-gn").disabled = dis; $("ol-hug").disabled = dis;
     var box = $("moods");
     if (!box.childElementCount || box.getAttribute("data-lang") !== S.lang) {
       box.innerHTML = ""; box.setAttribute("data-lang", S.lang);
@@ -4870,6 +4872,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
     if (!hugURL && !P.hugTipShown) { P.hugTipShown = true; save(); setTimeout(function () { toast("💡", t("hugPhotoTitle"), t("hugTip")); }, 3800); }
   }
   $("ch-hug").addEventListener("click", function () { sendHug(false); });
+  $("ol-hug").addEventListener("click", function () { sendHug(false); });
   $("hug-back").addEventListener("click", function () { closeHug(); sendHug(true); });
   $("hug-close").addEventListener("click", closeHug);
   $("hugfx").addEventListener("click", function (e) { if (e.target === this) closeHug(); });
