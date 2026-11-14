@@ -581,6 +581,18 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
       <button class="btn btn-ghost" id="unlink" hidden></button>
       <button class="btn btn-ghost" id="reset" data-i="reset"></button>
     </div>
+    <div class="card" id="acc-card">
+      <h2 data-i="accTitle"></h2>
+      <p class="small" id="acc-status"></p>
+      <button class="btn btn-gold" id="acc-google"><span>G</span> <span data-i="accBtn"></span></button>
+      <p class="small" data-i="accRestoreHint"></p>
+      <p class="err" id="acc-err" aria-live="polite"></p>
+    </div>
+    <div class="card">
+      <h2 data-i="delTitle"></h2>
+      <p class="small" data-i="delNote"></p>
+      <button class="btn btn-ghost" id="del-all" style="border-color:var(--bad);color:var(--bad)"></button>
+    </div>
     <button class="btn btn-gold" id="settings-done" data-i="done"></button>
   </section>
 
@@ -1215,7 +1227,16 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
       muResync: "↻ Resynchroniser", muStop: "Arrêter la musique", muStarted: function (n) { return n + " lance une chanson 🎧"; },
       tabHome: "Accueil", tabPlay: "Jouer", tabUs: "Nous deux", tabTogether: "Ensemble", langTitle: "Langue",
       hello: function (h) { return h < 12 ? "Bonjour" : h < 18 ? "Bon après-midi" : "Bonsoir"; },
-      tgEmpty: "Reliez vos deux téléphones pour vous appeler dans le jeu et écouter de la musique ensemble."
+      tgEmpty: "Reliez vos deux téléphones pour vous appeler dans le jeu et écouter de la musique ensemble.",
+      accTitle: "Sauvegarde du compte", accBtn: "Sauvegarder avec Google",
+      accNone: "Pas encore sauvegardé : si tu changes de téléphone ou effaces Chrome, ton couple sera perdu.",
+      accOk: function (e) { return "Sauvegardé avec Google ✓ " + e; },
+      accRestoreHint: "Nouveau téléphone ? Appuie sur le même bouton pour retrouver ton couple et ta progression.",
+      accRestored: "Compte restauré 💞", accNoCouple: "Ce compte Google n'a pas encore de couple enregistré.",
+      accErrProvider: "La connexion Google n'est pas encore activée dans Firebase.", accErr: "La connexion Google n'a pas abouti. Réessaie.",
+      delTitle: "Supprimer nos données", delBtn: "🗑️ Supprimer définitivement",
+      delNote: "Supprime votre couple, vos lettres, vos rêves, vos photos et ta progression, sur ce téléphone et en ligne. C'est définitif.",
+      delSure: "Touche encore pour confirmer : tout sera effacé", delDone: "Données supprimées."
     },
     kr: {
       modeLabel: "Mòd · Misyon Sekrè",
@@ -1419,7 +1440,16 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
       muResync: "↻ Resenkronize", muStop: "Kanpe mizik la", muStarted: function (n) { return n + " lanse yon chante 🎧"; },
       tabHome: "Akèy", tabPlay: "Jwe", tabUs: "Nou de", tabTogether: "Ansanm", langTitle: "Lang",
       hello: function (h) { return h < 12 ? "Bonjou" : h < 18 ? "Bon apremidi" : "Bonswa"; },
-      tgEmpty: "Konekte de telefòn nou yo pou nou rele nan jwèt la epi koute mizik ansanm."
+      tgEmpty: "Konekte de telefòn nou yo pou nou rele nan jwèt la epi koute mizik ansanm.",
+      accTitle: "Sovgad kont lan", accBtn: "Sovgade ak Google",
+      accNone: "Poko sovgade : si w chanje telefòn oswa efase Chrome, koup ou a ap pèdi.",
+      accOk: function (e) { return "Sovgade ak Google ✓ " + e; },
+      accRestoreHint: "Nouvo telefòn ? Peze menm bouton an pou w jwenn koup ou ak pwogrè w.",
+      accRestored: "Kont lan retounen 💞", accNoCouple: "Kont Google sa a poko gen koup ki anrejistre.",
+      accErrProvider: "Koneksyon Google poko aktive nan Firebase.", accErr: "Koneksyon Google la pa mache. Eseye ankò.",
+      delTitle: "Efase done nou yo", delBtn: "🗑️ Efase nèt",
+      delNote: "Sa efase koup nou, lèt nou, rèv nou, foto nou ak pwogrè w, sou telefòn sa a ak an liy. Ou pa ka retounen.",
+      delSure: "Peze ankò pou konfime : tout ap efase", delDone: "Done yo efase."
     },
     en: {
       modeLabel: "Mode · Secret Mission",
@@ -1623,7 +1653,16 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
       muResync: "↻ Re-sync", muStop: "Stop the music", muStarted: function (n) { return n + " started a song 🎧"; },
       tabHome: "Home", tabPlay: "Play", tabUs: "Us", tabTogether: "Together", langTitle: "Language",
       hello: function (h) { return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"; },
-      tgEmpty: "Link your two phones to call in the game and listen to music together."
+      tgEmpty: "Link your two phones to call in the game and listen to music together.",
+      accTitle: "Account backup", accBtn: "Back up with Google",
+      accNone: "Not backed up yet: if you change phones or clear Chrome, your couple will be lost.",
+      accOk: function (e) { return "Backed up with Google ✓ " + e; },
+      accRestoreHint: "New phone? Tap the same button to get your couple and progress back.",
+      accRestored: "Account restored 💞", accNoCouple: "This Google account has no couple saved yet.",
+      accErrProvider: "Google sign-in isn't turned on in Firebase yet.", accErr: "Google sign-in didn't go through. Try again.",
+      delTitle: "Delete our data", delBtn: "🗑️ Delete permanently",
+      delNote: "Deletes your couple, letters, dreams, photos and progress, on this phone and online. This can't be undone.",
+      delSure: "Tap again to confirm: everything will be erased", delDone: "Data deleted."
     }
   };
 
@@ -1840,7 +1879,7 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
     if (isTab()) { renderProfile(); renderOnline(); renderCallCard(); renderModes(); renderDaily(); renderStory(); renderInstall(); renderLetters(); renderDreams(); renderWeather(); renderMusic(); renderGreet(); renderTogether(); }
     if (current === "letter") renderLetterForm();
     if (current === "settings") renderWxSettings();
-    if (current === "settings") { renderSettingsExtra(); renderSettingsW1(); }
+    if (current === "settings") { renderSettingsExtra(); renderSettingsW1(); renderAccount(); }
     if (current === "sync") renderSync();
     if (current === "quiz") renderQuiz();
     if (current === "draw") renderDraw();
@@ -2162,10 +2201,14 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
       loadScript(FB + "firebase-app-compat.js").then(function () { return Promise.all([loadScript(FB + "firebase-auth-compat.js"), loadScript(FB + "firebase-database-compat.js")]); });
     OL.initP = ready.then(function () {
       if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG || {});
-      return firebase.auth().signInAnonymously();
+      return new Promise(function (res) {
+        var done = false, un = firebase.auth().onAuthStateChanged(function (u) { if (done) return; done = true; try { un(); } catch (e) {} res(u); });
+        setTimeout(function () { if (!done) { done = true; res(firebase.auth().currentUser); } }, 4000);
+      }).then(function (u) { return u ? { user: u } : firebase.auth().signInAnonymously(); });
     }).then(function (cred) {
       OL.uid = (cred && cred.user && cred.user.uid) || firebase.auth().currentUser.uid;
       OL.db = firebase.database();
+      recordDay(); handleRedirectResult();
       OL.db.ref(".info/serverTimeOffset").on("value", function (s) { OL.offset = s.val() || 0; });
       OL.db.ref(".info/connected").on("value", function (s) { OL.connected = !!s.val(); if (OL.connected) olAnnounce(); renderOnlineSafe(); });
       return OL;
@@ -2184,7 +2227,8 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
       return OL.db.ref("couples/" + code + "/members/a").set(OL.uid).then(function () { return code; }, function (e) { if (isPerm(e) && ++tries < 3) return attempt(); throw e; });
     }
     olInit().then(attempt).then(function (code) {
-      P.couple = { code: code, slot: "a" }; OL.lost = false; save(); olAttach(); sfx("reveal"); render();
+      P.couple = { code: code, slot: "a" }; OL.lost = false; save(); olAttach(); saveUserDoc(); sfx("reveal"); render();
+      OL.db.ref("stats/couples/" + code).set(TS()).catch(function () {});
     }).catch(function () { $("ol-err").textContent = t("linkNet"); })
       .then(function () { $("ol-create").disabled = false; });
   }
@@ -2195,7 +2239,7 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
     if (code.length !== 6) { $("ol-err").textContent = t("linkBad"); buzz(80); return; }
     $("ol-join-go").disabled = true;
     olInit().then(function () { return OL.db.ref("couples/" + code + "/members/b").set(OL.uid); }).then(function () {
-      P.couple = { code: code, slot: "b" }; OL.lost = false; save(); olAttach(); sfx("win"); confetti(true); buzz([60, 40, 120]);
+      P.couple = { code: code, slot: "b" }; OL.lost = false; save(); olAttach(); saveUserDoc(); sfx("win"); confetti(true); buzz([60, 40, 120]);
       toast("💞", t("onlineTitle"), t("linked")); render();
     }).catch(function (e) { $("ol-err").textContent = isPerm(e) ? t("linkBad") : t("linkNet"); buzz(120); })
       .then(function () { $("ol-join-go").disabled = false; });
@@ -2423,6 +2467,7 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
     if (!unlinkArmed) { unlinkArmed = true; renderUnlink(); buzz(60); return; }
     if (OL.db && P.couple) myLive().update({ online: false, lastSeen: TS() }).catch(function () {});
     olDetach(); P.couple = null; unlinkArmed = false; if (S.code && S.code.length === 6) { S.code = null; S.role = null; }
+    saveUserDoc();
     save(); renderUnlink(); sfx("tap");
   });
   $("go-settings").addEventListener("click", function () { unlinkArmed = false; renderUnlink(); });
@@ -3627,6 +3672,84 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
   }
   $("tg-link").addEventListener("click", function () { show("home"); setTimeout(function () { $("online-card").scrollIntoView({ block: "center" }); }, 80); });
 
+  /* ================= Backend: account backup (Google), user record, usage stats, data deletion ================= */
+  function dayUTC() { return new Date().toISOString().slice(0, 10); }
+  function recordDay() {
+    if (!OL.db || !OL.uid) return;
+    OL.db.ref("stats/days/" + dayUTC() + "/" + OL.uid).set(true).catch(function () {});
+    if (isGoogleUser()) saveUserDoc();
+  }
+  function isGoogleUser() {
+    var u = window.firebase && firebase.auth && firebase.auth().currentUser;
+    return !!(u && !u.isAnonymous);
+  }
+  function saveUserDoc() {
+    if (!OL.db || !OL.uid || !isGoogleUser()) return;
+    OL.db.ref("users/" + OL.uid).set({ couple: P.couple || null, me: P.me || null, love: P.love || null, xp: P.xp || 0, badges: P.badges || [], since: P.since || null, at: TS() }).catch(function () {});
+  }
+  function restoreFromUserDoc() {
+    return OL.db.ref("users/" + OL.uid).once("value").then(function (snap) {
+      var d = snap.val();
+      if (!d || !d.couple) { $("acc-err").textContent = t("accNoCouple"); saveUserDoc(); return; }
+      olDetach(); P.couple = d.couple; if (d.me) P.me = d.me; if (d.love) P.love = d.love;
+      if (d.xp > P.xp) P.xp = d.xp; if (d.badges) (Array.isArray(d.badges) ? d.badges : Object.values(d.badges)).forEach(function (b) { if (P.badges.indexOf(b) < 0) P.badges.push(b); });
+      if (d.since && !P.since) P.since = d.since;
+      OL.lost = false; save(); olAttach(); confetti(true); sfx("win"); toast("💞", t("accTitle"), t("accRestored")); render();
+    });
+  }
+  function afterGoogle(cred) {
+    var u = (cred && cred.user) || firebase.auth().currentUser;
+    if (!u) return;
+    var changed = u.uid !== OL.uid; OL.uid = u.uid;
+    if (changed || !P.couple) return restoreFromUserDoc();
+    saveUserDoc(); sfx("badge"); renderAccount();
+  }
+  function googleFail(e) {
+    var code = (e && e.code) || "";
+    if (code === "auth/credential-already-in-use" || code === "auth/email-already-in-use") {
+      var cr = e.credential || (firebase.auth.GoogleAuthProvider.credentialFromError && firebase.auth.GoogleAuthProvider.credentialFromError(e));
+      if (cr) return firebase.auth().signInWithCredential(cr).then(afterGoogle).catch(googleFail);
+    }
+    if (code === "auth/popup-blocked" || code === "auth/operation-not-supported-in-this-environment" || code === "auth/cancelled-popup-request") {
+      var u = firebase.auth().currentUser, pr = new firebase.auth.GoogleAuthProvider();
+      return (u && u.isAnonymous ? u.linkWithRedirect(pr) : firebase.auth().signInWithRedirect(pr)).catch(function (e2) { $("acc-err").textContent = t("accErr"); });
+    }
+    if (code === "auth/popup-closed-by-user") return;
+    $("acc-err").textContent = code === "auth/operation-not-allowed" || code === "auth/unauthorized-domain" ? t("accErrProvider") : t("accErr");
+  }
+  function handleRedirectResult() {
+    try { firebase.auth().getRedirectResult().then(function (r) { if (r && r.user) afterGoogle(r); }).catch(googleFail); } catch (e) {}
+  }
+  function renderAccount() {
+    var u = window.firebase && firebase.auth && firebase.auth().currentUser;
+    var g = !!(u && !u.isAnonymous);
+    $("acc-card").hidden = !olAvailable();
+    $("acc-status").textContent = g ? t("accOk")(u.email || "") : t("accNone");
+    $("acc-google").hidden = g;
+    $("del-all").textContent = delArmed ? t("delSure") : t("delBtn");
+  }
+  $("acc-google").addEventListener("click", function () {
+    $("acc-err").textContent = ""; sfx("tap");
+    olInit().then(function () {
+      var u = firebase.auth().currentUser, pr = new firebase.auth.GoogleAuthProvider();
+      var op = u && u.isAnonymous ? u.linkWithPopup(pr) : firebase.auth().signInWithPopup(pr);
+      return op.then(afterGoogle);
+    }).catch(googleFail);
+  });
+  var delArmed = false;
+  $("del-all").addEventListener("click", function () {
+    if (!delArmed) { delArmed = true; buzz(80); renderAccount(); return; }
+    var jobs = [];
+    if (OL.db && P.couple) { if (CALL.state !== "idle") endCall("ended"); var code = P.couple.code; olDetach(); jobs.push(OL.db.ref("couples/" + code).remove().catch(function () {})); }
+    if (OL.db && OL.uid) jobs.push(OL.db.ref("users/" + OL.uid).remove().catch(function () {}));
+    Promise.all(jobs).then(function () {
+      try { Object.keys(localStorage).forEach(function (k) { if (k.indexOf("nd-") === 0) localStorage.removeItem(k); }); } catch (e) {}
+      toast("🗑️", t("delTitle"), t("delDone"));
+      setTimeout(function () { location.reload(); }, 900);
+    });
+  });
+  $("go-settings").addEventListener("click", function () { delArmed = false; });
+
   /* ================= Night sky with shooting stars ================= */
   var cv = $("stars"), cx = cv.getContext("2d"), stars = [], shoot = null, nextShoot = 2500;
   function sizeStars() {
@@ -3673,7 +3796,7 @@ body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
   show("home");
   if (P.pinHash) openLock("unlock"); else if (!P.onboarded && !P.me) openOnb();
   if (P.wx && (!P.wxNow || Date.now() - P.wxNow.at > 20 * 60000)) fetchWeather();
-  if (P.couple && olAvailable()) olAttach();
+  if (P.couple && olAvailable()) olAttach(); else if (olAvailable()) olInit().catch(function () {});
 })();
 </script>
 </body>

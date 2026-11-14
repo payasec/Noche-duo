@@ -1,0 +1,37 @@
+{
+  "rules": {
+    "couples": {
+      "$code": {
+        ".read": "auth != null && (data.child('members/a').val() === auth.uid || data.child('members/b').val() === auth.uid)",
+        ".write": "auth != null && !newData.exists() && (data.child('members/a').val() === auth.uid || data.child('members/b').val() === auth.uid)",
+        "members": {
+          "$slot": {
+            ".write": "auth != null && !data.exists() && newData.val() === auth.uid && ($slot === 'a' || ($slot === 'b' && root.child('couples').child($code).child('members/a').exists()))"
+          }
+        },
+        "live": {
+          ".write": "auth != null && (root.child('couples').child($code).child('members/a').val() === auth.uid || root.child('couples').child($code).child('members/b').val() === auth.uid)",
+          "shared": {
+            "photo": { ".validate": "newData.isString() && newData.val().length < 200000" },
+            "dreams": { "$id": { ".validate": "newData.child('t').isString() && newData.child('t').val().length <= 120" } },
+            "music": { ".validate": "newData.child('id').isString() && newData.child('id').val().length === 11" }
+          },
+          "$slot": {
+            "letters": { "$id": { ".validate": "newData.child('type').isString() && (!newData.child('text').exists() || (newData.child('text').isString() && newData.child('text').val().length <= 1600))" } },
+            "draw": { "s": { "$k": { ".validate": "newData.child('p').isString() && newData.child('p').val().length < 30000" } } }
+          }
+        }
+      }
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "stats": {
+      "days": { "$day": { "$uid": { ".write": "auth != null && auth.uid === $uid", ".validate": "newData.isBoolean()" } } },
+      "couples": { "$code": { ".write": "auth != null && !data.exists()", ".validate": "newData.isNumber()" } }
+    }
+  }
+}
