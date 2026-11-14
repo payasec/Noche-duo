@@ -29,6 +29,9 @@
                   ".validate": "newData.isNumber() && ($slot === 'a' || $slot === 'b')"
                 }
               }
+            },
+            "hug": {
+              ".validate": "newData.isString() && newData.val().length < 200000"
             }
           },
           "chat": {
