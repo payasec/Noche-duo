@@ -1,0 +1,2445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Noche Duo</title>
+<meta name="theme-color" content="#0d0b1f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Noche Duo">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: one narrow column over a living night sky; each screen is a stack of glass cards */
+:root {
+  --sky: #0d0b1f;
+  --sky-2: #1a1638;
+  --ink: #f4eee4;
+  --muted: #a9a3c4;
+  --gold: #f0c674;
+  --rose: #ff7a93;
+  --flame: #ff9a3c;
+  --card: rgba(255,255,255,0.06);
+  --line: rgba(240,198,116,0.28);
+  --ok: #7fe0a7;
+  --bad: #ff8a8a;
+  --display: "Fraunces", Georgia, "Times New Roman", serif;
+  --body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: radial-gradient(120% 80% at 50% 0%, var(--sky-2), var(--sky) 70%);
+  background-color: var(--sky);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+}
+#stars, #fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+#stars { z-index: 0; }
+#fx { z-index: 50; }
+.wrap { position: relative; z-index: 1; max-width: 440px; margin: 0 auto; padding: 18px 18px 48px; display: flex; flex-direction: column; gap: 18px; min-height: 100%; }
+header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 700; font-size: 1.2rem; background: none; border: 0; color: var(--ink); padding: 0; cursor: pointer; }
+.brand svg { transition: transform .4s ease; }
+.brand:active svg { transform: rotate(-20deg) scale(1.1); }
+.hdr-right { display: flex; align-items: center; gap: 8px; }
+.lang { display: flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.lang button { background: none; border: 0; color: var(--muted); font: 500 0.8rem var(--body); padding: 6px 11px; cursor: pointer; }
+.lang button[aria-pressed="true"] { background: var(--gold); color: var(--sky); }
+.icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: none; color: var(--gold); display: grid; place-items: center; cursor: pointer; }
+h1 { font-family: var(--display); font-weight: 700; font-size: 2.2rem; line-height: 1.08; margin: 10px 0 0; text-wrap: balance; }
+h1 em { font-style: italic; color: var(--gold); font-weight: 500; }
+h2 { font-family: var(--display); font-weight: 500; font-size: 1.45rem; line-height: 1.2; margin: 0; text-wrap: balance; }
+h3 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin: 0; font-weight: 700; }
+.tag { color: var(--muted); margin: 6px 0 0; font-size: 1.02rem; }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 14px; backdrop-filter: blur(4px); }
+ol.rules { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+ol.rules li { display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: start; }
+ol.rules b { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--gold); color: var(--gold); font-family: var(--display); font-size: 0.95rem; }
+.btn { appearance: none; border: 0; border-radius: 14px; padding: 15px 18px; font: 700 1rem var(--body); cursor: pointer; width: 100%; transition: transform .08s ease, opacity .2s, box-shadow .3s; }
+.btn:active { transform: scale(0.97); }
+.btn:focus-visible, .lang button:focus-visible, .choice:focus-visible, input:focus-visible, .seal:focus-visible, .icon-btn:focus-visible, .brand:focus-visible, .yn button:focus-visible, .chips button:focus-visible, .switch:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.btn-gold { background: var(--gold); color: var(--sky); box-shadow: 0 6px 24px -8px rgba(240,198,116,0.6); }
+.btn-rose { background: var(--rose); color: #2a0712; box-shadow: 0 6px 24px -8px rgba(255,122,147,0.6); }
+.btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn[disabled] { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+.code { font-family: var(--display); font-size: 3.4rem; letter-spacing: 0.18em; text-align: center; color: var(--gold); margin: 4px 0; font-variant-numeric: tabular-nums; }
+.small { font-size: 0.88rem; color: var(--muted); margin: 0; }
+.center { text-align: center; }
+input.codein, input.txt { width: 100%; background: rgba(0,0,0,0.25); border: 1px solid var(--line); border-radius: 14px; color: var(--ink); font: 400 1rem var(--body); padding: 12px 14px; }
+input.codein { color: var(--gold); font: 500 2.2rem var(--display); letter-spacing: 0.3em; text-align: center; font-variant-numeric: tabular-nums; }
+.meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+.pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 4px 11px; font-size: 0.8rem; font-weight: 700; background: rgba(255,122,147,0.15); color: var(--rose); }
+
+/* Profile card */
+.couple { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.names { font-family: var(--display); font-size: 1.2rem; line-height: 1.2; }
+.names .heart { color: var(--rose); padding: 0 4px; }
+.flame { display: flex; align-items: center; gap: 6px; font-weight: 700; color: var(--flame); font-variant-numeric: tabular-nums; }
+.flame svg { filter: drop-shadow(0 0 6px rgba(255,154,60,0.6)); }
+.flame.out { color: var(--muted); }
+.flame.out svg { filter: none; opacity: .5; }
+.level-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.9rem; }
+.level-row b { font-family: var(--display); font-size: 1.05rem; color: var(--gold); font-weight: 500; }
+.bar { height: 8px; border-radius: 999px; background: rgba(255,255,255,0.08); overflow: hidden; }
+.bar > i { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--rose), var(--gold)); transition: width .8s cubic-bezier(.2,.8,.2,1); }
+.badges { display: grid; grid-template-columns: repeat(9, 1fr); gap: 5px; }
+.badges .badge { font-size: 1.05rem; border-radius: 10px; }
+.badge { padding: 0; cursor: pointer; color: inherit; font-family: inherit; aspect-ratio: 1; border-radius: 12px; display: grid; place-items: center; font-size: 1.25rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); filter: grayscale(1); opacity: .35; }
+.badge.on { filter: none; opacity: 1; border-color: var(--line); background: rgba(240,198,116,0.1); }
+.badge-names { font-size: 0.78rem; color: var(--muted); margin: 0; min-height: 1.2em; }
+
+/* Envelope */
+.seal { position: relative; border: 1px dashed var(--gold); border-radius: 16px; min-height: 180px; display: grid; place-items: center; padding: 22px; text-align: center; cursor: pointer; background: rgba(240,198,116,0.05); color: var(--ink); font: inherit; width: 100%; perspective: 800px; }
+.seal.closed { animation: glow 2.6s ease-in-out infinite; }
+@keyframes glow { 0%,100% { box-shadow: 0 0 0 0 rgba(240,198,116,0); } 50% { box-shadow: 0 0 28px -4px rgba(240,198,116,0.45); } }
+.env { display: flex; flex-direction: column; align-items: center; gap: 10px; color: var(--muted); }
+.env svg { animation: bob 2.6s ease-in-out infinite; }
+@keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+.open { display: flex; flex-direction: column; gap: 12px; align-items: center; animation: unfold .55s cubic-bezier(.2,.9,.3,1.2); transform-origin: top center; }
+@keyframes unfold { from { transform: rotateX(-80deg) scale(.9); opacity: 0; } to { transform: none; opacity: 1; } }
+.mission-text { font-family: var(--display); font-size: 1.45rem; line-height: 1.3; text-wrap: balance; }
+
+.timer { font-family: var(--display); font-size: 2.4rem; text-align: center; font-variant-numeric: tabular-nums; }
+.timer.done { color: var(--rose); animation: pulse 1s ease-in-out 3; }
+@keyframes pulse { 50% { transform: scale(1.08); } }
+.chips { display: flex; gap: 8px; justify-content: center; }
+.chips button { background: none; border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: 5px 13px; font: 500 0.85rem var(--body); cursor: pointer; }
+.chips button[aria-pressed="true"] { border-color: var(--gold); color: var(--gold); }
+.choice { text-align: left; background: rgba(255,255,255,0.04); border: 1px solid var(--line); color: var(--ink); border-radius: 14px; padding: 14px 16px; font: 400 0.98rem var(--body); cursor: pointer; width: 100%; transition: background .2s, border-color .2s; }
+.choice[aria-pressed="true"] { border-color: var(--rose); background: rgba(255,122,147,0.12); }
+.choices { display: flex; flex-direction: column; gap: 10px; }
+.reveal-item { border-left: 3px solid var(--gold); padding: 2px 0 2px 12px; display: flex; flex-direction: column; gap: 2px; animation: slideIn .5s ease both; }
+.reveal-item:nth-child(3) { animation-delay: .15s; }
+.reveal-item:nth-child(4) { animation-delay: .3s; }
+@keyframes slideIn { from { transform: translateX(-12px); opacity: 0; } to { transform: none; opacity: 1; } }
+.reveal-item.rose { border-color: var(--rose); }
+.reveal-item .lbl { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.reveal-item .val { font-family: var(--display); font-size: 1.12rem; line-height: 1.3; }
+.verdict { font-weight: 700; font-family: var(--body); font-size: 0.95rem; }
+.verdict.ok { color: var(--ok); }
+.verdict.bad { color: var(--bad); }
+.q { display: flex; flex-direction: column; gap: 8px; }
+.q p { margin: 0; font-weight: 500; }
+.yn { display: flex; gap: 8px; }
+.yn button { flex: 1; background: none; border: 1px solid var(--line); color: var(--ink); border-radius: 12px; padding: 11px; font: 500 0.95rem var(--body); cursor: pointer; }
+.yn button[aria-pressed="true"] { background: var(--gold); color: var(--sky); border-color: var(--gold); }
+.yn button:disabled { cursor: default; }
+.score { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.score div { border: 1px solid var(--line); border-radius: 14px; padding: 12px; text-align: center; }
+.score b { display: block; font-family: var(--display); font-size: 2rem; color: var(--gold); font-variant-numeric: tabular-nums; }
+.score span { font-size: 0.8rem; color: var(--muted); }
+.breakdown { margin: 0; padding: 0; list-style: none; font-size: 0.9rem; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+.breakdown li { display: flex; justify-content: space-between; font-variant-numeric: tabular-nums; }
+.note { background: rgba(255,122,147,0.1); border-radius: 12px; padding: 10px 12px; font-size: 0.88rem; color: var(--ink); margin: 0; }
+.err { color: var(--bad); font-size: 0.88rem; margin: 0; min-height: 1.2em; }
+.linkbtn { background: none; border: 0; color: var(--muted); text-decoration: underline; font: 400 0.88rem var(--body); cursor: pointer; padding: 6px; align-self: center; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 0.85rem; color: var(--muted); }
+.setrow { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.switch { width: 50px; height: 28px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,0.08); position: relative; cursor: pointer; flex: none; }
+.switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--muted); transition: transform .2s, background .2s; }
+.switch[aria-checked="true"] { background: rgba(240,198,116,0.25); }
+.switch[aria-checked="true"]::after { transform: translateX(22px); background: var(--gold); }
+.btnrow { display: flex; gap: 8px; }
+.btnrow .btn { padding: 11px 12px; font-size: 0.9rem; }
+.filelbl { display: block; text-align: center; }
+.filelbl input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+
+/* Toast + modal */
+.toast { position: fixed; left: 50%; top: 16px; transform: translate(-50%, -140%); z-index: 60; background: #241e48; border: 1px solid var(--gold); color: var(--ink); border-radius: 16px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 12px 32px -10px rgba(0,0,0,0.7); transition: transform .45s cubic-bezier(.2,.9,.3,1.2); max-width: calc(100% - 32px); }
+.toast.show { transform: translate(-50%, 0); }
+.toast .ic { font-size: 1.6rem; }
+.toast small { display: block; color: var(--gold); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
+.modal { position: fixed; inset: 0; z-index: 70; background: rgba(6,5,16,0.96); display: grid; place-items: center; padding: 18px; overflow-y: auto; }
+.modal-in { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 12px; animation: unfold .45s ease; }
+.modal img { width: 100%; border-radius: 16px; border: 1px solid var(--line); display: block; }
+.screen { animation: enter .35s ease; }
+@keyframes enter { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+/* Online couple */
+.status { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); display: inline-block; flex: none; }
+.dot.on { background: var(--ok); box-shadow: 0 0 10px var(--ok); animation: breathe 2s ease-in-out infinite; }
+@keyframes breathe { 50% { transform: scale(1.25); } }
+.partner-line { margin: 0; font-size: 0.95rem; }
+.partner-line .em { font-size: 1.15rem; }
+.listen { color: var(--gold); font-size: 0.9rem; }
+.moods { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.mood { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04); color: var(--ink); font: 400 0.7rem var(--body); cursor: pointer; text-align: center; line-height: 1.2; }
+.mood span { font-size: 1.5rem; }
+.mood[aria-pressed="true"] { border-color: var(--gold); background: rgba(240,198,116,0.12); }
+.mood:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.duel { border-top: 1px solid var(--line); padding-top: 12px; display: flex; flex-direction: column; gap: 4px; text-align: center; }
+.duel b { font-family: var(--display); font-size: 1.2rem; color: var(--gold); font-weight: 500; }
+.fxlayer { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; text-align: center; pointer-events: none; }
+.fxlayer p { font-family: var(--display); font-size: 1.6rem; margin: 16px 0 0; text-shadow: 0 2px 16px rgba(0,0,0,0.8); padding: 0 24px; text-wrap: balance; }
+#heartfx { background: radial-gradient(circle at 50% 50%, rgba(13,11,31,0.9) 0, rgba(13,11,31,0.6) 35%, rgba(13,11,31,0) 70%); }
+#heartfx svg { width: 160px; height: 160px; filter: drop-shadow(0 0 30px rgba(255,122,147,0.8)); animation: beat 1.6s ease-in-out both; }
+#heartfx > div { animation: fadeOut 2.6s ease both; }
+@keyframes beat { 0% { transform: scale(0.2); } 20% { transform: scale(1.15); } 32% { transform: scale(0.95); } 46% { transform: scale(1.2); } 60%,100% { transform: scale(1); } }
+@keyframes fadeOut { 0%,70% { opacity: 1; } 100% { opacity: 0; } }
+#moonfx { background: radial-gradient(80% 60% at 50% 40%, rgba(42,34,87,0.95), rgba(8,6,20,0.98)); pointer-events: auto; cursor: pointer; }
+#moonfx .bigmoon { width: 170px; height: 170px; border-radius: 50%; margin: 0 auto; background: radial-gradient(circle at 35% 35%, #fff3d0, #f0c674 60%, #c99a3f); box-shadow: 0 0 80px 10px rgba(240,198,116,0.5); animation: rise 2.2s cubic-bezier(.2,.8,.2,1) both; }
+#moonfx p { animation: enter 1s ease 1s both; }
+@keyframes rise { from { transform: translateY(45vh) scale(0.6); opacity: 0; } to { transform: none; opacity: 1; } }
+/* Modes, daily, story, synchro */
+.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.modetile { text-align: left; border: 1px solid var(--line); background: var(--card); border-radius: 16px; padding: 14px; color: var(--ink); font: inherit; cursor: pointer; display: flex; flex-direction: column; gap: 4px; transition: background .2s, box-shadow .2s; }
+.modetile b { font-family: var(--display); font-size: 1.1rem; font-weight: 500; }
+.modetile span { font-size: 0.82rem; color: var(--muted); line-height: 1.3; }
+.modetile[aria-pressed="true"] { border-color: var(--gold); background: rgba(240,198,116,0.1); box-shadow: inset 0 0 0 1px var(--gold); }
+.modetile:focus-visible, .vs:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.rowb { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.daily-text { font-family: var(--display); font-size: 1.25rem; line-height: 1.3; margin: 0; text-wrap: balance; }
+.big-days { font-family: var(--display); font-size: 2.1rem; color: var(--gold); line-height: 1; font-variant-numeric: tabular-nums; }
+.story-line { margin: 0; font-size: 0.95rem; }
+.versus { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; }
+.vs { min-height: 112px; border-radius: 18px; border: 1px solid var(--line); background: rgba(255,255,255,0.04); color: var(--ink); font: 500 1.2rem var(--display); cursor: pointer; padding: 12px; transition: transform .15s, background .2s, border-color .2s, box-shadow .2s; text-wrap: balance; }
+.vs[aria-pressed="true"] { background: var(--gold); color: var(--sky); border-color: var(--gold); transform: scale(1.03); }
+.vs.partner { box-shadow: 0 0 0 3px var(--rose); }
+.vs:disabled { cursor: default; }
+.or { font-family: var(--display); font-style: italic; color: var(--muted); }
+.streak { display: flex; gap: 10px; justify-content: center; }
+.streak i { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--gold); display: block; transition: background .3s, box-shadow .3s; }
+.streak i.on { background: var(--gold); box-shadow: 0 0 12px rgba(240,198,116,0.7); }
+.result { font-family: var(--display); font-size: 1.4rem; margin: 0; }
+
+/* Call bar */
+.callbar { position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 65; width: min(420px, calc(100% - 24px)); background: #241e48; border: 1px solid var(--gold); border-radius: 20px; padding: 12px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 16px 40px -12px rgba(0,0,0,0.8); }
+.callbar.ringing { animation: ringglow 1.2s ease-in-out infinite; border-color: var(--rose); }
+@keyframes ringglow { 50% { box-shadow: 0 0 34px -2px rgba(255,122,147,0.75); } }
+.cb-info { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+.cb-info .cb-time { margin-left: auto; font-variant-numeric: tabular-nums; color: var(--gold); }
+.cb-btns { display: flex; gap: 8px; }
+.cb-btns .btn { padding: 11px 10px; font-size: 0.92rem; }
+body.incall .wrap { padding-bottom: 150px; }
+a.btn { display: block; text-decoration: none; text-align: center; }
+/* Goodnight: the moon crosses the screen */
+#moonx { position: fixed; inset: 0; z-index: 85; overflow: hidden; cursor: pointer; background: radial-gradient(90% 70% at 50% 40%, rgb(30,24,66), rgb(8,6,20)); }
+#moonx .xmoon { position: absolute; left: 50%; top: 42%; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff3d0, #f0c674 60%, #c99a3f); box-shadow: 0 0 60px 12px rgba(240,198,116,0.55), 0 0 160px 50px rgba(240,198,116,0.16); animation: cross 5.4s cubic-bezier(.45,.05,.55,.95) both; }
+@keyframes cross { 0% { transform: translate(-80vw, 24vh) scale(0.55); opacity: 0; } 12% { opacity: 1; } 50% { transform: translate(0, -10vh) scale(1); } 88% { opacity: 1; } 100% { transform: translate(80vw, 24vh) scale(0.55); opacity: 0; } }
+#moonx p { position: absolute; left: 0; right: 0; top: 60%; margin: 0; padding: 0 24px; text-align: center; font-family: var(--display); font-size: 1.75rem; line-height: 1.25; text-wrap: balance; color: var(--ink); text-shadow: 0 2px 18px rgba(0,0,0,0.8); animation: gnText 5.4s ease both; }
+@keyframes gnText { 0%, 22% { opacity: 0; transform: translateY(10px); } 38%, 82% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+#moonx .twk { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #fff; animation: twk 1.8s ease-in-out infinite; }
+#moonx .twk.g { background: var(--gold); }
+@keyframes twk { 0%, 100% { opacity: 0.15; transform: scale(0.6); } 50% { opacity: 1; transform: scale(1.4); } }
+[hidden] { display: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<canvas id="stars" aria-hidden="true"></canvas>
+<canvas id="fx" aria-hidden="true"></canvas>
+<div class="toast" id="toast" role="status" aria-live="polite"><span class="ic" id="toast-ic"></span><span><small id="toast-k"></small><span id="toast-t"></span></span></div>
+
+<div class="wrap">
+  <header>
+    <button class="brand" id="brand" aria-label="Noche Duo">
+      <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><path d="M21 4a12 12 0 1 0 7 21A10 10 0 0 1 21 4z" fill="#f0c674"/></svg>
+      <span>Noche Duo</span>
+    </button>
+    <div class="hdr-right">
+      <div class="lang" role="group" aria-label="Langue">
+        <button id="lang-fr" aria-pressed="true">FR</button>
+        <button id="lang-kr" aria-pressed="false">KR</button>
+        <button id="lang-en" aria-pressed="false">EN</button>
+      </div>
+      <button class="icon-btn" id="go-settings" aria-label="Réglages">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/><circle cx="16" cy="7" r="2.2" stroke="currentColor" stroke-width="1.8" fill="none"/><circle cx="10" cy="17" r="2.2" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- HOME -->
+  <section id="s-home" class="screen stack">
+    <div>
+      <h1 data-i="homeTitle"></h1>
+      <p class="tag" data-i="tagline"></p>
+    </div>
+    <div class="card" id="install-card" hidden>
+      <b data-i="installTitle"></b>
+      <p class="small" id="install-text"></p>
+      <button class="btn btn-gold" id="install-btn" data-i="installBtn" hidden></button>
+    </div>
+    <div class="card" id="profile-card">
+      <div class="couple">
+        <div class="names" id="names"></div>
+        <div class="flame" id="flame" title="">
+          <svg width="20" height="22" viewBox="0 0 20 24" aria-hidden="true"><path d="M10 1c1 4 6 6 6 13a6 6 0 0 1-12 0c0-3 2-5 3-6 0 2 1 3 2 3 0-4-1-7 1-10z" fill="currentColor"/></svg>
+          <span id="flame-n">0</span>
+        </div>
+      </div>
+      <div class="level-row"><span><span data-i="level"></span> · <b id="level-name"></b></span><span class="small" id="level-xp"></span></div>
+      <div class="bar"><i id="level-bar"></i></div>
+      <h3 data-i="badges"></h3>
+      <div class="badges" id="badges"></div>
+      <p class="badge-names" id="badge-hint"></p>
+    </div>
+    <div class="card" id="daily-card">
+      <div class="rowb"><h3 data-i="dailyTitle"></h3><span class="small" id="daily-left"></span></div>
+      <p class="daily-text" id="daily-text"></p>
+      <button class="btn btn-gold" id="daily-done" data-i="dailyDone"></button>
+      <p class="small" id="daily-status"></p>
+    </div>
+    <div class="card" id="gn-card">
+      <button class="btn btn-ghost" id="gn-home" data-i="gnHome"></button>
+      <p class="small center" id="gn-note" hidden></p>
+    </div>
+    <h3 data-i="chooseGame"></h3>
+    <div class="modes" role="group">
+      <button class="modetile" id="mode-mission" type="button"><b data-i="mMission"></b><span data-i="mMissionD"></span></button>
+      <button class="modetile" id="mode-sync" type="button"><b data-i="mSync"></b><span data-i="mSyncD"></span></button>
+    </div>
+    <div class="card">
+      <ol class="rules" id="rules"></ol>
+    </div>
+    <button class="btn btn-gold" id="go-together" data-i="playTogether" hidden></button>
+    <button class="btn btn-gold" id="go-create" data-i="create"></button>
+    <button class="btn btn-ghost" id="go-join" data-i="join"></button>
+    <button class="btn btn-ghost" id="go-resume" data-i="resume2" hidden></button>
+    <p class="small center" data-i="howTo"></p>
+    <div class="card" id="story-card">
+      <h3 data-i="storyTitle"></h3>
+      <div class="stack" id="story-lines" style="gap:10px"></div>
+      <button class="linkbtn" id="story-edit" data-i="storyEdit"></button>
+    </div>
+    <div class="card" id="online-card" hidden>
+      <h3 data-i="onlineTitle"></h3>
+      <div id="ol-unlinked" class="stack">
+        <p class="small" data-i="linkIntro"></p>
+        <div class="btnrow">
+          <button class="btn btn-gold" id="ol-create" data-i="linkCreate"></button>
+          <button class="btn btn-ghost" id="ol-join" data-i="linkJoin"></button>
+        </div>
+        <div id="ol-joinbox" class="stack" hidden>
+          <label for="ol-code" class="small" data-i="linkEnter"></label>
+          <input id="ol-code" class="codein" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" style="font-size:1.8rem;letter-spacing:0.2em">
+          <button class="btn btn-gold" id="ol-join-go" data-i="linkJoinBtn"></button>
+        </div>
+        <p class="err" id="ol-err" aria-live="polite"></p>
+      </div>
+      <div id="ol-linked" class="stack" hidden>
+        <div id="ol-waiting" class="stack" hidden>
+          <p class="small" data-i="linkCodeTitle"></p>
+          <div class="code" id="ol-code-show" style="font-size:2.3rem"></div>
+          <p class="small center" data-i="linkSend"></p>
+        </div>
+        <div class="status"><span class="dot" id="ol-dot"></span><span id="ol-status"></span></div>
+        <p class="partner-line" id="ol-time"></p>
+        <p class="partner-line" id="ol-mood"></p>
+        <a class="listen" id="ol-listen" target="_blank" rel="noopener" hidden></a>
+        <div class="btnrow">
+          <button class="btn btn-rose" id="ol-pulse" data-i="pulseBtn"></button>
+          <button class="btn btn-ghost" id="ol-gn" data-i="gnBtn"></button>
+        </div>
+        <button class="btn btn-ghost" id="ol-mood-btn" data-i="moodBtn"></button>
+        <div id="ol-moodbox" class="stack" hidden>
+          <p class="small" data-i="moodTitle"></p>
+          <div class="moods" id="moods"></div>
+          <div class="field" id="ol-musicfield" hidden>
+            <label for="ol-music" data-i="musicLabel"></label>
+            <input id="ol-music" class="txt" maxlength="60" autocomplete="off">
+          </div>
+          <div class="btnrow">
+            <button class="btn btn-gold" id="ol-mood-save" data-i="moodSave"></button>
+            <button class="btn btn-ghost" id="ol-mood-clear" data-i="moodClear"></button>
+          </div>
+        </div>
+        <p class="small center" id="ol-note" aria-live="polite"></p>
+      </div>
+    </div>
+    <div class="card" id="call-card" hidden>
+      <h3 data-i="callTitle"></h3>
+      <button class="btn btn-rose" id="call-start" hidden></button>
+      <div class="btnrow" id="call-direct" hidden>
+        <a class="btn btn-ghost" id="call-tel" data-i="callPhone"></a>
+        <a class="btn btn-ghost" id="call-wa" target="_blank" rel="noopener" data-i="callWa"></a>
+      </div>
+      <p class="small" id="call-hint" hidden></p>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="s-settings" class="screen stack" hidden>
+    <h2 data-i="settings"></h2>
+    <div class="card">
+      <div class="field"><label for="in-me" data-i="myName"></label><input id="in-me" class="txt" maxlength="20" autocomplete="off"></div>
+      <div class="field"><label for="in-love" data-i="loveName"></label><input id="in-love" class="txt" maxlength="20" autocomplete="off"></div>
+      <div class="field"><label for="in-phone" data-i="phoneLabel"></label><input id="in-phone" class="txt" type="tel" inputmode="tel" maxlength="20" autocomplete="off" placeholder="+509 …"></div>
+    </div>
+    <div class="card">
+      <h2 data-i="datesTitle"></h2>
+      <div class="field"><label for="in-since" data-i="sinceLabel"></label><input id="in-since" class="txt" type="date"></div>
+      <div class="field"><label for="in-reunion" data-i="reunionLabel"></label><input id="in-reunion" class="txt" type="date"></div>
+      <div class="field"><label for="in-bday-love" data-i="bdayLoveLabel"></label><input id="in-bday-love" class="txt" type="date"></div>
+      <div class="field"><label for="in-bday-me" data-i="bdayMeLabel"></label><input id="in-bday-me" class="txt" type="date"></div>
+    </div>
+    <div class="card">
+      <div class="setrow"><span id="lbl-notif" data-i="notif"></span><button class="switch" id="sw-notif" role="switch" aria-checked="false" aria-labelledby="lbl-notif"></button></div>
+      <p class="small" id="notif-note"></p>
+      <div class="setrow"><span id="lbl-sound" data-i="sound"></span><button class="switch" id="sw-sound" role="switch" aria-checked="true" aria-labelledby="lbl-sound"></button></div>
+    </div>
+    <div class="card">
+      <h2 data-i="laughTitle"></h2>
+      <p class="small" data-i="laughHint"></p>
+      <p class="note" id="laugh-status"></p>
+      <label class="btn btn-gold filelbl" for="in-laugh"><span data-i="laughImport"></span><input type="file" id="in-laugh" accept="audio/*"></label>
+      <div class="btnrow" id="laugh-btns">
+        <button class="btn btn-ghost" id="laugh-test" data-i="laughTest"></button>
+        <button class="btn btn-ghost" id="laugh-remove" data-i="laughRemove"></button>
+      </div>
+      <p class="err" id="laugh-err" aria-live="polite"></p>
+    </div>
+    <div class="card">
+      <button class="btn btn-ghost" id="unlink" hidden></button>
+      <button class="btn btn-ghost" id="reset" data-i="reset"></button>
+    </div>
+    <button class="btn btn-gold" id="settings-done" data-i="done"></button>
+  </section>
+
+  <!-- CREATED -->
+  <section id="s-created" class="screen" hidden>
+    <div class="card">
+      <h2 data-i="codeTitle"></h2>
+      <div class="code" id="code-show">0000</div>
+      <p class="small center" data-i="sendCode"></p>
+      <button class="btn btn-gold" id="created-go" data-i="seeMission"></button>
+    </div>
+  </section>
+
+  <!-- JOIN -->
+  <section id="s-join" class="screen" hidden>
+    <div class="card">
+      <h2 data-i="enterCode"></h2>
+      <label for="code-in" class="small" data-i="codeLabel"></label>
+      <input id="code-in" class="codein" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="····">
+      <p class="err" id="join-err" aria-live="polite"></p>
+      <button class="btn btn-gold" id="join-go" data-i="joinBtn"></button>
+      <button class="linkbtn" data-home data-i="back"></button>
+    </div>
+  </section>
+
+  <!-- MISSION -->
+  <section id="s-mission" class="screen stack" hidden>
+    <div class="meta"><span id="m-round"></span><span id="m-code"></span></div>
+    <p class="note" id="partner-game" hidden></p>
+    <div class="card">
+      <h2 data-i="yourMission"></h2>
+      <button class="seal closed" id="seal">
+        <span class="env" id="seal-closed">
+          <svg width="46" height="46" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="1.5" fill="none" stroke="#f0c674" stroke-width="1.3"/><path d="M3.5 6.8l8.5 6.4 8.5-6.4" fill="none" stroke="#f0c674" stroke-width="1.3" stroke-linejoin="round"/><circle cx="12" cy="13" r="2.2" fill="#ff7a93"/></svg>
+          <span data-i="tapReveal"></span>
+        </span>
+        <span class="open" id="seal-open" hidden>
+          <span class="mission-text" id="mission-text"></span>
+          <span class="pill" id="mission-pts"></span>
+          <span class="small" data-i="tapHide"></span>
+        </span>
+      </button>
+    </div>
+    <div class="card">
+      <div class="timer" id="timer" role="timer">10:00</div>
+      <div class="chips" role="group" aria-label="Durée">
+        <button data-min="5" aria-pressed="false">5 min</button>
+        <button data-min="10" aria-pressed="true">10 min</button>
+        <button data-min="15" aria-pressed="false">15 min</button>
+      </div>
+      <button class="btn btn-ghost" id="timer-btn"></button>
+    </div>
+    <button class="btn btn-ghost" id="call-start-m" hidden></button>
+    <button class="btn btn-rose" id="go-accuse" data-i="accuseBtn"></button>
+    <p class="note" id="accused-note" hidden></p>
+    <button class="btn btn-gold" id="go-reveal" data-i="endRound"></button>
+    <button class="linkbtn" id="quit" data-i="quit"></button>
+  </section>
+
+  <!-- ACCUSE -->
+  <section id="s-accuse" class="screen" hidden>
+    <div class="card">
+      <h2 data-i="accuseTitle"></h2>
+      <p class="small" data-i="accuseHint"></p>
+      <div class="choices" id="choices"></div>
+      <button class="btn btn-rose" id="accuse-confirm" data-i="accuseConfirm" disabled></button>
+      <button class="linkbtn" id="accuse-cancel" data-i="back"></button>
+    </div>
+  </section>
+
+  <!-- SYNCHRO -->
+  <section id="s-sync" class="screen stack" hidden>
+    <div class="meta"><span id="y-q"></span><span id="y-code"></span></div>
+    <div class="card">
+      <div class="rowb"><h3 data-i="mSync"></h3><span class="small" id="y-best"></span></div>
+      <div class="streak" id="y-streak"><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+    <div class="card">
+      <h2 class="center" data-i="syncAsk"></h2>
+      <div class="versus">
+        <button class="vs" id="y-a" type="button"></button>
+        <span class="or" data-i="or"></span>
+        <button class="vs" id="y-b" type="button"></button>
+      </div>
+      <p class="small center" id="y-status" aria-live="polite"></p>
+      <div class="stack" id="y-manual" hidden>
+        <p class="small center" data-i="syncManual"></p>
+        <div class="btnrow">
+          <button class="btn btn-gold" id="y-same" data-i="same"></button>
+          <button class="btn btn-ghost" id="y-diff" data-i="diff"></button>
+        </div>
+      </div>
+      <p class="result center" id="y-result" hidden></p>
+      <button class="btn btn-gold" id="y-next" data-i="syncNext" hidden></button>
+    </div>
+    <button class="linkbtn" id="y-quit" data-i="quit"></button>
+  </section>
+
+  <!-- REVEAL -->
+  <section id="s-reveal" class="screen stack" hidden>
+    <div class="meta"><span id="r-round"></span><span id="r-code"></span></div>
+    <div class="card">
+      <h2 data-i="revealTitle"></h2>
+      <div class="reveal-item"><span class="lbl" data-i="mine"></span><span class="val" id="r-mine"></span></div>
+      <div class="reveal-item rose"><span class="lbl" data-i="theirs"></span><span class="val" id="r-theirs"></span></div>
+      <div class="reveal-item"><span class="lbl" data-i="yourGuess"></span><span class="val" id="r-guess"></span></div>
+    </div>
+    <div class="card">
+      <div class="q">
+        <p data-i="q1"></p>
+        <div class="yn" data-q="done"><button data-v="1" data-i="yes"></button><button data-v="0" data-i="no"></button></div>
+      </div>
+      <div class="q" id="q-caught">
+        <p data-i="q2"></p>
+        <div class="yn" data-q="caught"><button data-v="1" data-i="yes"></button><button data-v="0" data-i="no"></button></div>
+      </div>
+      <p class="small" data-i="honest"></p>
+    </div>
+    <div class="card" id="score-card" hidden>
+      <ul class="breakdown" id="breakdown"></ul>
+      <div class="score">
+        <div><b id="sc-round">0</b><span data-i="roundPts"></span></div>
+        <div><b id="sc-total">0</b><span data-i="totalPts"></span></div>
+      </div>
+      <div class="duel" id="duel" hidden></div>
+      <button class="btn btn-gold" id="validate" data-i="validate"></button>
+      <div class="stack" id="after-validate" hidden>
+        <button class="btn btn-rose" id="share" data-i="share"></button>
+        <button class="btn btn-gold" id="next-round" data-i="nextRound"></button>
+        <p class="small center" data-i="bothNext"></p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="fxlayer" id="heartfx" hidden><div>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.2 0 3.6 1.2 5.3 3.1 1.7-1.9 3.1-3.1 5.3-3.1 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z" fill="#ff7a93"/></svg>
+  <p id="heartfx-t"></p>
+</div></div>
+<div id="moonx" hidden aria-live="polite"><div id="moonx-stars"></div><div class="xmoon"></div><p id="moonx-t"></p></div>
+<div class="fxlayer" id="moonfx" hidden><div>
+  <div class="bigmoon"></div>
+  <p id="moonfx-t"></p>
+</div></div>
+
+<div class="callbar" id="callbar" hidden role="region" aria-live="polite">
+  <div class="cb-info"><span class="dot on"></span><span id="cb-text"></span><span class="cb-time" id="cb-time"></span></div>
+  <div class="cb-btns">
+    <button class="btn btn-gold" id="cb-accept"></button>
+    <button class="btn btn-ghost" id="cb-mute"></button>
+    <button class="btn btn-rose" id="cb-end"></button>
+  </div>
+</div>
+<audio id="remote-audio" autoplay playsinline></audio>
+
+<!-- SHARE MODAL -->
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-in">
+    <h2 id="modal-title" data-i="shareTitle"></h2>
+    <img id="share-img" alt="">
+    <p class="small center" data-i="longPress"></p>
+    <button class="btn btn-rose" id="share-native" data-i="shareNative"></button>
+    <div class="btnrow">
+      <a class="btn btn-ghost center" id="share-dl" download="noche-duo.png" data-i="download" style="text-decoration:none"></a>
+      <button class="btn btn-ghost" id="share-copy" data-i="copy"></button>
+    </div>
+    <button class="linkbtn" id="modal-close" data-i="close"></button>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= FIREBASE CONFIG =================
+     Paste your firebaseConfig here to turn on the online features.
+     Leave it as null and the game works offline, as before. */
+  var FIREBASE_CONFIG = {
+    apiKey: "AIzaSyD1PqbrBMntRT-yh8r46sTfWBzJ3AgdWZE",
+    authDomain: "noche-duo.firebaseapp.com",
+    databaseURL: "https://noche-duo-default-rtdb.firebaseio.com",
+    projectId: "noche-duo",
+    storageBucket: "noche-duo.firebasestorage.app",
+    messagingSenderId: "532613816449",
+    appId: "1:532613816449:web:694a9d68ae596f54662d80"
+  };
+
+  /* In-game call servers. STUN is free. For mobile networks (Digicel, Natcom…)
+     add a TURN relay here, e.g. { urls: "turn:…", username: "…", credential: "…" } */
+  var ICE_SERVERS = [
+    { urls: "stun:stun.l.google.com:19302" },
+    { urls: "stun:stun1.l.google.com:19302" }
+  ];
+
+  var MOODS = [
+    ["😊", "Heureux·se", "Kontan", "Happy"],
+    ["🥰", "Amoureux·se", "Damou", "In love"],
+    ["🥺", "Tu me manques", "Ou manke m", "I miss you"],
+    ["😴", "Fatigué·e", "Fatige", "Tired"],
+    ["😤", "Stressé·e", "Estrese", "Stressed"],
+    ["🎵", "J'écoute de la musique", "M ap koute mizik", "Listening to music"],
+    ["💼", "Au travail", "Nan travay", "At work"],
+    ["📚", "J'étudie", "M ap etidye", "Studying"]
+  ];
+
+  /* Synchro: [FR A, FR B, KR A, KR B] */
+  var PAIRS = [
+    ["Griot", "Pizza", "Griyo", "Pitza", "Griot", "Pizza"], ["Plage", "Montagne", "Lanmè", "Mòn", "Beach", "Mountains"], ["Kompa", "Zouk", "Konpa", "Zouk", "Kompa", "Zouk"],
+    ["Matin", "Soir", "Maten", "Aswè", "Morning", "Evening"], ["Film", "Série", "Fim", "Seri", "Movie", "Series"], ["Chat", "Chien", "Chat", "Chen", "Cat", "Dog"],
+    ["Sucré", "Salé", "Sikre", "Sale", "Sweet", "Salty"], ["Appel", "Message", "Apèl", "Mesaj", "Call", "Text"], ["Pluie", "Soleil", "Lapli", "Solèy", "Rain", "Sun"],
+    ["Fête", "Soirée tranquille", "Fèt", "Aswè trankil", "Party", "Quiet night"], ["Thé", "Café", "Te", "Kafe", "Tea", "Coffee"], ["Diri kole", "Riz blanc", "Diri kole", "Diri blan", "Diri kole", "White rice"],
+    ["Danser", "Chanter", "Danse", "Chante", "Dance", "Sing"], ["Ville", "Campagne", "Lavil", "Andeyò", "City", "Countryside"], ["Voyager", "Rester à la maison", "Vwayaje", "Rete lakay", "Travel", "Stay home"],
+    ["Lever tôt", "Grasse matinée", "Leve bonè", "Dòmi ta", "Early bird", "Sleep in"], ["Football", "Basket", "Foutbòl", "Baskèt", "Soccer", "Basketball"], ["Brésil", "Argentine", "Brezil", "Ajantin", "Brazil", "Argentina"],
+    ["Mangue", "Ananas", "Mango", "Zannanna", "Mango", "Pineapple"], ["Bisou", "Câlin", "Bo", "Kalin", "Kiss", "Hug"], ["Surprise", "Plan prévu", "Sipriz", "Plan ki prevwa", "Surprise", "Planned"],
+    ["Cuisiner", "Commander", "Kwit manje", "Kòmande", "Cook", "Order in"], ["Selfie", "Paysage", "Selfi", "Peyizaj", "Selfie", "Landscape"], ["Mer", "Piscine", "Lanmè", "Pisin", "Sea", "Pool"],
+    ["Livre", "Film", "Liv", "Fim", "Book", "Movie"], ["Rouge", "Noir", "Wouj", "Nwa", "Red", "Black"], ["Lettre d'amour", "Message vocal", "Lèt damou", "Vokal", "Love letter", "Voice note"],
+    ["Bannann peze", "Frites", "Bannann peze", "Fri", "Bannann peze", "Fries"], ["Jour", "Nuit", "Lajounen", "Lannwit", "Day", "Night"], ["Moto", "Voiture", "Moto", "Machin", "Motorbike", "Car"],
+    ["Jacmel", "Cap-Haïtien", "Jakmèl", "Okap", "Jacmel", "Cap-Haïtien"], ["Chaleur", "Fraîcheur", "Chalè", "Fre", "Heat", "Cool breeze"], ["Jus naturel", "Soda", "Ji natirèl", "Kola", "Fresh juice", "Soda"],
+    ["Dormir tôt", "Veiller tard", "Dòmi bonè", "Veye ta", "Sleep early", "Stay up late"], ["Garder un secret", "Tout raconter", "Kenbe sekrè", "Rakonte tout", "Keep a secret", "Tell everything"],
+    ["Pikliz", "Sans piment", "Pikliz", "San piman", "Pikliz", "No spice"], ["Rire", "Pleurer devant un film", "Ri", "Kriye devan yon fim", "Laugh", "Cry at a movie"]
+  ];
+
+  /* Daily challenge, same for every couple on a given day */
+  var DAILY = [
+    ["Envoie un vocal avec 3 choses que tu aimes chez ton amour.", "Voye yon vokal ak 3 bagay ou renmen nan lanmou w.", "Send a voice note with 3 things you love about your partner."],
+    ["Prenez chacun une photo du ciel et envoyez-la à l'autre.", "Chak moun pran yon foto syèl la epi voye l bay lòt la.", "Each take a photo of the sky and send it to the other."],
+    ["Racontez-vous votre plus beau souvenir ensemble.", "Rakonte youn lòt pi bèl souvni nou ansanm.", "Tell each other your favorite memory together."],
+    ["Écris un petit poème de 4 lignes pour ton amour.", "Ekri yon ti powèm 4 liy pou lanmou w.", "Write a little 4-line poem for your love."],
+    ["Chante le refrain d'une chanson d'amour à ton amour.", "Chante koral yon chante damou pou lanmou w.", "Sing the chorus of a love song to your love."],
+    ["Dis ce qui t'a fait craquer la toute première fois.", "Di sa ki te fè w tonbe premye fwa a.", "Say what made you fall for them the very first time."],
+    ["Écoutez la même chanson au même moment.", "Koute menm chante a an menm tan.", "Listen to the same song at the same time."],
+    ["Envoie une photo de ton endroit préféré.", "Voye yon foto kote ou pi renmen an.", "Send a photo of your favorite spot."],
+    ["Planifiez ensemble votre prochain rendez-vous.", "Planifye pwochen randevou nou ansanm.", "Plan your next date together."],
+    ["Fais 5 compliments à ton amour sans t'arrêter.", "Fè lanmou w 5 konpliman san w pa kanpe.", "Give your love 5 compliments without stopping."],
+    ["Racontez-vous un rêve que vous voulez réaliser.", "Rakonte youn lòt yon rèv nou vle reyalize.", "Tell each other a dream you want to make real."],
+    ["Envoyez-vous un selfie avec votre plus belle grimace.", "Voye youn lòt yon selfi ak pi bèl grimas nou.", "Send each other a selfie with your best funny face."],
+    ["Dis merci à ton amour pour une chose précise.", "Di lanmou w mèsi pou yon bagay presi.", "Thank your love for one specific thing."],
+    ["Choisissez un film à regarder en même temps.", "Chwazi yon fim pou nou gade an menm tan.", "Pick a movie to watch at the same time."],
+    ["Décrivez votre maison de rêve.", "Dekri kay rèv nou.", "Describe your dream home."],
+    ["Partagez votre plat préféré et sa recette.", "Pataje manje nou pi renmen ak resèt li.", "Share your favorite dish and its recipe."],
+    ["Dis « je t'aime » dans une autre langue.", "Di « mwen renmen w » nan yon lòt lang.", "Say “I love you” in another language."],
+    ["Écrivez chacun 3 choses à faire ensemble cette année.", "Chak moun ekri 3 bagay pou nou fè ansanm ane sa a.", "Each write down 3 things to do together this year."],
+    ["Envoie un message à lire juste avant de dormir.", "Voye yon mesaj pou li jis anvan l dòmi.", "Send a message to read right before bed."],
+    ["Racontez votre journée en 3 mots seulement.", "Rakonte jounen nou an 3 mo sèlman.", "Describe your day in just 3 words."],
+    ["Faites un appel de 10 minutes sans parler de travail.", "Fè yon apèl 10 minit san pale de travay.", "Have a 10-minute call without talking about work."],
+    ["Imitez-vous l'un l'autre pendant une minute.", "Imite youn lòt pandan yon minit.", "Imitate each other for one minute."],
+    ["Choisis une chanson qui vous représente et envoie-la.", "Chwazi yon chante ki reprezante nou epi voye l.", "Pick a song that represents you two and send it."],
+    ["Dis ce que tu admires le plus chez ton amour.", "Di sa w pi admire nan lanmou w.", "Say what you admire most about your love."],
+    ["Faites la liste de vos 5 prochains rendez-vous.", "Fè lis 5 pwochen randevou nou.", "List your next 5 dates."],
+    ["Partage une photo de toi enfant.", "Pataje yon foto ou lè w te piti.", "Share a photo of yourself as a child."],
+    ["Promettez-vous une petite chose pour cette semaine.", "Pwomèt youn lòt yon ti bagay pou semèn sa a.", "Promise each other one small thing for this week."],
+    ["Dites-vous bonne nuit avec Noche Duo ce soir.", "Di youn lòt bòn nwit ak Noche Duo aswè a.", "Say goodnight to each other with Noche Duo tonight."]
+  ];
+
+  /* ================= Missions (FR / Kreyòl, points) ================= */
+  var M = [
+    ["Fais-lui dire le mot « mangue ».", "Fè l di mo « mango ».", 1, "Get them to say the word “mango”."],
+    ["Fais-lui dire ton prénom 3 fois.", "Fè l di non w 3 fwa.", 2, "Get them to say your name 3 times."],
+    ["Fais rire ton amour 3 fois.", "Fè lanmou w ri 3 fwa.", 1, "Make your love laugh 3 times."],
+    ["Fais-lui chanter au moins une phrase d'une chanson.", "Fè l chante omwen yon fraz nan yon chante.", 3, "Get them to sing at least one line of a song."],
+    ["Place le mot « girafe » 2 fois dans la conversation.", "Mete mo « jiraf » 2 fwa nan konvèsasyon an.", 2, "Slip the word “giraffe” into the conversation twice."],
+    ["Fais-lui raconter un souvenir d'enfance.", "Fè l rakonte w yon souvni depi li te piti.", 1, "Get them to tell you a childhood memory."],
+    ["Fais-lui dire « je t'aime » en premier.", "Fè l di « mwen renmen w » anvan w.", 2, "Get them to say “I love you” first."],
+    ["Fais-lui dire ce qu'on a mangé à son dernier repas.", "Fè l di w sa l te manje dènye fwa.", 1, "Get them to tell you what they had for their last meal."],
+    ["Fais-lui imiter un animal.", "Fè l imite yon bèt.", 3, "Get them to imitate an animal."],
+    ["Fais-lui avouer un petit secret.", "Fè l avoue w yon ti sekrè.", 3, "Get them to confess a little secret."],
+    ["Dis le mot « ananas » 3 fois.", "Di mo « zannanna » 3 fwa.", 2, "Say the word “pineapple” 3 times."],
+    ["Fais-lui dire « d'accord » 5 fois.", "Fè l di « dakò » 5 fwa.", 2, "Get them to say “okay” 5 times."],
+    ["Fais-lui parler de votre premier rendez-vous.", "Fè l pale de premye randevou nou.", 1, "Get them to talk about your first date."],
+    ["Fais-toi complimenter sur ton physique.", "Fè l fè w yon konpliman sou fizik ou.", 2, "Get a compliment on your looks."],
+    ["Fais-lui citer un pays d'Afrique.", "Fè l di non yon peyi an Afrik.", 2, "Get them to name a country in Africa."],
+    ["Chuchote pendant 30 secondes sans qu'on te demande pourquoi.", "Pale ba pandan 30 segonn san l pa mande w poukisa.", 3, "Whisper for 30 seconds without being asked why."],
+    ["Fais-lui te promettre quelque chose.", "Fè l pwomèt ou yon bagay.", 2, "Get them to promise you something."],
+    ["Fais-lui dire un nombre plus grand que 1000.", "Fè l di yon chif ki pi gwo pase 1000.", 2, "Get them to say a number bigger than 1,000."],
+    ["Fais-lui poser une question sur ta famille.", "Fè l poze w yon kesyon sou fanmi w.", 2, "Get them to ask a question about your family."],
+    ["Glisse 3 phrases en anglais sans raison.", "Lage 3 fraz an anglè san rezon.", 1, "Drop 3 sentences in French for no reason."],
+    ["Fais-lui décrire les vêtements qu'on porte en ce moment.", "Fè l dekri rad li gen sou li kounye a.", 1, "Get them to describe what they're wearing right now."],
+    ["Fais-lui proposer une sortie pour votre prochaine rencontre.", "Fè l pwopoze yon kote pou nou soti pwochen fwa nou wè.", 2, "Get them to suggest an outing for your next date."],
+    ["Fais-lui siffler ou fredonner.", "Fè l sifle oswa fredonnen.", 3, "Get them to whistle or hum."],
+    ["Fais-lui dire « tu me manques ».", "Fè l di « ou manke m ».", 2, "Get them to say “I miss you”."],
+    ["Commence 3 phrases par « Tu savais que… ».", "Kòmanse 3 fraz ak « Èske w te konnen… ».", 1, "Start 3 sentences with “Did you know…”."],
+    ["Fais-lui épeler un mot.", "Fè l eple yon mo.", 3, "Get them to spell a word."],
+    ["Fais-lui dire l'heure qu'il est.", "Fè l di w ki lè li ye.", 1, "Get them to tell you the time."],
+    ["Fais-lui dire le nom d'un plat haïtien.", "Fè l di non yon manje ayisyen.", 1, "Get them to name a Haitian dish."],
+    ["Fais-lui dire « oui » 10 fois.", "Fè l di « wi » 10 fwa.", 2, "Get them to say “yes” 10 times."],
+    ["Fais-lui raconter son rêve de la nuit dernière.", "Fè l rakonte w rèv li te fè yè swa.", 2, "Get them to tell you last night's dream."],
+    ["Fais-lui dire un mot en espagnol.", "Fè l di yon mo an panyòl.", 2, "Get them to say a word in Spanish."],
+    ["Fais-lui dire le nom de ta couleur préférée.", "Fè l di non koulè ou pi renmen an.", 2, "Get them to say the name of your favorite color."]
+  ];
+
+  /* ================= Levels + badges ================= */
+  var LEVELS = [
+    { xp: 0,   fr: "Crush",        kr: "Krach", en: "Crush" },
+    { xp: 10,  fr: "Flirt",        kr: "Flè lanmou", en: "Flirt" },
+    { xp: 30,  fr: "Amoureux",     kr: "Damou", en: "In love" },
+    { xp: 70,  fr: "Inséparables", kr: "Kè kole", en: "Inseparable" },
+    { xp: 150, fr: "Âmes sœurs",   kr: "De kè, yon sèl", en: "Soulmates" }
+  ];
+  var BADGES = [
+    { id: "first",  ic: "🌙", fr: "Première mission",   kr: "Premye misyon", en: "First mission" },
+    { id: "spy",    ic: "🕵️", fr: "Espion parfait",     kr: "Espyon pafè", en: "Perfect spy" },
+    { id: "detect", ic: "🔍", fr: "Détective",          kr: "Detektif", en: "Detective" },
+    { id: "caught", ic: "😅", fr: "Grillé !",           kr: "Yo kenbe m !", en: "Busted!" },
+    { id: "perfect",ic: "💎", fr: "Sans faute",         kr: "San fòt", en: "Flawless" },
+    { id: "flame3", ic: "🔥", fr: "Flamme de 3 jours",  kr: "Flanm 3 jou", en: "3-day Flame" },
+    { id: "r10",    ic: "👑", fr: "10 manches jouées",  kr: "10 manch jwe", en: "10 rounds played" },
+    { id: "daily",  ic: "🎯", fr: "Défi du jour relevé", kr: "Defi jou a reyalize", en: "Daily challenge done" },
+    { id: "sync5",  ic: "⚡", fr: "Synchro parfaite",    kr: "Synchro pafè", en: "Perfect Synchro" }
+  ];
+
+  /* ================= Text ================= */
+  var T = {
+    fr: {
+      modeLabel: "Mode · Mission Secrète",
+      homeTitle: "Le jeu des <em>amoureux</em>, même à distance.",
+      tagline: "Des jeux, des défis et des petits gestes pour rester proches, même loin.",
+      r1: "Chacun reçoit une mission secrète sur son téléphone.",
+      r2: "Accomplis-la pendant votre appel sans que ton amour s'en rende compte.",
+      r3: "Démasque sa mission avant la fin. Une seule chance.",
+      create: "Créer une partie", join: "Rejoindre une partie", resume2: "Reprendre la partie en cours",
+      howTo: "Jouez chacun sur votre téléphone, pendant que vous vous appelez.",
+      me: "Toi", love: "Ton amour",
+      level: "Niveau", badges: "Badges", badgeHint: "Touche un badge pour voir son nom.",
+      flameTitle: function (n) { return "Flamme : " + n + (n > 1 ? " jours d'affilée" : " jour"); },
+      xpOf: function (a, b) { return b ? a + " / " + b + " XP" : a + " XP · niveau max"; },
+      settings: "Réglages", myName: "Ton prénom", loveName: "Le prénom de ton amour",
+      sound: "Sons et vibrations",
+      laughTitle: "Le rire de ton amour",
+      laughHint: "Demande à ton amour un vocal où il ou elle rit, puis importe-le ici. Il se jouera quand tu gagnes une manche, ou quand tu touches la lune en haut. Il reste uniquement sur ce téléphone.",
+      laughNone: "Aucun rire importé pour l'instant.",
+      laughSet: "Rire importé ✓",
+      laughImport: "Importer un vocal", laughTest: "Écouter", laughRemove: "Retirer",
+      laughBig: "Ce vocal est trop lourd. Choisis-en un plus court (moins de 15 secondes).",
+      laughBad: "Ce fichier ne peut pas être lu. Essaie un autre format (mp3, m4a, ogg).",
+      laughNoSave: "Le rire marche maintenant, mais ce navigateur ne pourra pas le garder après fermeture.",
+      reset: "Effacer toute la progression", resetSure: "Touche encore pour confirmer",
+      done: "Terminé",
+      codeTitle: "Code de la partie", sendCode: "Envoie ce code à ton amour pour qu'on joue ensemble.", seeMission: "Voir ma mission",
+      enterCode: "Rejoindre une partie", codeLabel: "Entre le code à 4 chiffres reçu de ton amour", joinBtn: "Rejoindre", back: "Retour",
+      badCode: "Le code doit avoir 4 chiffres.",
+      round: "Manche", game: "Partie",
+      yourMission: "Ta mission secrète", tapReveal: "Touche pour ouvrir l'enveloppe. Ne montre pas ton écran !", tapHide: "Touche pour cacher",
+      pts: function (n) { return n + (n > 1 ? " points" : " point"); },
+      start: "Démarrer le chrono", pause: "Pause", resume: "Reprendre", restart: "Recommencer",
+      accuseBtn: "Démasquer sa mission", accused: "Ton accusation est enregistrée. Réponse à la révélation.",
+      endRound: "Fin de la manche : révéler", quit: "Quitter la partie",
+      accuseTitle: "Quelle est la mission de ton amour ?", accuseHint: "Une seule chance. Bonne réponse : +2. Mauvaise : −1.", accuseConfirm: "J'accuse !",
+      revealTitle: "Les missions", mine: "Ta mission", theirs: "Sa mission", yourGuess: "Ton accusation",
+      noGuess: "Tu n'as accusé personne.", right: "Bien vu !", wrong: "Raté.",
+      q1: "As-tu réussi ta mission ?", q2: "Ton amour a trouvé ta mission ?", yes: "Oui", no: "Non",
+      honest: "Soyez honnêtes, ton amour peut contester !",
+      bMission: "Mission réussie en secret", bCaught: "Mission découverte", bFail: "Mission ratée", bRight: "Bonne accusation", bWrong: "Mauvaise accusation",
+      roundPts: "points cette manche", totalPts: "total de la partie",
+      validate: "Valider mes points",
+      share: "Partager mon résultat", nextRound: "Manche suivante",
+      bothNext: "Appuyez tous les deux sur Manche suivante pour avoir de nouvelles missions.",
+      newBadge: "Nouveau badge", levelUp: "Niveau supérieur",
+      shareTitle: "Ta carte de résultat", longPress: "Appuie longuement sur l'image pour l'enregistrer.",
+      shareNative: "Partager", download: "Télécharger", copy: "Copier le texte", copied: "Copié !", close: "Fermer",
+      cWin: "Mission réussie 🕵️", cCaught: "Grillé·e ! 😅", cFail: "Mission ratée 🙈",
+      cDetect: "Mission de mon amour démasquée 🔍",
+      cFlame: function (n) { return "Flamme " + n + (n > 1 ? " jours" : " jour"); },
+      cDare: "Vous osez nous défier ?",
+      cTag: "Le jeu des amoureux",
+      loveMid: "ton amour",
+      onlineTitle: "Notre couple en ligne",
+      linkIntro: "Connectez vos deux téléphones pour sentir l'autre en direct : pensées, humeur, bonne nuit et parties synchronisées.",
+      linkCreate: "Créer notre lien", linkJoin: "J'ai un code",
+      linkCodeTitle: "Votre code de couple",
+      linkSend: "Envoie ce code à ton amour. Il ne sert qu'une fois : ensuite vos téléphones restent connectés.",
+      linkEnter: "Code de couple reçu (6 caractères)", linkJoinBtn: "Connecter",
+      linkBad: "Code invalide, ou ce couple est déjà complet.",
+      linkNet: "Pas de connexion. Vérifie Internet et réessaie.",
+      linkLost: "Le lien avec ton amour est perdu. Créez un nouveau lien.",
+      linked: "Vos téléphones sont connectés 💞",
+      online: function (n) { return n + " est en ligne"; },
+      seen: function (n, m) { return n + " vu" + " il y a " + (m < 60 ? Math.max(1, m) + " min" : m < 1440 ? Math.floor(m / 60) + " h" : Math.floor(m / 1440) + " j"); },
+      never: function (n) { return n + " ne s'est pas encore connecté·e"; },
+      theirTime: function (hm, n) { return "🕐 Il est " + hm + " chez " + n; },
+      moodNone: function (n) { return n + " n'a pas partagé son humeur"; },
+      moodIs: function (n, e, l) { return n + " : " + e + " " + l; },
+      listening: function (n, s) { return "🎵 " + n + " écoute « " + s + " »"; },
+      listenToo: "Écouter aussi sur YouTube ↗",
+      pulseBtn: "💓 Pensée", pulseSent: "Pensée envoyée 💓", pulseK: "Pensée",
+      pulseGot: function (n) { return n + " pense à toi"; },
+      gnBtn: "🌙 Bonne nuit", gnSent: "Bonne nuit envoyée. Attends la sienne…",
+      gnBoth: function (n) { return "Bonne nuit, " + n + " 🌙"; },
+      moodBtn: "Partager mon humeur", moodTitle: "Comment tu te sens ?", musicLabel: "Qu'est-ce que tu écoutes ?",
+      moodSave: "Partager", moodClear: "Effacer", moodSaved: "Humeur partagée ✓",
+      playTogether: "Jouer ensemble",
+      pOpened: "a ouvert sa mission 👀", pAccused: "a accusé ! 🔍", pWaiting: "n'a pas encore ouvert sa mission",
+      pScore: function (n, p, tot) { return n + " : " + (p > 0 ? "+" : "") + p + " (total " + tot + ")"; },
+      waitPartner: function (n) { return "En attente des points de " + n + "…"; },
+      youWin: "Tu gagnes la manche ! 🏆", tie: "Égalité 🤝", theyWin: function (n) { return n + " gagne la manche"; },
+      newRoundToast: "Nouvelle manche",
+      unlink: "Délier notre couple", unlinkSure: "Touche encore pour confirmer",
+      phoneLabel: "Numéro de ton amour (avec l'indicatif, ex. +509…)",
+      callTitle: "Appeler ton amour",
+      callInGame: function (n) { return "🎙️ Appeler " + n + " dans le jeu"; },
+      callPhone: "📞 Appel normal", callWa: "💬 WhatsApp",
+      callNoNumber: "Ajoute son numéro dans les réglages pour l'appeler en un geste.",
+      callOut: function (n) { return "Ça sonne chez " + n + "…"; },
+      callIn: function (n) { return n + " t'appelle 📞"; },
+      callConnecting: "Connexion…",
+      callWith: function (n) { return "En appel avec " + n; },
+      accept: "Répondre", decline: "Refuser", hangup: "Raccrocher", mute: "Couper le micro", unmute: "Rallumer le micro",
+      callEnded: function (d) { return "Appel terminé" + (d ? " (" + d + ")" : ""); },
+      callMissed: "Appel manqué", callDeclined: function (n) { return n + " ne peut pas répondre pour l'instant"; },
+      micDenied: "Le micro est bloqué. Autorise-le dans les réglages du navigateur.",
+      callFail: "L'appel n'a pas pu se connecter. Essaie en Wi-Fi, ou utilise l'appel normal.",
+      callNoSupport: "Ce navigateur ne permet pas l'appel dans le jeu. Utilise l'appel normal.",
+      chooseGame: "Choisis un jeu",
+      mMission: "🕵️ Mission Secrète", mMissionD: "Une mission cachée chacun pendant l'appel",
+      mSync: "⚡ Synchro", mSyncD: "Répondez pareil 5 fois de suite",
+      s1: "Une question « A ou B ? » s'affiche en même temps chez vous deux.",
+      s2: "Chacun choisit sans rien dire à l'autre.",
+      s3: "Répondez pareil 5 fois de suite pour gagner.",
+      syncAsk: "Ton choix ?", or: "ou",
+      syncWaitMe: "Choisis ta réponse.",
+      syncWaitP: function (n) { return "En attente du choix de " + n + "…"; },
+      syncPChose: function (n) { return n + " a déjà choisi. À toi !"; },
+      syncManual: "Dites vos réponses à voix haute. Vous avez choisi pareil ?",
+      same: "Pareil ! 💞", diff: "Différent",
+      syncSame: "Pareil ! 💞", syncDiff: function (n, x) { return n ? "Raté… " + n + " a choisi « " + x + " »" : "Raté… la série repart à zéro"; },
+      syncWin: "Synchro parfaite ! ⚡ +5 XP",
+      syncNext: "Question suivante",
+      syncBest: function (b) { return "Record : " + b; },
+      qLabel: function (n) { return "Question " + n; },
+      dailyTitle: "Défi du jour 🎯", dailyDone: "C'est fait ✓",
+      dailyLeft: function (h, m) { return "Nouveau défi dans " + h + " h " + (m < 10 ? "0" : "") + m; },
+      dailyMine: "Défi relevé ✓ +3 XP",
+      dailyPartner: function (n, done) { return done ? n + " l'a relevé aussi ✓" : n + " ne l'a pas encore relevé"; },
+      storyTitle: "Notre histoire", storyEdit: "Modifier nos dates",
+      storyEmpty: "Ajoute vos dates : depuis quand vous êtes ensemble, vos retrouvailles et vos anniversaires.",
+      together: function (d) { return d <= 1 ? "jour ensemble" : "jours ensemble"; },
+      nextStep: function (lbl, d) { return "Prochaine étape : " + lbl + (d === 0 ? " aujourd'hui ! 🎉" : " dans " + d + (d > 1 ? " jours" : " jour")); },
+      daysLbl: function (n) { return n + " jours"; },
+      yearsLbl: function (n) { return n + (n > 1 ? " ans" : " an") + " ensemble"; },
+      reunionIn: function (d) { return d === 0 ? "🎉 C'est le jour des retrouvailles !" : "⏳ Plus que " + d + (d > 1 ? " jours" : " jour") + " avant de vous voir"; },
+      bdayLove: function (n, d) { return d === 0 ? "🎂 C'est l'anniversaire de " + n + " aujourd'hui !" : "🎂 Anniversaire de " + n + " dans " + d + (d > 1 ? " jours" : " jour"); },
+      bdayMe: function (d) { return d === 0 ? "🎂 Joyeux anniversaire à toi !" : "🎂 Ton anniversaire dans " + d + (d > 1 ? " jours" : " jour"); },
+      celebrate: "Jour spécial",
+      datesTitle: "Nos dates",
+      sinceLabel: "Ensemble depuis le", reunionLabel: "Prochaines retrouvailles",
+      bdayLoveLabel: "Anniversaire de ton amour", bdayMeLabel: "Ton anniversaire",
+      notif: "Notifications",
+      notifNote: "Tu reçois les Pensées, les appels et les bonnes nuits même quand le jeu est en arrière-plan.",
+      notifDenied: "Les notifications sont bloquées. Autorise-les dans les réglages du téléphone.",
+      notifNo: "Ce navigateur ne gère pas les notifications. Installe d'abord Noche Duo sur ton écran d'accueil.",
+      installTitle: "📲 Installe Noche Duo",
+      installAndroid: "Ajoute le jeu à ton écran d'accueil : il s'ouvre comme une vraie appli, en plein écran.",
+      installIOS: "Sur iPhone : touche le bouton Partager ⬆️ en bas de Safari, puis « Sur l'écran d'accueil ».",
+      installBtn: "Installer l'appli",
+      nCall: function (n) { return n + " t'appelle 📞"; }, nGN: function (n) { return n + " te dit bonne nuit 🌙"; },
+      gnHome: "🌙 Dire bonne nuit", gnTogether: "Bonne nuit à vous deux 🌙",
+      gnLocalNote: "Dis-le-lui aussi au téléphone 😉 Une fois en ligne, la lune traversera aussi son écran."
+    },
+    kr: {
+      modeLabel: "Mòd · Misyon Sekrè",
+      homeTitle: "Jwèt <em>moun ki renmen</em>, menm lè yo lwen.",
+      tagline: "Jwèt, defi ak ti jès pou nou rete pre, menm lè nou lwen.",
+      r1: "Chak moun resevwa yon misyon sekrè sou telefòn li.",
+      r2: "Fè misyon an pandan nou nan telefòn san lanmou w pa konnen.",
+      r3: "Devine misyon pa l anvan jwèt la fini. Yon sèl chans.",
+      create: "Kreye yon pati", join: "Antre nan yon pati", resume2: "Kontinye pati a",
+      howTo: "Chak moun jwe sou telefòn pa l, pandan n ap pale nan telefòn.",
+      me: "Ou", love: "Lanmou w",
+      level: "Nivo", badges: "Badj", badgeHint: "Peze yon badj pou w wè non l.",
+      flameTitle: function (n) { return "Flanm : " + n + " jou youn dèyè lòt"; },
+      xpOf: function (a, b) { return b ? a + " / " + b + " XP" : a + " XP · dènye nivo"; },
+      settings: "Paramèt", myName: "Non pa w", loveName: "Non lanmou w",
+      sound: "Son ak vibrasyon",
+      laughTitle: "Ri lanmou w",
+      laughHint: "Mande lanmou w voye yon vokal kote l ap ri, epi mete l la a. L ap jwe lè w genyen yon manch, oswa lè w peze lalin anlè a. Li rete sèlman sou telefòn sa a.",
+      laughNone: "Ou poko mete okenn ri.",
+      laughSet: "Ri a anrejistre ✓",
+      laughImport: "Mete yon vokal", laughTest: "Tande", laughRemove: "Retire",
+      laughBig: "Vokal sa a twò lou. Chwazi youn ki pi kout (mwens pase 15 segonn).",
+      laughBad: "Fichye sa a pa ka jwe. Eseye yon lòt fòma (mp3, m4a, ogg).",
+      laughNoSave: "Ri a mache kounye a, men navigatè sa a p ap ka kenbe l lè w fèmen l.",
+      reset: "Efase tout pwogrè", resetSure: "Peze ankò pou konfime",
+      done: "Fini",
+      codeTitle: "Kòd pati a", sendCode: "Voye kòd sa a bay lanmou w pou nou jwe ansanm.", seeMission: "Wè misyon m",
+      enterCode: "Antre nan yon pati", codeLabel: "Mete kòd 4 chif lanmou w voye ba ou a", joinBtn: "Antre", back: "Retounen",
+      badCode: "Kòd la dwe gen 4 chif.",
+      round: "Manch", game: "Pati",
+      yourMission: "Misyon sekrè w", tapReveal: "Peze pou w louvri anvlòp la. Pa montre ekran w !", tapHide: "Peze pou w kache l",
+      pts: function (n) { return n + " pwen"; },
+      start: "Lanse kwonomèt la", pause: "Kanpe", resume: "Kontinye", restart: "Rekòmanse",
+      accuseBtn: "Devine misyon pa l", accused: "Akizasyon w anrejistre. W ap wè repons lan nan fen manch lan.",
+      endRound: "Fen manch : montre misyon yo", quit: "Kite pati a",
+      accuseTitle: "Ki misyon lanmou w genyen ?", accuseHint: "Yon sèl chans. Bon repons : +2. Move repons : −1.", accuseConfirm: "M akize !",
+      revealTitle: "Misyon yo", mine: "Misyon pa w", theirs: "Misyon pa l", yourGuess: "Akizasyon w",
+      noGuess: "Ou pa t akize.", right: "Ou jwenn li !", wrong: "Ou rate.",
+      q1: "Èske w reyisi misyon w ?", q2: "Èske lanmou w te jwenn misyon w ?", yes: "Wi", no: "Non",
+      honest: "Se pou nou onèt, lanmou w ka konteste !",
+      bMission: "Misyon reyisi an sekrè", bCaught: "Yo dekouvri misyon w", bFail: "Misyon rate", bRight: "Bon akizasyon", bWrong: "Move akizasyon",
+      roundPts: "pwen nan manch sa a", totalPts: "total pati a",
+      validate: "Valide pwen m",
+      share: "Pataje rezilta m", nextRound: "Pwochen manch",
+      bothNext: "Nou toude peze Pwochen manch pou nou jwenn nouvo misyon.",
+      newBadge: "Nouvo badj", levelUp: "Nouvo nivo",
+      shareTitle: "Kat rezilta w", longPress: "Peze imaj la lontan pou w anrejistre l.",
+      shareNative: "Pataje", download: "Telechaje", copy: "Kopye tèks la", copied: "Kopye !", close: "Fèmen",
+      cWin: "Misyon reyisi 🕵️", cCaught: "Yo kenbe m ! 😅", cFail: "Misyon rate 🙈",
+      cDetect: "M jwenn misyon lanmou m 🔍",
+      cFlame: function (n) { return "Flanm " + n + " jou"; },
+      cDare: "Nou ka bat nou ?",
+      cTag: "Jwèt moun ki renmen",
+      loveMid: "lanmou w",
+      onlineTitle: "Koup nou an liy",
+      linkIntro: "Konekte de telefòn nou yo pou nou santi lòt la an dirèk : panse, imè, bòn nwit ak pati ki mache ansanm.",
+      linkCreate: "Kreye lyen nou", linkJoin: "M gen yon kòd",
+      linkCodeTitle: "Kòd koup nou",
+      linkSend: "Voye kòd sa a bay lanmou w. Li sèvi yon sèl fwa : apre sa telefòn nou yo rete konekte.",
+      linkEnter: "Kòd koup ou resevwa a (6 karaktè)", linkJoinBtn: "Konekte",
+      linkBad: "Kòd la pa bon, oswa koup sa a deja konplè.",
+      linkNet: "Pa gen koneksyon. Verifye entènèt ou epi eseye ankò.",
+      linkLost: "Lyen ak lanmou w lan pèdi. Kreye yon nouvo lyen.",
+      linked: "Telefòn nou yo konekte 💞",
+      online: function (n) { return n + " an liy"; },
+      seen: function (n, m) { return "Dènye fwa " + n + " te la : " + (m < 60 ? Math.max(1, m) + " min" : m < 1440 ? Math.floor(m / 60) + " è" : Math.floor(m / 1440) + " jou") + " pase"; },
+      never: function (n) { return n + " poko konekte"; },
+      theirTime: function (hm, n) { return "🕐 Li " + hm + " lakay " + n; },
+      moodNone: function (n) { return n + " poko pataje imè l"; },
+      moodIs: function (n, e, l) { return n + " : " + e + " " + l; },
+      listening: function (n, s) { return "🎵 " + n + " ap koute « " + s + " »"; },
+      listenToo: "Koute l tou sou YouTube ↗",
+      pulseBtn: "💓 Panse", pulseSent: "Panse a voye 💓", pulseK: "Panse",
+      pulseGot: function (n) { return n + " ap panse a ou"; },
+      gnBtn: "🌙 Bòn nwit", gnSent: "Bòn nwit ou a pati. Tann pa l la…",
+      gnBoth: function (n) { return "Bòn nwit, " + n + " 🌙"; },
+      moodBtn: "Pataje imè m", moodTitle: "Kijan ou santi w ?", musicLabel: "Kisa w ap koute ?",
+      moodSave: "Pataje", moodClear: "Efase", moodSaved: "Imè a pataje ✓",
+      playTogether: "Jwe ansanm",
+      pOpened: "louvri misyon l 👀", pAccused: "akize ! 🔍", pWaiting: "poko louvri misyon l",
+      pScore: function (n, p, tot) { return n + " : " + (p > 0 ? "+" : "") + p + " (total " + tot + ")"; },
+      waitPartner: function (n) { return "N ap tann pwen " + n + "…"; },
+      youWin: "Ou genyen manch lan ! 🏆", tie: "Egalite 🤝", theyWin: function (n) { return n + " genyen manch lan"; },
+      newRoundToast: "Nouvo manch",
+      unlink: "Dekonekte koup nou", unlinkSure: "Peze ankò pou konfime",
+      phoneLabel: "Nimewo lanmou w (ak kòd peyi a, egz. +509…)",
+      callTitle: "Rele lanmou w",
+      callInGame: function (n) { return "🎙️ Rele " + n + " nan jwèt la"; },
+      callPhone: "📞 Apèl nòmal", callWa: "💬 WhatsApp",
+      callNoNumber: "Mete nimewo l nan paramèt yo pou w ka rele l fasil.",
+      callOut: function (n) { return "L ap sonnen lakay " + n + "…"; },
+      callIn: function (n) { return n + " ap rele w 📞"; },
+      callConnecting: "N ap konekte…",
+      callWith: function (n) { return "N ap pale ak " + n; },
+      accept: "Reponn", decline: "Refize", hangup: "Rakwoche", mute: "Fèmen mikwo a", unmute: "Limen mikwo a",
+      callEnded: function (d) { return "Apèl la fini" + (d ? " (" + d + ")" : ""); },
+      callMissed: "Apèl ou rate", callDeclined: function (n) { return n + " pa ka reponn kounye a"; },
+      micDenied: "Mikwo a bloke. Otorize l nan paramèt navigatè a.",
+      callFail: "Apèl la pa t ka konekte. Eseye ak Wi-Fi, oswa sèvi ak apèl nòmal la.",
+      callNoSupport: "Navigatè sa a pa ka fè apèl nan jwèt la. Sèvi ak apèl nòmal la.",
+      chooseGame: "Chwazi yon jwèt",
+      mMission: "🕵️ Misyon Sekrè", mMissionD: "Yon misyon kache pou chak moun pandan apèl la",
+      mSync: "⚡ Synchro", mSyncD: "Reponn menm bagay 5 fwa youn dèyè lòt",
+      s1: "Yon kesyon « A oswa B ? » parèt an menm tan sou de telefòn yo.",
+      s2: "Chak moun chwazi san di lòt la anyen.",
+      s3: "Reponn menm bagay 5 fwa youn dèyè lòt pou nou genyen.",
+      syncAsk: "Kisa w chwazi ?", or: "oswa",
+      syncWaitMe: "Chwazi repons ou.",
+      syncWaitP: function (n) { return "N ap tann chwa " + n + "…"; },
+      syncPChose: function (n) { return n + " deja chwazi. Se tou pa w !"; },
+      syncManual: "Di repons nou fò. Nou te chwazi menm bagay ?",
+      same: "Menm bagay ! 💞", diff: "Diferan",
+      syncSame: "Menm bagay ! 💞", syncDiff: function (n, x) { return n ? "Rate… " + n + " te chwazi « " + x + " »" : "Rate… seri a rekòmanse a zewo"; },
+      syncWin: "Synchro pafè ! ⚡ +5 XP",
+      syncNext: "Pwochen kesyon",
+      syncBest: function (b) { return "Rekò : " + b; },
+      qLabel: function (n) { return "Kesyon " + n; },
+      dailyTitle: "Defi jou a 🎯", dailyDone: "Mwen fè l ✓",
+      dailyLeft: function (h, m) { return "Nouvo defi nan " + h + " è " + (m < 10 ? "0" : "") + m; },
+      dailyMine: "Defi a reyalize ✓ +3 XP",
+      dailyPartner: function (n, done) { return done ? n + " fè l tou ✓" : n + " poko fè l"; },
+      storyTitle: "Istwa nou", storyEdit: "Chanje dat nou yo",
+      storyEmpty: "Mete dat nou yo : depi kilè nou ansanm, lè n ap rejwenn ak anivèsè nou.",
+      together: function (d) { return d <= 1 ? "jou ansanm" : "jou ansanm"; },
+      nextStep: function (lbl, d) { return "Pwochen etap : " + lbl + (d === 0 ? " jodi a ! 🎉" : " nan " + d + " jou"); },
+      daysLbl: function (n) { return n + " jou"; },
+      yearsLbl: function (n) { return n + " an ansanm"; },
+      reunionIn: function (d) { return d === 0 ? "🎉 Se jodi a n ap rejwenn !" : "⏳ Rete " + d + " jou anvan nou wè"; },
+      bdayLove: function (n, d) { return d === 0 ? "🎂 Se anivèsè " + n + " jodi a !" : "🎂 Anivèsè " + n + " nan " + d + " jou"; },
+      bdayMe: function (d) { return d === 0 ? "🎂 Bòn fèt pou ou !" : "🎂 Anivèsè w nan " + d + " jou"; },
+      celebrate: "Jou espesyal",
+      datesTitle: "Dat nou yo",
+      sinceLabel: "Ansanm depi", reunionLabel: "Pwochen fwa n ap wè",
+      bdayLoveLabel: "Anivèsè lanmou w", bdayMeLabel: "Anivèsè pa w",
+      notif: "Notifikasyon",
+      notifNote: "W ap resevwa Panse, apèl ak bòn nwit menm lè jwèt la ap mache dèyè.",
+      notifDenied: "Notifikasyon yo bloke. Otorize yo nan paramèt telefòn nan.",
+      notifNo: "Navigatè sa a pa jere notifikasyon. Enstale Noche Duo sou ekran an anvan.",
+      installTitle: "📲 Enstale Noche Duo",
+      installAndroid: "Mete jwèt la sou ekran prensipal ou : l ap louvri tankou yon vrè aplikasyon, sou tout ekran an.",
+      installIOS: "Sou iPhone : peze bouton Pataje ⬆️ anba Safari, epi « Sur l'écran d'accueil / Add to Home Screen ».",
+      installBtn: "Enstale aplikasyon an",
+      nCall: function (n) { return n + " ap rele w 📞"; }, nGN: function (n) { return n + " di w bòn nwit 🌙"; },
+      gnHome: "🌙 Di bòn nwit", gnTogether: "Bòn nwit pou nou de 🌙",
+      gnLocalNote: "Di l li nan telefòn nan tou 😉 Lè nou an liy, lalin nan ap travèse ekran pa l tou."
+    },
+    en: {
+      modeLabel: "Mode · Secret Mission",
+      homeTitle: "The game for <em>lovers</em>, even far apart.",
+      tagline: "Games, challenges and little gestures to stay close, even when you're apart.",
+      r1: "Each of you gets a secret mission on your phone.",
+      r2: "Pull it off during your call without your love noticing.",
+      r3: "Expose their mission before the end. One chance only.",
+      create: "Create a game", join: "Join a game", resume2: "Resume the current game",
+      howTo: "Each of you plays on your own phone while you're on a call.",
+      me: "You", love: "Your love",
+      level: "Level", badges: "Badges", badgeHint: "Tap a badge to see its name.",
+      flameTitle: function (n) { return "Flame: " + n + (n > 1 ? " days in a row" : " day"); },
+      xpOf: function (a, b) { return b ? a + " / " + b + " XP" : a + " XP · max level"; },
+      settings: "Settings", myName: "Your first name", loveName: "Your love's first name",
+      sound: "Sounds and vibrations",
+      laughTitle: "Your love's laugh",
+      laughHint: "Ask your love for a voice note of them laughing, then import it here. It plays when you win a round, or when you tap the moon at the top. It stays on this phone only.",
+      laughNone: "No laugh imported yet.",
+      laughSet: "Laugh imported ✓",
+      laughImport: "Import a voice note", laughTest: "Play", laughRemove: "Remove",
+      laughBig: "This voice note is too large. Pick a shorter one (under 15 seconds).",
+      laughBad: "This file can't be played. Try another format (mp3, m4a, ogg).",
+      laughNoSave: "The laugh works now, but this browser can't keep it after you close it.",
+      reset: "Erase all progress", resetSure: "Tap again to confirm",
+      done: "Done",
+      codeTitle: "Game code", sendCode: "Send this code to your love so you can play together.", seeMission: "See my mission",
+      enterCode: "Join a game", codeLabel: "Enter the 4-digit code your love sent you", joinBtn: "Join", back: "Back",
+      badCode: "The code must have 4 digits.",
+      round: "Round", game: "Game",
+      yourMission: "Your secret mission", tapReveal: "Tap to open the envelope. Don't show your screen!", tapHide: "Tap to hide",
+      pts: function (n) { return n + (n > 1 ? " points" : " point"); },
+      start: "Start the timer", pause: "Pause", resume: "Resume", restart: "Restart",
+      accuseBtn: "Expose their mission", accused: "Your accusation is saved. You'll see if you're right at the reveal.",
+      endRound: "End of round: reveal", quit: "Leave the game",
+      accuseTitle: "What is your love's mission?", accuseHint: "One chance only. Right: +2. Wrong: −1.", accuseConfirm: "I accuse!",
+      revealTitle: "The missions", mine: "Your mission", theirs: "Their mission", yourGuess: "Your accusation",
+      noGuess: "You didn't accuse anyone.", right: "Nailed it!", wrong: "Missed.",
+      q1: "Did you complete your mission?", q2: "Did your love figure out your mission?", yes: "Yes", no: "No",
+      honest: "Be honest, your love can challenge you!",
+      bMission: "Mission done in secret", bCaught: "Mission uncovered", bFail: "Mission failed", bRight: "Right accusation", bWrong: "Wrong accusation",
+      roundPts: "points this round", totalPts: "game total",
+      validate: "Confirm my points",
+      share: "Share my result", nextRound: "Next round",
+      bothNext: "Both tap Next round to get new missions.",
+      newBadge: "New badge", levelUp: "Level up",
+      shareTitle: "Your result card", longPress: "Press and hold the image to save it.",
+      shareNative: "Share", download: "Download", copy: "Copy the text", copied: "Copied!", close: "Close",
+      cWin: "Mission accomplished 🕵️", cCaught: "Busted! 😅", cFail: "Mission failed 🙈",
+      cDetect: "Exposed my love's mission 🔍",
+      cFlame: function (n) { return "Flame " + n + (n > 1 ? " days" : " day"); },
+      cDare: "Dare to challenge us?",
+      cTag: "The game for lovers",
+      loveMid: "your love",
+      onlineTitle: "Our couple online",
+      linkIntro: "Connect your two phones to feel each other live: thoughts, mood, goodnight and synced games.",
+      linkCreate: "Create our link", linkJoin: "I have a code",
+      linkCodeTitle: "Your couple code",
+      linkSend: "Send this code to your love. It works once: after that, your phones stay connected.",
+      linkEnter: "Couple code you received (6 characters)", linkJoinBtn: "Connect",
+      linkBad: "Invalid code, or this couple is already complete.",
+      linkNet: "No connection. Check your internet and try again.",
+      linkLost: "The link with your love was lost. Create a new link.",
+      linked: "Your phones are connected 💞",
+      online: function (n) { return n + " is online"; },
+      seen: function (n, m) { return n + " was last seen " + (m < 60 ? Math.max(1, m) + " min" : m < 1440 ? Math.floor(m / 60) + " h" : Math.floor(m / 1440) + " d") + " ago"; },
+      never: function (n) { return n + " hasn't connected yet"; },
+      theirTime: function (hm, n) { return "🕐 It's " + hm + " where " + n + " is"; },
+      moodNone: function (n) { return n + " hasn't shared a mood"; },
+      moodIs: function (n, e, l) { return n + ": " + e + " " + l; },
+      listening: function (n, s) { return "🎵 " + n + " is listening to “" + s + "”"; },
+      listenToo: "Listen too on YouTube ↗",
+      pulseBtn: "💓 Thinking of you", pulseSent: "Sent 💓", pulseK: "Thinking of you",
+      pulseGot: function (n) { return n + " is thinking of you"; },
+      gnBtn: "🌙 Goodnight", gnSent: "Goodnight sent. Wait for theirs…",
+      gnBoth: function (n) { return "Goodnight, " + n + " 🌙"; },
+      moodBtn: "Share my mood", moodTitle: "How do you feel?", musicLabel: "What are you listening to?",
+      moodSave: "Share", moodClear: "Clear", moodSaved: "Mood shared ✓",
+      playTogether: "Play together",
+      pOpened: "opened their mission 👀", pAccused: "made an accusation! 🔍", pWaiting: "hasn't opened their mission yet",
+      pScore: function (n, p, tot) { return n + ": " + (p > 0 ? "+" : "") + p + " (total " + tot + ")"; },
+      waitPartner: function (n) { return "Waiting for " + n + "'s points…"; },
+      youWin: "You win the round! 🏆", tie: "It's a tie 🤝", theyWin: function (n) { return n + " wins the round"; },
+      newRoundToast: "New round",
+      unlink: "Unlink our couple", unlinkSure: "Tap again to confirm",
+      phoneLabel: "Your love's number (with country code, e.g. +509…)",
+      callTitle: "Call your love",
+      callInGame: function (n) { return "🎙️ Call " + n + " in the game"; },
+      callPhone: "📞 Regular call", callWa: "💬 WhatsApp",
+      callNoNumber: "Add their number in Settings to call them in one tap.",
+      callOut: function (n) { return "Ringing " + n + "…"; },
+      callIn: function (n) { return n + " is calling you 📞"; },
+      callConnecting: "Connecting…",
+      callWith: function (n) { return "On a call with " + n; },
+      accept: "Answer", decline: "Decline", hangup: "Hang up", mute: "Mute", unmute: "Unmute",
+      callEnded: function (d) { return "Call ended" + (d ? " (" + d + ")" : ""); },
+      callMissed: "Missed call", callDeclined: function (n) { return n + " can't answer right now"; },
+      micDenied: "The microphone is blocked. Allow it in your browser settings.",
+      callFail: "The call couldn't connect. Try on Wi-Fi, or use a regular call.",
+      callNoSupport: "This browser can't make calls in the game. Use a regular call.",
+      chooseGame: "Choose a game",
+      mMission: "🕵️ Secret Mission", mMissionD: "A hidden mission each during your call",
+      mSync: "⚡ Synchro", mSyncD: "Give the same answer 5 times in a row",
+      s1: "An “A or B?” question appears on both your phones at the same time.",
+      s2: "Each of you picks without telling the other.",
+      s3: "Give the same answer 5 times in a row to win.",
+      syncAsk: "Your pick?", or: "or",
+      syncWaitMe: "Pick your answer.",
+      syncWaitP: function (n) { return "Waiting for " + n + "'s pick…"; },
+      syncPChose: function (n) { return n + " already picked. Your turn!"; },
+      syncManual: "Say your answers out loud. Did you pick the same?",
+      same: "Same! 💞", diff: "Different",
+      syncSame: "Same! 💞", syncDiff: function (n, x) { return n ? "Missed… " + n + " picked “" + x + "”" : "Missed… the streak starts over"; },
+      syncWin: "Perfect Synchro! ⚡ +5 XP",
+      syncNext: "Next question",
+      syncBest: function (b) { return "Best: " + b; },
+      qLabel: function (n) { return "Question " + n; },
+      dailyTitle: "Daily challenge 🎯", dailyDone: "Done ✓",
+      dailyLeft: function (h, m) { return "New challenge in " + h + " h " + (m < 10 ? "0" : "") + m; },
+      dailyMine: "Challenge done ✓ +3 XP",
+      dailyPartner: function (n, done) { return done ? n + " did it too ✓" : n + " hasn't done it yet"; },
+      storyTitle: "Our story", storyEdit: "Edit our dates",
+      storyEmpty: "Add your dates: when you got together, your next reunion and your birthdays.",
+      together: function (d) { return d <= 1 ? "day together" : "days together"; },
+      nextStep: function (lbl, d) { return "Next milestone: " + lbl + (d === 0 ? " today! 🎉" : " in " + d + (d > 1 ? " days" : " day")); },
+      daysLbl: function (n) { return n + " days"; },
+      yearsLbl: function (n) { return n + (n > 1 ? " years" : " year") + " together"; },
+      reunionIn: function (d) { return d === 0 ? "🎉 Today is reunion day!" : "⏳ Only " + d + (d > 1 ? " days" : " day") + " until you see each other"; },
+      bdayLove: function (n, d) { return d === 0 ? "🎂 It's " + n + "'s birthday today!" : "🎂 " + n + "'s birthday in " + d + (d > 1 ? " days" : " day"); },
+      bdayMe: function (d) { return d === 0 ? "🎂 Happy birthday to you!" : "🎂 Your birthday in " + d + (d > 1 ? " days" : " day"); },
+      celebrate: "Special day",
+      datesTitle: "Our dates",
+      sinceLabel: "Together since", reunionLabel: "Next reunion",
+      bdayLoveLabel: "Your love's birthday", bdayMeLabel: "Your birthday",
+      notif: "Notifications",
+      notifNote: "Get thoughts, calls and goodnights even when the game is in the background.",
+      notifDenied: "Notifications are blocked. Allow them in your phone settings.",
+      notifNo: "This browser doesn't support notifications. Install Noche Duo on your home screen first.",
+      installTitle: "📲 Install Noche Duo",
+      installAndroid: "Add the game to your home screen: it opens like a real app, full screen.",
+      installIOS: "On iPhone: tap the Share button ⬆️ at the bottom of Safari, then “Add to Home Screen”.",
+      installBtn: "Install the app",
+      nCall: function (n) { return n + " is calling you 📞"; }, nGN: function (n) { return n + " says goodnight 🌙"; },
+      gnHome: "🌙 Say goodnight", gnTogether: "Goodnight to you both 🌙",
+      gnLocalNote: "Say it on the phone too 😉 Once you're online, the moon will cross their screen too."
+    }
+  };
+
+  /* ================= Storage ================= */
+  var canStore = true;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { canStore = false; return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  var S = { lang: "fr", code: null, role: null, round: 1, total: 0, accusation: null, answers: {}, validated: false, lastPts: 0, mode: "mission", syncN: 1, syncPick: null, syncDone: false, syncMatch: null, streak: 0, syncWon: false };
+  var P = { me: "", love: "", sound: true, xp: 0, rounds: 0, flame: 0, lastDay: null, badges: [] };
+  function save() { lsSet("nd-state", JSON.stringify(S)); lsSet("nd-profile", JSON.stringify(P)); }
+  function load() {
+    try { var s = JSON.parse(lsGet("nd-state")); if (s && typeof s === "object") Object.assign(S, s); } catch (e) {}
+    try { var p = JSON.parse(lsGet("nd-profile")); if (p && typeof p === "object") Object.assign(P, p); } catch (e) {}
+    laughURL = lsGet("nd-laugh");
+  }
+
+  function t(k) { return T[S.lang][k]; }
+  function $(id) { return document.getElementById(id); }
+  function L(o) { return o[S.lang] || o.fr; }
+
+  /* ================= Seeded deal: both phones compute the same missions ================= */
+  function hash(str) { var h = 2166136261; for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; var x = Math.imul(seed ^ seed >>> 15, 1 | seed); x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x; return ((x ^ x >>> 14) >>> 0) / 4294967296; }; }
+  function shuffled(arr, r) { var a = arr.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var tmp = a[i]; a[i] = a[j]; a[j] = tmp; } return a; }
+  function deal() {
+    var r = rng(hash("ms|" + S.code + "|" + S.round));
+    var idx = shuffled(M.map(function (_, i) { return i; }), r);
+    var mine = S.role === "A" ? idx[0] : idx[1];
+    var theirs = S.role === "A" ? idx[1] : idx[0];
+    var decoys = S.role === "A" ? idx.slice(2, 5) : idx.slice(5, 8);
+    var options = shuffled([theirs].concat(decoys), rng(hash("opt|" + S.code + "|" + S.round + "|" + S.role)));
+    return { mine: mine, theirs: theirs, options: options };
+  }
+  function mText(i) { return M[i][{ fr: 0, kr: 1, en: 3 }[S.lang] || 0]; }
+
+  /* ================= Progress ================= */
+  function levelOf(xp) { var i = 0; for (var k = 0; k < LEVELS.length; k++) if (xp >= LEVELS[k].xp) i = k; return i; }
+  function dayKey(d) { d = d || new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
+  function yesterdayKey() { var d = new Date(); d.setDate(d.getDate() - 1); return dayKey(d); }
+  function liveFlame() { return (P.lastDay === dayKey() || P.lastDay === yesterdayKey()) ? P.flame : 0; }
+  function computeScore(d) {
+    var lines = [], pts = 0, lvl = M[d.mine][2];
+    var spy = S.answers.done === 1 && S.answers.caught === 0;
+    if (spy) { lines.push([t("bMission"), lvl]); pts += lvl; }
+    else if (S.answers.done === 1) { lines.push([t("bCaught"), 0]); }
+    else { lines.push([t("bFail"), 0]); }
+    var acc = S.accusation !== null, right = acc && S.accusation === d.theirs;
+    if (acc) { if (right) { lines.push([t("bRight"), 2]); pts += 2; } else { lines.push([t("bWrong"), -1]); pts -= 1; } }
+    return { pts: pts, lines: lines, spy: spy, right: right, caught: S.answers.done === 1 && S.answers.caught === 1 };
+  }
+  function applyProgress(res) {
+    var beforeLvl = levelOf(P.xp);
+    P.xp += Math.max(res.pts, 0) + 1;
+    P.rounds += 1;
+    var today = dayKey();
+    if (P.lastDay !== today) { P.flame = P.lastDay === yesterdayKey() ? P.flame + 1 : 1; P.lastDay = today; }
+    var earned = [];
+    function give(id) { if (P.badges.indexOf(id) < 0) { P.badges.push(id); earned.push(id); } }
+    give("first");
+    if (res.spy) give("spy");
+    if (res.right) give("detect");
+    if (res.caught) give("caught");
+    if (res.spy && res.right) give("perfect");
+    if (P.flame >= 3) give("flame3");
+    if (P.rounds >= 10) give("r10");
+    return { earned: earned, levelUp: levelOf(P.xp) > beforeLvl };
+  }
+
+  /* ================= Sound (synthesised, no files) ================= */
+  var ac = null;
+  function audio() { if (!P.sound) return null; try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === "suspended") ac.resume(); } catch (e) { ac = null; } return ac; }
+  function note(freq, start, dur, type, vol) {
+    var a = audio(); if (!a) return;
+    var o = a.createOscillator(), g = a.createGain();
+    o.type = type || "sine"; o.frequency.value = freq;
+    var t0 = a.currentTime + start;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol || 0.18, t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(a.destination); o.start(t0); o.stop(t0 + dur + 0.05);
+  }
+  var SFX = {
+    tap: function () { note(880, 0, 0.08, "sine", 0.06); },
+    reveal: function () { note(659, 0, 0.5); note(988, 0.12, 0.7); note(1319, 0.24, 0.9, "sine", 0.1); },
+    accuse: function () { note(330, 0, 0.18, "triangle"); note(247, 0.12, 0.35, "triangle"); },
+    win: function () { [523, 659, 784, 1047].forEach(function (f, i) { note(f, i * 0.11, 0.5, "triangle", 0.16); }); note(1568, 0.48, 0.9, "sine", 0.08); },
+    lose: function () { note(392, 0, 0.3, "triangle"); note(330, 0.2, 0.3, "triangle"); note(262, 0.4, 0.6, "triangle"); },
+    badge: function () { [1175, 1397, 1760, 2093].forEach(function (f, i) { note(f, i * 0.07, 0.35, "sine", 0.08); }); },
+    alarm: function () { for (var i = 0; i < 3; i++) { note(880, i * 0.35, 0.18, "square", 0.06); } }
+  };
+  function sfx(n) { if (P.sound && SFX[n]) SFX[n](); }
+  function buzz(p) { if (!P.sound) return; try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} }
+
+  var laughURL = null, laughEl = null;
+  function playLaugh() {
+    if (!laughURL || !P.sound) return false;
+    try { laughEl = laughEl || new Audio(); laughEl.src = laughURL; laughEl.currentTime = 0; var pr = laughEl.play(); if (pr && pr.catch) pr.catch(function () {}); return true; } catch (e) { return false; }
+  }
+
+  /* ================= Effects canvas: confetti + hearts ================= */
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var fx = $("fx"), fc = fx.getContext("2d"), parts = [], fxRunning = false;
+  function sizeFx() { var dpr = window.devicePixelRatio || 1; fx.width = innerWidth * dpr; fx.height = innerHeight * dpr; fc.setTransform(dpr, 0, 0, dpr, 0, 0); }
+  function confetti(big) {
+    if (reduce) return;
+    var cols = ["#f0c674", "#ff7a93", "#ffffff", "#ff9a3c", "#c9b8ff"];
+    var n = big ? 140 : 70;
+    for (var i = 0; i < n; i++) {
+      parts.push({ x: innerWidth / 2 + (Math.random() - 0.5) * 80, y: innerHeight * 0.35, vx: (Math.random() - 0.5) * 11, vy: -Math.random() * 11 - 4,
+        g: 0.28, r: Math.random() * 5 + 3, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.3, c: cols[i % cols.length], heart: i % 6 === 0, life: 1 });
+    }
+    if (!fxRunning) { fxRunning = true; requestAnimationFrame(fxLoop); }
+  }
+  function drawHeart(x, y, s) { fc.beginPath(); fc.moveTo(x, y + s * 0.3); fc.bezierCurveTo(x, y - s * 0.3, x - s, y - s * 0.3, x - s, y + s * 0.2); fc.bezierCurveTo(x - s, y + s * 0.7, x, y + s, x, y + s * 1.2); fc.bezierCurveTo(x, y + s, x + s, y + s * 0.7, x + s, y + s * 0.2); fc.bezierCurveTo(x + s, y - s * 0.3, x, y - s * 0.3, x, y + s * 0.3); fc.fill(); }
+  function fxLoop() {
+    fc.clearRect(0, 0, innerWidth, innerHeight);
+    parts = parts.filter(function (p) { return p.y < innerHeight + 30 && p.life > 0; });
+    parts.forEach(function (p) {
+      p.vy += p.g; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life -= 0.004;
+      fc.globalAlpha = Math.max(p.life, 0); fc.fillStyle = p.c;
+      if (p.heart) drawHeart(p.x, p.y, p.r);
+      else { fc.save(); fc.translate(p.x, p.y); fc.rotate(p.rot); fc.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); fc.restore(); }
+    });
+    fc.globalAlpha = 1;
+    if (parts.length) requestAnimationFrame(fxLoop); else { fxRunning = false; fc.clearRect(0, 0, innerWidth, innerHeight); }
+  }
+
+  /* ================= Toasts (queued) ================= */
+  var toastQ = [], toastBusy = false;
+  function toast(ic, k, txt) { toastQ.push([ic, k, txt]); if (!toastBusy) nextToast(); }
+  function nextToast() {
+    var it = toastQ.shift(); if (!it) { toastBusy = false; return; }
+    toastBusy = true;
+    $("toast-ic").textContent = it[0]; $("toast-k").textContent = it[1]; $("toast-t").textContent = it[2];
+    $("toast").classList.add("show"); sfx("badge");
+    setTimeout(function () { $("toast").classList.remove("show"); setTimeout(nextToast, 450); }, 2400);
+  }
+
+  /* ================= Screens ================= */
+  var current = "home";
+  function show(name) {
+    document.querySelectorAll(".screen").forEach(function (s) { s.hidden = true; });
+    var el = $("s-" + name); el.hidden = false;
+    el.style.animation = "none"; void el.offsetWidth; el.style.animation = "";
+    current = name; render(); window.scrollTo(0, 0);
+  }
+
+  function applyText() {
+    document.documentElement.lang = { fr: "fr", kr: "ht", en: "en" }[S.lang] || "fr";
+    document.querySelectorAll("[data-i]").forEach(function (el) {
+      var v = t(el.getAttribute("data-i"));
+      if (typeof v !== "string") return;
+      var span = el.querySelector(":scope > span[data-i]");
+      if (span) return;
+      if (el.tagName === "LABEL" && el.classList.contains("filelbl")) return;
+      el.innerHTML = v;
+    });
+    $("lang-fr").setAttribute("aria-pressed", S.lang === "fr");
+    $("lang-kr").setAttribute("aria-pressed", S.lang === "kr");
+    $("lang-en").setAttribute("aria-pressed", S.lang === "en");
+    $("go-settings").setAttribute("aria-label", t("settings"));
+  }
+
+  var sealOpen = false, pendingAcc = null, badgeSel = null;
+
+  function renderProfile() {
+    var me = P.me || t("me"), love = nameStart();
+    $("names").innerHTML = "";
+    var a = document.createElement("span"); a.textContent = me;
+    var h = document.createElement("span"); h.className = "heart"; h.textContent = "♥";
+    var b = document.createElement("span"); b.textContent = love;
+    $("names").appendChild(a); $("names").appendChild(h); $("names").appendChild(b);
+    var f = liveFlame();
+    $("flame-n").textContent = f;
+    $("flame").classList.toggle("out", f === 0);
+    $("flame").title = t("flameTitle")(f);
+    $("flame").setAttribute("aria-label", t("flameTitle")(f));
+    var li = levelOf(P.xp), nxt = LEVELS[li + 1];
+    $("level-name").textContent = L(LEVELS[li]);
+    $("level-xp").textContent = t("xpOf")(P.xp, nxt ? nxt.xp : 0);
+    var pct = nxt ? (P.xp - LEVELS[li].xp) / (nxt.xp - LEVELS[li].xp) * 100 : 100;
+    requestAnimationFrame(function () { $("level-bar").style.width = Math.max(3, pct) + "%"; });
+    var box = $("badges"); box.innerHTML = "";
+    BADGES.forEach(function (bd) {
+      var el = document.createElement("button");
+      el.type = "button";
+      el.className = "badge" + (P.badges.indexOf(bd.id) >= 0 ? " on" : "");
+      el.textContent = bd.ic; el.setAttribute("aria-label", L(bd));
+      el.addEventListener("click", function () { badgeSel = bd.id; sfx("tap"); renderProfile(); });
+      box.appendChild(el);
+    });
+    var sel = BADGES.filter(function (x) { return x.id === badgeSel; })[0];
+    $("badge-hint").textContent = sel ? sel.ic + " " + L(sel) + (P.badges.indexOf(sel.id) >= 0 ? " ✓" : " 🔒") : t("badgeHint");
+    $("go-resume").hidden = !(S.code && S.role);
+  }
+
+  function renderSettings() {
+    if (document.activeElement !== $("in-me")) $("in-me").value = P.me;
+    if (document.activeElement !== $("in-love")) $("in-love").value = P.love;
+    if (document.activeElement !== $("in-phone")) $("in-phone").value = P.lovePhone || "";
+    $("sw-sound").setAttribute("aria-checked", String(P.sound));
+    $("laugh-status").textContent = laughURL ? t("laughSet") : t("laughNone");
+    $("laugh-btns").hidden = !laughURL;
+    $("reset").textContent = resetArmed ? t("resetSure") : t("reset");
+    var lbl = document.querySelector(".filelbl > span"); if (lbl) lbl.textContent = t("laughImport");
+    renderUnlink();
+  }
+
+  function render() {
+    applyText();
+    if (current === "home") { renderProfile(); renderOnline(); renderCallCard(); renderModes(); renderDaily(); renderStory(); renderInstall(); }
+    if (current === "settings") renderSettingsExtra();
+    if (current === "sync") renderSync();
+    if (current === "settings") renderSettings();
+    renderCallbar();
+    if (!S.code) return;
+    renderPartnerGame();
+    renderCallMission();
+    var d = deal();
+    var meta = t("round") + " " + S.round, codeTxt = t("game") + " " + S.code;
+    $("code-show").textContent = S.code;
+    $("m-round").textContent = meta; $("m-code").textContent = codeTxt;
+    $("r-round").textContent = meta; $("r-code").textContent = codeTxt;
+
+    $("mission-text").textContent = mText(d.mine);
+    $("mission-pts").textContent = t("pts")(M[d.mine][2]);
+    $("seal-closed").hidden = sealOpen;
+    $("seal-open").hidden = !sealOpen;
+    $("seal").classList.toggle("closed", !sealOpen);
+
+    var hasAcc = S.accusation !== null;
+    $("go-accuse").hidden = hasAcc;
+    $("accused-note").hidden = !hasAcc;
+    $("accused-note").textContent = t("accused");
+    updateTimerUI();
+
+    var box = $("choices"); box.innerHTML = "";
+    d.options.forEach(function (i) {
+      var b = document.createElement("button");
+      b.className = "choice"; b.type = "button"; b.textContent = mText(i);
+      b.setAttribute("aria-pressed", pendingAcc === i);
+      b.addEventListener("click", function () { pendingAcc = i; sfx("tap"); render(); });
+      box.appendChild(b);
+    });
+    $("accuse-confirm").disabled = pendingAcc === null;
+
+    $("r-mine").textContent = mText(d.mine);
+    $("r-theirs").textContent = mText(d.theirs);
+    $("r-guess").innerHTML = "";
+    if (!hasAcc) $("r-guess").textContent = t("noGuess");
+    else {
+      var ok = S.accusation === d.theirs;
+      var s1 = document.createElement("span"); s1.textContent = mText(S.accusation) + " ";
+      var s2 = document.createElement("span"); s2.className = "verdict " + (ok ? "ok" : "bad"); s2.textContent = ok ? t("right") : t("wrong");
+      $("r-guess").appendChild(s1); $("r-guess").appendChild(s2);
+    }
+    document.querySelectorAll(".yn").forEach(function (g) {
+      var q = g.getAttribute("data-q");
+      g.querySelectorAll("button").forEach(function (b) {
+        b.setAttribute("aria-pressed", String(S.answers[q]) === b.getAttribute("data-v"));
+        b.disabled = S.validated;
+      });
+    });
+    $("q-caught").hidden = S.answers.done !== 1;
+
+    var ready = S.answers.done === 0 || (S.answers.done === 1 && (S.answers.caught === 0 || S.answers.caught === 1));
+    $("score-card").hidden = !ready;
+    if (ready) {
+      var res = computeScore(d);
+      var ul = $("breakdown"); ul.innerHTML = "";
+      res.lines.forEach(function (l) {
+        var li = document.createElement("li");
+        var a = document.createElement("span"); a.textContent = l[0];
+        var b = document.createElement("span"); b.textContent = (l[1] > 0 ? "+" : "") + l[1];
+        li.appendChild(a); li.appendChild(b); ul.appendChild(li);
+      });
+      $("sc-round").textContent = res.pts;
+      $("sc-total").textContent = S.validated ? S.total : S.total + res.pts;
+      $("validate").hidden = S.validated;
+      $("after-validate").hidden = !S.validated;
+    }
+  }
+
+  /* ================= Timer ================= */
+  var tm = { total: 600, left: 600, running: false, id: null };
+  function fmt(s) { var m = Math.floor(s / 60), r = s % 60; return m + ":" + (r < 10 ? "0" : "") + r; }
+  function updateTimerUI() {
+    $("timer").textContent = fmt(tm.left);
+    $("timer").classList.toggle("done", tm.left === 0);
+    $("timer-btn").textContent = tm.left === 0 ? t("restart") : tm.running ? t("pause") : (tm.left < tm.total ? t("resume") : t("start"));
+  }
+  function tick() {
+    tm.left = Math.max(0, tm.left - 1);
+    if (tm.left === 0) { stopTimer(); sfx("alarm"); buzz([300, 150, 300, 150, 300]); }
+    updateTimerUI();
+  }
+  function stopTimer() { tm.running = false; clearInterval(tm.id); tm.id = null; }
+  function resetTimer(min) { stopTimer(); tm.total = min * 60; tm.left = tm.total; updateTimerUI(); }
+  $("timer-btn").addEventListener("click", function () {
+    sfx("tap");
+    if (tm.left === 0) { resetTimer(tm.total / 60); return; }
+    if (tm.running) stopTimer(); else { tm.running = true; tm.id = setInterval(tick, 1000); }
+    updateTimerUI();
+  });
+  document.querySelectorAll(".chips button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      sfx("tap");
+      document.querySelectorAll(".chips button").forEach(function (x) { x.setAttribute("aria-pressed", x === b); });
+      resetTimer(+b.getAttribute("data-min"));
+    });
+  });
+
+  /* ================= Share card ================= */
+  var shareText = "", shareBlob = null;
+  function roundRect(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+  function buildCard() {
+    var d = deal(), res = computeScore(d);
+    var W = 1080, H = 1350, c = document.createElement("canvas"); c.width = W; c.height = H;
+    var g = c.getContext("2d");
+    var bg = g.createRadialGradient(W / 2, 0, 50, W / 2, H * 0.3, H);
+    bg.addColorStop(0, "#2a2257"); bg.addColorStop(0.6, "#120f2b"); bg.addColorStop(1, "#0a0818");
+    g.fillStyle = bg; g.fillRect(0, 0, W, H);
+    var r = rng(hash("card" + S.code + S.round));
+    for (var i = 0; i < 220; i++) { g.globalAlpha = 0.25 + r() * 0.6; g.fillStyle = i % 8 === 0 ? "#f0c674" : "#fff"; g.beginPath(); g.arc(r() * W, r() * H, r() * 2.2 + 0.4, 0, 7); g.fill(); }
+    g.globalAlpha = 1;
+    // moon
+    g.save(); g.shadowColor = "rgba(240,198,116,0.7)"; g.shadowBlur = 60;
+    g.fillStyle = "#f0c674"; g.beginPath(); g.arc(W / 2, 250, 110, 0, 7); g.fill(); g.restore();
+    g.fillStyle = "#1c1740"; g.beginPath(); g.arc(W / 2 + 55, 215, 100, 0, 7); g.fill();
+    g.textAlign = "center"; g.textBaseline = "alphabetic";
+    g.fillStyle = "#f4eee4"; g.font = "700 92px Fraunces, Georgia, serif"; g.fillText("Noche Duo", W / 2, 480);
+    g.fillStyle = "#a9a3c4"; g.font = "500 36px 'DM Sans', system-ui, sans-serif"; g.fillText(t("cTag") + " · " + t("round") + " " + S.round, W / 2, 540);
+    if (P.me || P.love) { g.fillStyle = "#ff7a93"; g.font = "italic 500 52px Fraunces, Georgia, serif"; g.fillText((P.me || t("me")) + "  ♥  " + (P.love || t("love")), W / 2, 625); }
+    // result panel
+    g.fillStyle = "rgba(255,255,255,0.06)"; g.strokeStyle = "rgba(240,198,116,0.45)"; g.lineWidth = 3;
+    roundRect(g, 110, 690, W - 220, 380, 40); g.fill(); g.stroke();
+    var head = res.spy ? t("cWin") : res.caught ? t("cCaught") : t("cFail");
+    g.fillStyle = "#f4eee4"; g.font = "700 64px Fraunces, Georgia, serif"; g.fillText(head, W / 2, 800);
+    if (res.right) { g.fillStyle = "#7fe0a7"; g.font = "500 40px 'DM Sans', system-ui, sans-serif"; g.fillText(t("cDetect"), W / 2, 870); }
+    g.fillStyle = "#f0c674"; g.font = "700 120px Fraunces, Georgia, serif"; g.fillText((res.pts > 0 ? "+" : "") + res.pts, W / 2, 1010);
+    // footer stats
+    var f = liveFlame();
+    g.font = "700 44px 'DM Sans', system-ui, sans-serif";
+    g.fillStyle = "#ff9a3c"; g.fillText("🔥 " + t("cFlame")(f), W / 2 - 220, 1160);
+    g.fillStyle = "#f0c674"; g.fillText("✦ " + L(LEVELS[levelOf(P.xp)]), W / 2 + 230, 1160);
+    g.fillStyle = "#f4eee4"; g.font = "italic 500 46px Fraunces, Georgia, serif"; g.fillText(t("cDare"), W / 2, 1265);
+    shareText = "Noche Duo 🌙 · " + t("round") + " " + S.round + "\n" + head + (res.right ? "\n" + t("cDetect") : "") + "\n" + (res.pts > 0 ? "+" : "") + res.pts + " · 🔥 " + t("cFlame")(f) + " · " + L(LEVELS[levelOf(P.xp)]) + "\n" + t("cDare");
+    return c;
+  }
+  function openShare() {
+    var go = function () {
+      var c = buildCard();
+      var url = c.toDataURL("image/png");
+      $("share-img").src = url; $("share-img").alt = shareText;
+      $("share-dl").href = url;
+      shareBlob = null;
+      try { c.toBlob(function (b) { shareBlob = b; }, "image/png"); } catch (e) {}
+      var canNative = !!navigator.share;
+      $("share-native").hidden = !canNative;
+      $("modal").hidden = false; applyText();
+      $("share-copy").textContent = t("copy");
+      $("modal-close").focus();
+    };
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(go, go); else go();
+  }
+  $("share").addEventListener("click", function () { sfx("tap"); openShare(); });
+  $("modal-close").addEventListener("click", function () { $("modal").hidden = true; $("share").focus(); });
+  $("modal").addEventListener("click", function (e) { if (e.target === $("modal")) $("modal").hidden = true; });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("modal").hidden) $("modal").hidden = true; });
+  $("share-copy").addEventListener("click", function () {
+    var btn = this;
+    try {
+      navigator.clipboard.writeText(shareText).then(function () { btn.textContent = t("copied"); }, function () { fallbackCopy(btn); });
+    } catch (e) { fallbackCopy(btn); }
+  });
+  function fallbackCopy(btn) {
+    var ta = document.createElement("textarea"); ta.value = shareText; document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); btn.textContent = t("copied"); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+  $("share-native").addEventListener("click", function () {
+    var data = { title: "Noche Duo", text: shareText };
+    try {
+      if (shareBlob && window.File) {
+        var file = new File([shareBlob], "noche-duo.png", { type: "image/png" });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) data.files = [file];
+      }
+      navigator.share(data).catch(function () {});
+    } catch (e) {}
+  });
+
+  /* ================= Events ================= */
+  function newRoundState() { S.accusation = null; S.answers = {}; S.validated = false; S.opened = false; sealOpen = false; pendingAcc = null; resetTimer(tm.total / 60); }
+
+  $("lang-fr").addEventListener("click", function () { S.lang = "fr"; sfx("tap"); save(); render(); });
+  $("lang-kr").addEventListener("click", function () { S.lang = "kr"; sfx("tap"); save(); render(); });
+  $("lang-en").addEventListener("click", function () { S.lang = "en"; sfx("tap"); save(); render(); });
+  $("brand").addEventListener("click", function () {
+    if (!playLaugh()) sfx("reveal");
+    if (current !== "home" && current !== "mission" && current !== "accuse" && current !== "reveal") show("home");
+  });
+
+  $("go-create").addEventListener("click", function () {
+    sfx("tap");
+    S.code = String(Math.floor(1000 + Math.random() * 9000));
+    S.role = "A"; S.round = 1; S.total = 0; newRoundState(); resetSyncAll(); save(); show("created");
+  });
+  $("go-resume").addEventListener("click", function () { sfx("tap"); goMode(); });
+  $("created-go").addEventListener("click", function () { sfx("tap"); goMode(); });
+  $("go-join").addEventListener("click", function () { sfx("tap"); $("join-err").textContent = ""; show("join"); setTimeout(function () { $("code-in").focus(); }, 50); });
+  $("code-in").addEventListener("input", function (e) { e.target.value = e.target.value.replace(/\D/g, "").slice(0, 4); });
+  $("join-go").addEventListener("click", function () {
+    var v = $("code-in").value.trim();
+    if (!/^\d{4}$/.test(v)) { $("join-err").textContent = t("badCode"); buzz(80); return; }
+    sfx("tap");
+    S.code = v; S.role = "B"; S.round = 1; S.total = 0; newRoundState(); resetSyncAll(); save(); goMode();
+  });
+  $("code-in").addEventListener("keydown", function (e) { if (e.key === "Enter") $("join-go").click(); });
+  document.querySelectorAll("[data-home]").forEach(function (b) { b.addEventListener("click", function () { show("home"); }); });
+
+  $("seal").addEventListener("click", function () {
+    sealOpen = !sealOpen;
+    if (sealOpen) { sfx("reveal"); buzz(30); if (!S.opened) { S.opened = true; save(); pubGame(); } } else sfx("tap");
+    render();
+  });
+  $("go-accuse").addEventListener("click", function () { sfx("tap"); pendingAcc = null; show("accuse"); });
+  $("accuse-cancel").addEventListener("click", function () { pendingAcc = null; show("mission"); });
+  $("accuse-confirm").addEventListener("click", function () {
+    if (pendingAcc === null) return;
+    S.accusation = pendingAcc; pendingAcc = null; sfx("accuse"); buzz([40, 60, 40]); save(); pubGame(); show("mission");
+  });
+  $("go-reveal").addEventListener("click", function () { stopTimer(); sealOpen = false; sfx("reveal"); show("reveal"); });
+  $("quit").addEventListener("click", function () { S.code = null; S.role = null; newRoundState(); save(); show("home"); });
+
+  document.querySelectorAll(".yn").forEach(function (g) {
+    var q = g.getAttribute("data-q");
+    g.querySelectorAll("button").forEach(function (b) {
+      b.addEventListener("click", function () {
+        if (S.validated) return;
+        sfx("tap");
+        S.answers[q] = +b.getAttribute("data-v");
+        if (q === "done" && S.answers.done === 0) delete S.answers.caught;
+        save(); render();
+      });
+    });
+  });
+
+  $("validate").addEventListener("click", function () {
+    if (S.validated) return;
+    var res = computeScore(deal());
+    S.total += res.pts; S.lastPts = res.pts; S.validated = true;
+    var out = applyProgress(res);
+    save(); pubGame(); render();
+    if (res.pts > 0) { if (!playLaugh()) sfx("win"); confetti(res.pts >= 3); buzz([60, 40, 120]); }
+    else { sfx("lose"); buzz(200); }
+    out.earned.forEach(function (id) { var b = BADGES.filter(function (x) { return x.id === id; })[0]; toast(b.ic, t("newBadge"), L(b)); });
+    if (out.levelUp) { toast("✦", t("levelUp"), L(LEVELS[levelOf(P.xp)])); setTimeout(function () { confetti(true); }, 600); }
+    $("after-validate").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+  });
+
+  function localNextRound() { S.round += 1; newRoundState(); save(); pubGame(); show("mission"); }
+  $("next-round").addEventListener("click", function () {
+    sfx("tap");
+    if (coupleMode() && OL.db) {
+      var target = S.round;
+      OL.db.ref(olBase() + "/live/shared/round").transaction(function (c) { c = c || 1; return c === target ? target + 1 : c; })
+        .then(function () { if (S.round === target) { /* listener will move us; fall back if it did not */ setTimeout(function () { if (S.round === target && (OL.sharedRound || 0) <= target) localNextRound(); }, 4000); } })
+        .catch(function () { localNextRound(); });
+    } else localNextRound();
+  });
+
+  /* Settings */
+  var resetArmed = false;
+  $("go-settings").addEventListener("click", function () { sfx("tap"); resetArmed = false; show("settings"); });
+  $("settings-done").addEventListener("click", function () { sfx("tap"); show(S.code && current !== "settings" ? "mission" : "home"); });
+  $("in-me").addEventListener("input", function () { P.me = this.value.trim(); save(); });
+  $("in-love").addEventListener("input", function () { P.love = this.value.trim(); save(); });
+  $("sw-sound").addEventListener("click", function () { P.sound = !P.sound; save(); renderSettings(); sfx("tap"); });
+  $("in-laugh").addEventListener("change", function () {
+    var f = this.files && this.files[0]; this.value = "";
+    $("laugh-err").textContent = "";
+    if (!f) return;
+    if (f.size > 2.5 * 1024 * 1024) { $("laugh-err").textContent = t("laughBig"); return; }
+    var rd = new FileReader();
+    rd.onload = function () {
+      var url = rd.result;
+      laughURL = url;
+      if (!lsSet("nd-laugh", url)) $("laugh-err").textContent = t("laughNoSave");
+      renderSettings();
+      try {
+        laughEl = laughEl || new Audio();
+        laughEl.onerror = function () { $("laugh-err").textContent = t("laughBad"); };
+        laughEl.src = url;
+        var pr = laughEl.play(); if (pr && pr.catch) pr.catch(function () {});
+      } catch (e) { $("laugh-err").textContent = t("laughBad"); }
+    };
+    rd.onerror = function () { $("laugh-err").textContent = t("laughBad"); };
+    rd.readAsDataURL(f);
+  });
+  $("laugh-test").addEventListener("click", function () { var was = P.sound; P.sound = true; playLaugh(); P.sound = was; });
+  $("laugh-remove").addEventListener("click", function () { laughURL = null; lsDel("nd-laugh"); renderSettings(); });
+  $("reset").addEventListener("click", function () {
+    if (!resetArmed) { resetArmed = true; renderSettings(); buzz(60); return; }
+    P = { me: P.me, love: P.love, sound: P.sound, couple: P.couple, gnShown: P.gnShown, lovePhone: P.lovePhone, since: P.since, reunion: P.reunion, bdayLove: P.bdayLove, bdayMe: P.bdayMe, notif: P.notif, xp: 0, rounds: 0, flame: 0, lastDay: null, badges: [], syncBest: 0 };
+    resetArmed = false; save(); renderSettings(); sfx("tap");
+  });
+
+  /* ================= Online couple (Firebase Realtime Database) ================= */
+  var FB = "https://www.gstatic.com/firebasejs/10.12.2/";
+  var OL = { db: null, uid: null, initP: null, refs: [], partner: {}, partnerJoined: false, sharedRound: null, offset: 0, connected: false, basePulse: undefined, myGN: 0, lost: false, moodPick: null, lastPulse: 0 };
+  function olAvailable() { return !!(FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey) || !!window.__ND_MOCK; }
+  function loadScript(src) { return new Promise(function (res, rej) { var s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
+  function srvNow() { return Date.now() + OL.offset; }
+  function TS() { return firebase.database.ServerValue.TIMESTAMP; }
+  function partnerName() { return P.love || (OL.partner && OL.partner.name) || ""; }
+  function nameStart() { return partnerName() || t("love"); }
+  function nameMid() { return partnerName() || t("loveMid"); }
+  function coupleMode() { return !!(P.couple && S.code === P.couple.code); }
+  function olBase() { return "couples/" + P.couple.code; }
+  function mySlot() { return P.couple.slot; }
+  function otherSlot() { return P.couple.slot === "a" ? "b" : "a"; }
+  function myLive() { return OL.db.ref(olBase() + "/live/" + mySlot()); }
+  function isPerm(e) { return /permission/i.test(String(e && (e.code || e.message) || "")); }
+
+  function olInit() {
+    if (OL.initP) return OL.initP;
+    var ready = window.firebase ? Promise.resolve() :
+      loadScript(FB + "firebase-app-compat.js").then(function () { return Promise.all([loadScript(FB + "firebase-auth-compat.js"), loadScript(FB + "firebase-database-compat.js")]); });
+    OL.initP = ready.then(function () {
+      if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG || {});
+      return firebase.auth().signInAnonymously();
+    }).then(function (cred) {
+      OL.uid = (cred && cred.user && cred.user.uid) || firebase.auth().currentUser.uid;
+      OL.db = firebase.database();
+      OL.db.ref(".info/serverTimeOffset").on("value", function (s) { OL.offset = s.val() || 0; });
+      OL.db.ref(".info/connected").on("value", function (s) { OL.connected = !!s.val(); if (OL.connected) olAnnounce(); renderOnlineSafe(); });
+      return OL;
+    });
+    OL.initP.catch(function () { OL.initP = null; });
+    return OL.initP;
+  }
+
+  function genCode() { var A = "ABCDEFGHJKMNPQRSTUVWXYZ23456789", s = ""; for (var i = 0; i < 6; i++) s += A[Math.floor(Math.random() * A.length)]; return s; }
+
+  function olCreate() {
+    $("ol-err").textContent = ""; $("ol-create").disabled = true;
+    var tries = 0;
+    function attempt() {
+      var code = genCode();
+      return OL.db.ref("couples/" + code + "/members/a").set(OL.uid).then(function () { return code; }, function (e) { if (isPerm(e) && ++tries < 3) return attempt(); throw e; });
+    }
+    olInit().then(attempt).then(function (code) {
+      P.couple = { code: code, slot: "a" }; OL.lost = false; save(); olAttach(); sfx("reveal"); render();
+    }).catch(function () { $("ol-err").textContent = t("linkNet"); })
+      .then(function () { $("ol-create").disabled = false; });
+  }
+
+  function olJoin() {
+    var code = $("ol-code").value.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+    $("ol-err").textContent = "";
+    if (code.length !== 6) { $("ol-err").textContent = t("linkBad"); buzz(80); return; }
+    $("ol-join-go").disabled = true;
+    olInit().then(function () { return OL.db.ref("couples/" + code + "/members/b").set(OL.uid); }).then(function () {
+      P.couple = { code: code, slot: "b" }; OL.lost = false; save(); olAttach(); sfx("win"); confetti(true); buzz([60, 40, 120]);
+      toast("💞", t("onlineTitle"), t("linked")); render();
+    }).catch(function (e) { $("ol-err").textContent = isPerm(e) ? t("linkBad") : t("linkNet"); buzz(120); })
+      .then(function () { $("ol-join-go").disabled = false; });
+  }
+
+  function olAttach() {
+    if (!P.couple || !olAvailable()) return;
+    olDetach();
+    olInit().then(function () {
+      if (!P.couple) return;
+      var base = olBase();
+      function watch(path, fn) { var r = OL.db.ref(path); var cb = r.on("value", fn, olPermErr); OL.refs.push([r, cb]); }
+      watch(base + "/members/" + otherSlot(), function (s) {
+        var was = OL.partnerJoined; OL.partnerJoined = !!s.val();
+        if (!was && OL.partnerJoined && OL.attachedOnce) { toast("💞", t("onlineTitle"), t("linked")); confetti(true); sfx("win"); }
+        OL.attachedOnce = true; renderOnlineSafe();
+      });
+      watch(base + "/live/" + otherSlot(), function (s) { onPartner(s.val() || {}); });
+      watch(base + "/live/shared/round", function (s) { onSharedRound(s.val()); });
+      watch(base + "/live/" + mySlot() + "/goodnight", function (s) { OL.myGN = s.val() || 0; checkGN(); });
+      watch(base + "/live/call", function (s) { onCall(s.val()); });
+      watch(base + "/live/shared/syncN", function (s) { onSharedSync(s.val()); });
+      watch(base + "/live/shared/dates", function (s) { onSharedDates(s.val()); });
+      watch(base + "/live/callIce/" + otherSlot(), function (s) { onRemoteIce(s.val()); });
+      olAnnounce(); pubGame();
+    }).catch(function () { renderOnlineSafe(); });
+  }
+  function olDetach() {
+    OL.refs.forEach(function (p) { try { p[0].off("value", p[1]); } catch (e) {} });
+    OL.refs = []; OL.basePulse = undefined; OL.partner = {}; OL.partnerJoined = false; OL.sharedRound = null; OL.attachedOnce = false;
+  }
+  function olPermErr(e) {
+    if (isPerm(e)) { olDetach(); P.couple = null; OL.lost = true; save(); render(); }
+  }
+  function olAnnounce() {
+    if (!P.couple || !OL.db) return;
+    var ref = myLive();
+    ref.update({ online: true, tz: -new Date().getTimezoneOffset(), name: P.me || null, bday: P.bdayMe || null, daily: P.dailyDone || null }).catch(function () {});
+    ref.onDisconnect().update({ online: false, lastSeen: TS() });
+  }
+
+  function onPartner(v) {
+    var pn = v.pulse ? v.pulse.n : null;
+    if (OL.basePulse !== undefined && pn && pn !== OL.basePulse && v.pulse.at && srvNow() - v.pulse.at < 120000) receivePulse();
+    OL.basePulse = pn;
+    OL.partner = v;
+    checkGN(); checkSync(); renderOnlineSafe(); renderPartnerGame();
+  }
+  function onSharedRound(r) {
+    OL.sharedRound = r;
+    if (coupleMode() && r && r > S.round && S.mode !== "sync") {
+      S.round = r; newRoundState(); save(); pubGame();
+      if (["mission", "reveal", "accuse"].indexOf(current) >= 0) { show("mission"); toast("🌙", t("newRoundToast"), t("round") + " " + r); }
+    }
+  }
+
+  function receivePulse() {
+    $("heartfx-t").textContent = t("pulseGot")(nameStart());
+    var el = $("heartfx"); el.hidden = false;
+    var inner = el.firstElementChild; inner.style.animation = "none"; void inner.offsetWidth; inner.style.animation = "";
+    var svg = el.querySelector("svg"); svg.style.animation = "none"; void svg.offsetWidth; svg.style.animation = "";
+    sfx("reveal"); buzz([120, 80, 120, 300, 120, 80, 120]);
+    notifyIfHidden("💓 Noche Duo", t("pulseGot")(nameStart()), "pulse");
+    clearTimeout(OL.heartT); OL.heartT = setTimeout(function () { el.hidden = true; }, reduce ? 2200 : 2700);
+  }
+  function sendPulse() {
+    if (!OL.db || !P.couple) return;
+    if (Date.now() - OL.lastPulse < 3000) return;
+    OL.lastPulse = Date.now();
+    myLive().child("pulse").set({ at: TS(), n: Math.random().toString(36).slice(2) }).then(function () { olNote(t("pulseSent")); }, function () { olNote(t("linkNet")); });
+    sfx("tap"); buzz(40); confetti(false);
+  }
+  function sendGN() {
+    if (!OL.db || !P.couple) return;
+    myLive().child("goodnight").set(TS()).then(function () { olNote(t("gnSent")); }, function () { olNote(t("linkNet")); });
+    crossFx(t("gnBoth")(nameMid()));
+  }
+  function checkGN() {
+    var a = OL.myGN, b = OL.partner && OL.partner.goodnight;
+    if (b && b !== OL.lastGNNotified && srvNow() - b < 600000) { OL.lastGNNotified = b; notifyIfHidden("🌙 Noche Duo", t("nGN")(nameStart()), "gn"); if (!document.hidden) crossFx(t("nGN")(nameStart())); }
+    if (!a || !b || Math.abs(a - b) > 3 * 3600000) return;
+    var latest = Math.max(a, b);
+    if (P.gnShown === latest || srvNow() - latest > 12 * 3600000) return;
+    P.gnShown = latest; save();
+    setTimeout(function () {
+      $("moonfx-t").textContent = t("gnTogether");
+      $("moonfx").hidden = false;
+      note(523, 0.3, 1.2, "sine", 0.1); note(659, 0.6, 1.2, "sine", 0.1); note(784, 0.9, 1.6, "sine", 0.1);
+      buzz([80, 120, 80]);
+      clearTimeout(OL.moonT); OL.moonT = setTimeout(function () { $("moonfx").hidden = true; }, 5500);
+    }, 5800);
+  }
+  $("moonfx").addEventListener("click", function () { $("moonfx").hidden = true; });
+
+  function olNote(msg) { $("ol-note").textContent = msg; clearTimeout(OL.noteT); OL.noteT = setTimeout(function () { $("ol-note").textContent = ""; }, 3000); }
+
+  function pubGame() {
+    if (!coupleMode() || !OL.db) return;
+    myLive().child("game").set({ round: S.round, opened: !!S.opened, accused: S.accusation !== null, validated: !!S.validated, pts: S.validated ? S.lastPts : null, total: S.total }).catch(function () {});
+  }
+
+  function fmtHM(tz) { var d = new Date(Date.now() + tz * 60000); var h = d.getUTCHours(), m = d.getUTCMinutes(); return (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m; }
+
+  function renderOnline() {
+    var avail = olAvailable();
+    $("online-card").hidden = !avail;
+    var linked = !!P.couple;
+    $("go-together").hidden = !(avail && linked && OL.partnerJoined);
+    $("go-create").hidden = avail && linked && OL.partnerJoined;
+    $("go-join").hidden = avail && linked && OL.partnerJoined;
+    if (!avail) return;
+    $("ol-unlinked").hidden = linked;
+    $("ol-linked").hidden = !linked;
+    if (!linked) { if (OL.lost && !$("ol-err").textContent) $("ol-err").textContent = t("linkLost"); return; }
+    $("ol-waiting").hidden = OL.partnerJoined;
+    $("ol-code-show").textContent = P.couple.code;
+    var p = OL.partner || {}, n = nameStart();
+    var on = OL.partnerJoined && p.online === true;
+    $("ol-dot").classList.toggle("on", on);
+    $("ol-status").textContent = on ? t("online")(n) : (p.lastSeen ? t("seen")(n, Math.round((srvNow() - p.lastSeen) / 60000)) : t("never")(n));
+    $("ol-time").hidden = typeof p.tz !== "number";
+    if (typeof p.tz === "number") $("ol-time").textContent = t("theirTime")(fmtHM(p.tz), nameMid());
+    var mi = typeof p.moodIdx === "number" ? MOODS[p.moodIdx] : null;
+    if (p.music && mi && mi[0] === "🎵") $("ol-mood").textContent = t("listening")(n, p.music);
+    else if (mi) $("ol-mood").textContent = t("moodIs")(n, mi[0], mi[{ fr: 1, kr: 2, en: 3 }[S.lang] || 1]);
+    else $("ol-mood").textContent = t("moodNone")(n);
+    $("ol-listen").hidden = !p.music;
+    if (p.music) { $("ol-listen").href = "https://www.youtube.com/results?search_query=" + encodeURIComponent(p.music); $("ol-listen").textContent = t("listenToo"); }
+    var dis = !OL.partnerJoined;
+    $("ol-pulse").disabled = dis; $("ol-gn").disabled = dis;
+    var box = $("moods");
+    if (!box.childElementCount || box.getAttribute("data-lang") !== S.lang) {
+      box.innerHTML = ""; box.setAttribute("data-lang", S.lang);
+      MOODS.forEach(function (m, i) {
+        var b = document.createElement("button"); b.type = "button"; b.className = "mood";
+        var e = document.createElement("span"); e.textContent = m[0];
+        b.appendChild(e); b.appendChild(document.createTextNode(m[{ fr: 1, kr: 2, en: 3 }[S.lang] || 1]));
+        b.addEventListener("click", function () { OL.moodPick = i; sfx("tap"); renderMoodPick(); });
+        box.appendChild(b);
+      });
+    }
+    renderMoodPick();
+  }
+  function renderMoodPick() {
+    Array.prototype.forEach.call($("moods").children, function (b, i) { b.setAttribute("aria-pressed", OL.moodPick === i); });
+    $("ol-musicfield").hidden = OL.moodPick !== 5;
+  }
+  function renderOnlineSafe() { if (current === "home") { renderProfile(); renderOnline(); renderCallCard(); renderDaily(); renderStory(); } if (current === "sync") renderSync(); renderCallMission(); }
+
+  function renderPartnerGame() {
+    var pg = $("partner-game"), duel = $("duel");
+    if (!coupleMode() || !OL.partnerJoined) { pg.hidden = true; duel.hidden = true; return; }
+    var g = (OL.partner && OL.partner.game) || {}, same = g.round === S.round, n = nameStart();
+    pg.hidden = false;
+    pg.textContent = n + " " + (same && g.accused ? t("pAccused") : same && g.opened ? t("pOpened") : t("pWaiting"));
+    duel.hidden = !S.validated;
+    if (!S.validated) return;
+    duel.innerHTML = "";
+    if (same && g.validated && typeof g.pts === "number") {
+      var b = document.createElement("b");
+      b.textContent = g.pts < S.lastPts ? t("youWin") : g.pts === S.lastPts ? t("tie") : t("theyWin")(n);
+      var s = document.createElement("span"); s.className = "small"; s.textContent = t("pScore")(n, g.pts, g.total);
+      duel.appendChild(b); duel.appendChild(s);
+      if (OL.duelShown !== S.code + S.round) { OL.duelShown = S.code + S.round; if (g.pts < S.lastPts) confetti(true); }
+    } else {
+      var w = document.createElement("span"); w.className = "small"; w.textContent = t("waitPartner")(nameMid());
+      duel.appendChild(w);
+    }
+  }
+
+  function playTogether() {
+    if (!P.couple) return;
+    sfx("tap");
+    var same = S.code === P.couple.code;
+    var r = OL.sharedRound || 1;
+    if (!OL.sharedRound && OL.db) OL.db.ref(olBase() + "/live/shared/round").transaction(function (c) { return c || 1; }).catch(function () {});
+    S.code = P.couple.code; S.role = mySlot() === "a" ? "A" : "B";
+    if (!same) S.total = 0;
+    if (!same || S.round !== r) { S.round = r; newRoundState(); }
+    if (!same) resetSyncAll();
+    if (OL.sharedSyncN && OL.sharedSyncN > (S.syncN || 1)) { S.syncN = OL.sharedSyncN; resetSyncQ(); }
+    if (!OL.sharedSyncN && OL.db) OL.db.ref(olBase() + "/live/shared/syncN").transaction(function (c) { return c || 1; }).catch(function () {});
+    save(); pubGame(); pubSync(); goMode();
+  }
+
+  $("ol-create").addEventListener("click", olCreate);
+  $("ol-join").addEventListener("click", function () { sfx("tap"); $("ol-joinbox").hidden = false; $("ol-code").focus(); });
+  $("ol-code").addEventListener("input", function (e) { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6); });
+  $("ol-code").addEventListener("keydown", function (e) { if (e.key === "Enter") olJoin(); });
+  $("ol-join-go").addEventListener("click", olJoin);
+  $("ol-pulse").addEventListener("click", sendPulse);
+  $("ol-gn").addEventListener("click", sendGN);
+  $("ol-mood-btn").addEventListener("click", function () {
+    sfx("tap"); var box = $("ol-moodbox"); box.hidden = !box.hidden;
+    if (!box.hidden) { OL.moodPick = typeof OL.myMood === "number" ? OL.myMood : null; $("ol-music").value = OL.myMusic || ""; renderMoodPick(); }
+  });
+  $("ol-mood-save").addEventListener("click", function () {
+    if (OL.moodPick === null || !OL.db) return;
+    var music = OL.moodPick === 5 ? $("ol-music").value.trim().slice(0, 60) : "";
+    OL.myMood = OL.moodPick; OL.myMusic = music;
+    myLive().update({ moodIdx: OL.moodPick, music: music || null, moodAt: TS() }).then(function () { olNote(t("moodSaved")); }, function () { olNote(t("linkNet")); });
+    $("ol-moodbox").hidden = true; sfx("badge");
+  });
+  $("ol-mood-clear").addEventListener("click", function () {
+    if (!OL.db) return;
+    OL.myMood = null; OL.myMusic = ""; OL.moodPick = null;
+    myLive().update({ moodIdx: null, music: null }).catch(function () {});
+    $("ol-moodbox").hidden = true; sfx("tap");
+  });
+  $("go-together").addEventListener("click", playTogether);
+  $("in-me").addEventListener("change", function () { if (P.couple && OL.db) myLive().update({ name: P.me || null }).catch(function () {}); });
+
+  var unlinkArmed = false;
+  function renderUnlink() { $("unlink").hidden = !P.couple; $("unlink").textContent = unlinkArmed ? t("unlinkSure") : t("unlink"); }
+  $("unlink").addEventListener("click", function () {
+    if (!unlinkArmed) { unlinkArmed = true; renderUnlink(); buzz(60); return; }
+    if (OL.db && P.couple) myLive().update({ online: false, lastSeen: TS() }).catch(function () {});
+    olDetach(); P.couple = null; unlinkArmed = false; if (S.code && S.code.length === 6) { S.code = null; S.role = null; }
+    save(); renderUnlink(); sfx("tap");
+  });
+  $("go-settings").addEventListener("click", function () { unlinkArmed = false; renderUnlink(); });
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) { olAnnounce(); renderOnlineSafe(); } });
+  setInterval(renderOnlineSafe, 30000);
+
+  /* ================= Calls: phone/WhatsApp + in-game voice (WebRTC, signalled through Firebase) ================= */
+  var CALL = { pc: null, stream: null, id: null, role: null, state: "idle", offer: null, seen: {}, pending: [], muted: false, t0: 0, tick: null, ringT: null, ringI: null, handled: null, answered: false };
+  var rtcOK = !!(window.RTCPeerConnection && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  function rid() { return Math.random().toString(36).slice(2, 10) + Date.now().toString(36); }
+  function callRef() { return OL.db.ref(olBase() + "/live/call"); }
+  function iceRef(slot) { return OL.db.ref(olBase() + "/live/callIce/" + slot); }
+  function canCallInGame() { return rtcOK && !!P.couple && !!OL.db && OL.partnerJoined; }
+  function phoneDigits() { return (P.lovePhone || "").replace(/[^0-9+]/g, ""); }
+
+  function renderCallCard() {
+    var inGame = canCallInGame() && CALL.state === "idle";
+    var hasNum = phoneDigits().replace(/\+/g, "").length >= 6;
+    $("call-card").hidden = !(inGame || hasNum || (P.couple && OL.partnerJoined));
+    $("call-start").hidden = !inGame;
+    $("call-start").textContent = t("callInGame")(nameMid());
+    $("call-direct").hidden = !hasNum;
+    if (hasNum) { $("call-tel").href = "tel:" + phoneDigits(); $("call-wa").href = "https://wa.me/" + phoneDigits().replace(/\+/g, ""); }
+    $("call-hint").hidden = hasNum;
+    $("call-hint").textContent = rtcOK ? t("callNoNumber") : t("callNoSupport") + " " + t("callNoNumber");
+  }
+  function renderCallMission() {
+    var b = $("call-start-m");
+    b.hidden = !(canCallInGame() && CALL.state === "idle" && coupleMode());
+    b.textContent = t("callInGame")(nameMid());
+  }
+  function fmtDur(ms) { var s = Math.floor(ms / 1000), m = Math.floor(s / 60); s %= 60; return m + ":" + (s < 10 ? "0" : "") + s; }
+  function renderCallbar() {
+    var st = CALL.state, bar = $("callbar"), n = nameStart();
+    bar.hidden = st === "idle";
+    document.body.classList.toggle("incall", st !== "idle");
+    if (st === "idle") return;
+    bar.classList.toggle("ringing", st === "incoming");
+    $("cb-text").textContent = st === "calling" ? t("callOut")(n) : st === "incoming" ? t("callIn")(n) : st === "connecting" ? t("callConnecting") : t("callWith")(n);
+    $("cb-time").textContent = st === "incall" && CALL.t0 ? fmtDur(Date.now() - CALL.t0) : "";
+    $("cb-accept").hidden = st !== "incoming";
+    $("cb-accept").textContent = t("accept");
+    $("cb-mute").hidden = st === "incoming";
+    $("cb-mute").textContent = CALL.muted ? t("unmute") : t("mute");
+    $("cb-end").textContent = st === "incoming" ? t("decline") : t("hangup");
+  }
+  function setCallState(s) {
+    CALL.state = s;
+    if (s === "incall" && !CALL.t0) { CALL.t0 = Date.now(); clearInterval(CALL.tick); CALL.tick = setInterval(renderCallbar, 1000); stopRing(); sfx("win"); buzz(60); }
+    renderCallbar(); renderCallCard(); renderCallMission();
+  }
+  function startRing(incoming) {
+    stopRing();
+    var ring = incoming
+      ? function () { note(880, 0, 0.3, "sine", 0.14); note(988, 0.35, 0.3, "sine", 0.14); note(880, 0.7, 0.3, "sine", 0.14); buzz([400, 200, 400]); }
+      : function () { note(440, 0, 0.9, "sine", 0.05); note(480, 0, 0.9, "sine", 0.05); };
+    ring(); CALL.ringI = setInterval(ring, incoming ? 2200 : 3000);
+  }
+  function stopRing() { clearInterval(CALL.ringI); CALL.ringI = null; }
+
+  function getMic() {
+    return navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }, video: false })
+      .catch(function (e) { var err = new Error("mic"); err.mic = true; err.orig = e; throw err; });
+  }
+  function makePC() {
+    var pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+    CALL.stream.getTracks().forEach(function (tr) { pc.addTrack(tr, CALL.stream); });
+    pc.onicecandidate = function (e) { if (e.candidate && P.couple) iceRef(mySlot()).child(rid()).set(e.candidate.toJSON()).catch(function () {}); };
+    pc.ontrack = function (e) { var a = $("remote-audio"); a.srcObject = e.streams[0]; var pr = a.play(); if (pr && pr.catch) pr.catch(function () {}); };
+    function watchState() {
+      var cs = pc.connectionState || pc.iceConnectionState;
+      if (cs === "connected" || cs === "completed") { if (CALL.state !== "incall") setCallState("incall"); }
+      else if (cs === "failed") { endCall("fail"); }
+    }
+    pc.onconnectionstatechange = watchState; pc.oniceconnectionstatechange = watchState;
+    CALL.pc = pc; return pc;
+  }
+  function addIce(c) { if (CALL.pc && CALL.pc.remoteDescription) CALL.pc.addIceCandidate(new RTCIceCandidate(c)).catch(function () {}); else CALL.pending.push(c); }
+  function flushPending() { var q = CALL.pending; CALL.pending = []; q.forEach(addIce); }
+  function onRemoteIce(v) {
+    if (!v) { CALL.seen = {}; CALL.pending = []; return; }
+    Object.keys(v).forEach(function (k) { if (!CALL.seen[k]) { CALL.seen[k] = true; addIce(v[k]); } });
+  }
+
+  function startCall() {
+    if (!canCallInGame() || CALL.state !== "idle") return;
+    sfx("tap");
+    getMic().then(function (stream) {
+      CALL.stream = stream; CALL.id = rid(); CALL.role = "caller"; CALL.answered = false; CALL.handled = CALL.id;
+      setCallState("calling"); startRing(false);
+      return Promise.all([iceRef("a").set(null), iceRef("b").set(null)]);
+    }).then(function () {
+      var pc = makePC();
+      return pc.createOffer();
+    }).then(function (off) {
+      return CALL.pc.setLocalDescription(off).then(function () { return off; });
+    }).then(function (off) {
+      return callRef().set({ id: CALL.id, from: mySlot(), state: "ringing", offer: { type: off.type, sdp: off.sdp }, at: TS() });
+    }).then(function () {
+      clearTimeout(CALL.ringT);
+      CALL.ringT = setTimeout(function () { if (CALL.state === "calling") endCall("missed"); }, 45000);
+    }).catch(callError);
+  }
+  function acceptCall() {
+    stopRing(); sfx("tap");
+    var offer = CALL.offer;
+    getMic().then(function (stream) {
+      CALL.stream = stream; setCallState("connecting");
+      var pc = makePC();
+      return pc.setRemoteDescription(offer);
+    }).then(function () {
+      flushPending();
+      return CALL.pc.createAnswer();
+    }).then(function (ans) {
+      return CALL.pc.setLocalDescription(ans).then(function () { return ans; });
+    }).then(function (ans) {
+      return callRef().update({ answer: { type: ans.type, sdp: ans.sdp }, state: "accepted" });
+    }).catch(callError);
+  }
+  function declineCall() { stopRing(); if (OL.db && P.couple) callRef().update({ state: "declined" }).catch(function () {}); cleanupCall(null); }
+  function endCall(reason) {
+    if (CALL.state === "idle") return;
+    if (OL.db && P.couple) callRef().update({ state: reason === "missed" ? "missed" : "ended" }).catch(function () {});
+    cleanupCall(reason || "ended");
+  }
+  function cleanupCall(reason) {
+    var dur = CALL.t0 ? fmtDur(Date.now() - CALL.t0) : "";
+    stopRing(); clearTimeout(CALL.ringT); clearInterval(CALL.tick);
+    try { if (CALL.pc) CALL.pc.close(); } catch (e) {}
+    if (CALL.stream) CALL.stream.getTracks().forEach(function (tr) { tr.stop(); });
+    var a = $("remote-audio"); a.srcObject = null;
+    var handled = CALL.handled;
+    CALL = { pc: null, stream: null, id: null, role: null, state: "idle", offer: null, seen: CALL.seen, pending: [], muted: false, t0: 0, tick: null, ringT: null, ringI: null, handled: handled, answered: false };
+    setCallState("idle");
+    var n = nameStart();
+    var msg = reason === "ended" ? t("callEnded")(dur) : reason === "missed" ? t("callMissed") : reason === "declined" ? t("callDeclined")(n) : reason === "fail" ? t("callFail") : reason === "mic" ? t("micDenied") : null;
+    if (msg) { toast("📞", t("callTitle"), msg); }
+    if (reason === "ended" || reason === "declined" || reason === "missed") sfx("lose");
+  }
+  function callError(err) {
+    if (CALL.state === "idle") return;
+    if (err && err.mic) { if (OL.db && P.couple) callRef().update({ state: CALL.role === "callee" ? "declined" : "ended" }).catch(function () {}); cleanupCall("mic"); }
+    else endCall("fail");
+  }
+  function onCall(v) {
+    if (!v) { if (CALL.state !== "idle") cleanupCall("ended"); return; }
+    var mine = v.id === CALL.id;
+    if (v.state === "ringing" && v.from !== mySlot()) {
+      if (CALL.state === "idle" && v.id !== CALL.handled && (!v.at || srvNow() - v.at < 60000)) {
+        CALL.handled = v.id; CALL.id = v.id; CALL.role = "callee"; CALL.offer = v.offer;
+        setCallState("incoming"); startRing(true);
+        notifyIfHidden("📞 Noche Duo", t("nCall")(nameStart()), "call");
+      }
+    } else if (v.state === "accepted" && CALL.role === "caller" && mine && v.answer && !CALL.answered) {
+      CALL.answered = true; clearTimeout(CALL.ringT); stopRing(); setCallState("connecting");
+      CALL.pc.setRemoteDescription(v.answer).then(flushPending).catch(function () { endCall("fail"); });
+    } else if (mine && CALL.state !== "idle" && (v.state === "ended" || v.state === "declined" || v.state === "missed")) {
+      cleanupCall(v.state === "declined" && CALL.role === "caller" ? "declined" : v.state === "missed" ? "missed" : "ended");
+    }
+  }
+
+  $("call-start").addEventListener("click", startCall);
+  $("call-start-m").addEventListener("click", startCall);
+  $("cb-accept").addEventListener("click", acceptCall);
+  $("cb-end").addEventListener("click", function () { if (CALL.state === "incoming") declineCall(); else endCall("ended"); });
+  $("cb-mute").addEventListener("click", function () {
+    CALL.muted = !CALL.muted;
+    if (CALL.stream) CALL.stream.getAudioTracks().forEach(function (tr) { tr.enabled = !CALL.muted; });
+    sfx("tap"); renderCallbar();
+  });
+  $("in-phone").addEventListener("input", function () { P.lovePhone = this.value.trim(); save(); });
+  window.addEventListener("pagehide", function () { if (CALL.state !== "idle" && OL.db && P.couple) callRef().update({ state: "ended" }); });
+
+  /* ================= Shared progress helpers ================= */
+  function award(id) {
+    if (P.badges.indexOf(id) >= 0) return;
+    P.badges.push(id);
+    var b = BADGES.filter(function (x) { return x.id === id; })[0];
+    if (b) toast(b.ic, t("newBadge"), L(b));
+  }
+  function addXP(n) {
+    var before = levelOf(P.xp); P.xp += n;
+    if (levelOf(P.xp) > before) { toast("✦", t("levelUp"), L(LEVELS[levelOf(P.xp)])); setTimeout(function () { confetti(true); }, 600); }
+  }
+  function touchDay() {
+    var today = dayKey();
+    if (P.lastDay !== today) { P.flame = P.lastDay === yesterdayKey() ? P.flame + 1 : 1; P.lastDay = today; }
+    if (P.flame >= 3) award("flame3");
+  }
+
+  /* ================= Modes ================= */
+  function goMode() { show(S.mode === "sync" ? "sync" : (S.validated ? "reveal" : "mission")); }
+  function renderModes() {
+    var m = S.mode === "sync" ? "sync" : "mission";
+    $("mode-mission").setAttribute("aria-pressed", m === "mission");
+    $("mode-sync").setAttribute("aria-pressed", m === "sync");
+    var keys = m === "sync" ? ["s1", "s2", "s3"] : ["r1", "r2", "r3"];
+    var ol = $("rules"); ol.innerHTML = "";
+    keys.forEach(function (k, i) {
+      var li = document.createElement("li"), b = document.createElement("b"), sp = document.createElement("span");
+      b.textContent = i + 1; sp.textContent = t(k); li.appendChild(b); li.appendChild(sp); ol.appendChild(li);
+    });
+  }
+  $("mode-mission").addEventListener("click", function () { S.mode = "mission"; save(); sfx("tap"); renderModes(); });
+  $("mode-sync").addEventListener("click", function () { S.mode = "sync"; save(); sfx("tap"); renderModes(); });
+
+  /* ================= Daily challenge ================= */
+  function dayIndex() { var d = new Date(); return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000); }
+  function renderDaily() {
+    var idx = (dayIndex() * 7) % DAILY.length;
+    $("daily-text").textContent = DAILY[idx][{ fr: 0, kr: 1, en: 2 }[S.lang] || 0];
+    var d = new Date(), mid = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1), left = Math.max(0, mid - d);
+    $("daily-left").textContent = t("dailyLeft")(Math.floor(left / 3600000), Math.floor(left / 60000) % 60);
+    var done = P.dailyDone === dayKey();
+    $("daily-done").hidden = done;
+    var st = done ? t("dailyMine") : "";
+    if (P.couple && OL.partnerJoined) { var pd = OL.partner && OL.partner.daily === dayKey(); st += (st ? " · " : "") + t("dailyPartner")(nameStart(), pd); }
+    $("daily-status").textContent = st;
+    $("daily-status").hidden = !st;
+  }
+  $("daily-done").addEventListener("click", function () {
+    if (P.dailyDone === dayKey()) return;
+    P.dailyDone = dayKey(); addXP(3); touchDay(); award("daily"); save();
+    sfx("win"); confetti(false); buzz([60, 40, 120]);
+    if (P.couple && OL.db) myLive().update({ daily: P.dailyDone }).catch(function () {});
+    render();
+  });
+
+  /* ================= Our story: dates ================= */
+  function ymd(str) { if (!str || !/^\d{4}-\d{2}-\d{2}$/.test(str)) return null; var p = str.split("-"); return Date.UTC(+p[0], +p[1] - 1, +p[2]); }
+  function todayUTC() { var d = new Date(); return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()); }
+  function daysUntilYearly(str) {
+    var t0 = ymd(str); if (t0 === null) return null;
+    var src = new Date(t0), now = new Date(), y = now.getFullYear();
+    var next = Date.UTC(y, src.getUTCMonth(), src.getUTCDate());
+    if (next < todayUTC()) next = Date.UTC(y + 1, src.getUTCMonth(), src.getUTCDate());
+    return Math.round((next - todayUTC()) / 86400000);
+  }
+  function loveBday() { return P.bdayLove || (OL.partner && OL.partner.bday) || ""; }
+  function storyLine(txt, cls) { var p = document.createElement("p"); p.className = cls || "story-line"; p.textContent = txt; return p; }
+  function renderStory() {
+    var box = $("story-lines"); box.innerHTML = "";
+    var any = false, today = todayUTC(), special = [];
+    var since = ymd(P.since);
+    if (since !== null && since <= today) {
+      any = true;
+      var days = Math.round((today - since) / 86400000);
+      var row = document.createElement("div"); row.className = "rowb"; row.style.justifyContent = "flex-start"; row.style.gap = "10px";
+      var big = document.createElement("span"); big.className = "big-days"; big.textContent = "💑 " + days;
+      var lbl = document.createElement("span"); lbl.textContent = t("together")(days);
+      row.appendChild(big); row.appendChild(lbl); box.appendChild(row);
+      var steps = [100, 200, 300, 500, 1000, 1500, 2000, 2500, 3000, 4000, 5000];
+      var nextN = steps.filter(function (x) { return x >= days; })[0];
+      var annD = daysUntilYearly(P.since), sd = new Date(since), td = new Date(today);
+      var doneY = td.getUTCFullYear() - sd.getUTCFullYear();
+      if (td.getUTCMonth() < sd.getUTCMonth() || (td.getUTCMonth() === sd.getUTCMonth() && td.getUTCDate() < sd.getUTCDate())) doneY--;
+      var nextY = annD === 0 ? doneY : doneY + 1;
+      var cand = [];
+      if (nextN !== undefined) cand.push([nextN - days, t("daysLbl")(nextN)]);
+      if (annD !== null && nextY >= 1) cand.push([annD, t("yearsLbl")(nextY)]);
+      cand.sort(function (a, b) { return a[0] - b[0]; });
+      if (cand.length) { var stepTxt = t("nextStep")(cand[0][1], cand[0][0]); box.appendChild(storyLine(stepTxt, "small")); if (cand[0][0] === 0) special.push(["step" + cand[0][1], "🎉 " + cand[0][1]]); }
+    }
+    var reu = ymd(P.reunion);
+    if (reu !== null && reu >= today) { any = true; var dr = Math.round((reu - today) / 86400000); box.appendChild(storyLine(t("reunionIn")(dr))); if (dr === 0) special.push(["reunion", t("reunionIn")(0)]); }
+    var bl = daysUntilYearly(loveBday());
+    if (bl !== null && bl <= 60) { any = true; box.appendChild(storyLine(t("bdayLove")(nameMid(), bl))); if (bl === 0) special.push(["bdayLove", t("bdayLove")(nameMid(), 0)]); }
+    var bm = daysUntilYearly(P.bdayMe);
+    if (bm !== null && bm <= 60) { any = true; box.appendChild(storyLine(t("bdayMe")(bm))); if (bm === 0) special.push(["bdayMe", t("bdayMe")(0)]); }
+    if (!any) box.appendChild(storyLine(t("storyEmpty"), "small"));
+    special.forEach(function (sp) {
+      var key = dayKey() + ":" + sp[0];
+      if ((P.celebrated || []).indexOf(key) >= 0) return;
+      P.celebrated = (P.celebrated || []).slice(-20).concat([key]); save();
+      setTimeout(function () { confetti(true); sfx("win"); toast("🎉", t("celebrate"), sp[1]); }, 500);
+    });
+  }
+  $("story-edit").addEventListener("click", function () { sfx("tap"); show("settings"); setTimeout(function () { $("in-since").scrollIntoView({ block: "center" }); }, 50); });
+  function onSharedDates(v) {
+    if (!v) { if (P.since || P.reunion) pubDates(); return; }
+    var ch = false;
+    if (v.since && v.since !== P.since) { P.since = v.since; ch = true; }
+    if (v.reunion !== undefined && v.reunion !== P.reunion) { P.reunion = v.reunion || ""; ch = true; }
+    if (ch) { save(); if (current === "home") renderStory(); if (current === "settings") renderSettingsExtra(); }
+  }
+  function pubDates() { if (P.couple && OL.db) OL.db.ref(olBase() + "/live/shared/dates").update({ since: P.since || null, reunion: P.reunion || null }).catch(function () {}); }
+  [["in-since", "since", true], ["in-reunion", "reunion", true], ["in-bday-love", "bdayLove", false], ["in-bday-me", "bdayMe", false]].forEach(function (f) {
+    $(f[0]).addEventListener("change", function () {
+      P[f[1]] = this.value || ""; save();
+      if (f[2]) pubDates();
+      if (f[1] === "bdayMe" && P.couple && OL.db) myLive().update({ bday: P.bdayMe || null }).catch(function () {});
+    });
+  });
+
+  /* ================= Synchro ================= */
+  function resetSyncQ() { S.syncPick = null; S.syncDone = false; S.syncMatch = null; }
+  function resetSyncAll() { S.syncN = 1; S.streak = 0; resetSyncQ(); }
+  function syncQ() {
+    var order = shuffled(PAIRS.map(function (_, i) { return i; }), rng(hash("sync|" + S.code)));
+    return PAIRS[order[((S.syncN || 1) - 1) % order.length]];
+  }
+  function pairText(q, k) { return q[({ fr: 0, kr: 2, en: 4 }[S.lang] || 0) + k]; }
+  function pubSync() { if (coupleMode() && OL.db) myLive().child("sync").set({ n: S.syncN || 1, pick: S.syncPick === null || S.syncPick === undefined ? null : S.syncPick }).catch(function () {}); }
+  function onlineSync() { return coupleMode() && !!OL.db && OL.partnerJoined; }
+  function partnerSyncPick() { var ps = OL.partner && OL.partner.sync; return ps && ps.n === S.syncN && (ps.pick === 0 || ps.pick === 1) ? ps.pick : null; }
+  function resolveSync(match) {
+    if (S.syncDone) return;
+    S.syncDone = true; S.syncMatch = match; touchDay();
+    if (match) {
+      S.streak = (S.streak || 0) + 1; addXP(1);
+      P.syncBest = Math.max(P.syncBest || 0, S.streak);
+      if (S.streak >= 5) { addXP(5); award("sync5"); confetti(true); sfx("win"); buzz([60, 40, 60, 40, 200]); S.syncWon = true; }
+      else { sfx("badge"); buzz(40); confetti(false); }
+    } else { S.streak = 0; sfx("lose"); buzz(160); }
+    save(); if (current === "sync") renderSync();
+  }
+  function checkSync() {
+    if (!onlineSync() || S.syncDone || S.syncPick === null || S.syncPick === undefined) { if (current === "sync") renderSync(); return; }
+    var pp = partnerSyncPick();
+    if (pp !== null) resolveSync(pp === S.syncPick);
+  }
+  function onSharedSync(n) {
+    OL.sharedSyncN = n;
+    if (coupleMode() && n && n > (S.syncN || 1)) {
+      if (S.syncWon) { S.streak = 0; S.syncWon = false; }
+      S.syncN = n; resetSyncQ(); save(); pubSync(); if (current === "sync") renderSync();
+    }
+  }
+  function renderSync() {
+    if (!S.code) return;
+    var q = syncQ(), n = nameStart();
+    $("y-q").textContent = t("qLabel")(S.syncN || 1);
+    $("y-code").textContent = t("game") + " " + S.code;
+    $("y-best").textContent = t("syncBest")(P.syncBest || 0);
+    Array.prototype.forEach.call($("y-streak").children, function (el, i) { el.classList.toggle("on", i < (S.streak || 0)); });
+    var picked = S.syncPick === 0 || S.syncPick === 1;
+    [["y-a", 0], ["y-b", 1]].forEach(function (b) {
+      var el = $(b[0]); el.textContent = pairText(q, b[1]);
+      el.setAttribute("aria-pressed", S.syncPick === b[1]);
+      el.disabled = picked;
+      el.classList.toggle("partner", S.syncDone && onlineSync() && partnerSyncPick() === b[1]);
+    });
+    var online = onlineSync();
+    var status = "";
+    if (!S.syncDone) {
+      if (!picked) status = online && partnerSyncPick() !== null ? t("syncPChose")(n) : t("syncWaitMe");
+      else if (online) status = t("syncWaitP")(nameMid());
+    }
+    $("y-status").textContent = status;
+    $("y-manual").hidden = online || !picked || S.syncDone;
+    $("y-result").hidden = !S.syncDone;
+    if (S.syncDone) {
+      var pp = partnerSyncPick();
+      $("y-result").textContent = S.syncWon ? t("syncWin") : S.syncMatch ? t("syncSame") : t("syncDiff")(online && pp !== null ? n : "", online && pp !== null ? pairText(q, pp) : "");
+    }
+    $("y-next").hidden = !S.syncDone;
+  }
+  function pickSync(k) {
+    if (S.syncDone || S.syncPick === 0 || S.syncPick === 1) return;
+    S.syncPick = k; sfx("tap"); buzz(25); save(); pubSync(); checkSync(); renderSync();
+  }
+  $("y-a").addEventListener("click", function () { pickSync(0); });
+  $("y-b").addEventListener("click", function () { pickSync(1); });
+  $("y-same").addEventListener("click", function () { resolveSync(true); });
+  $("y-diff").addEventListener("click", function () { resolveSync(false); });
+  $("y-next").addEventListener("click", function () {
+    sfx("tap");
+    function local() { if (S.syncWon) { S.streak = 0; S.syncWon = false; } S.syncN = (S.syncN || 1) + 1; resetSyncQ(); save(); pubSync(); renderSync(); }
+    if (onlineSync()) {
+      var target = S.syncN || 1;
+      OL.db.ref(olBase() + "/live/shared/syncN").transaction(function (c) { c = c || 1; return c === target ? target + 1 : c; })
+        .then(function () { setTimeout(function () { if ((S.syncN || 1) === target) local(); }, 4000); })
+        .catch(local);
+    } else local();
+  });
+  $("y-quit").addEventListener("click", function () { S.code = null; S.role = null; newRoundState(); resetSyncAll(); save(); show("home"); });
+
+  /* ================= Settings extras: dates + notifications ================= */
+  function renderSettingsExtra() {
+    [["in-since", "since"], ["in-reunion", "reunion"], ["in-bday-love", "bdayLove"], ["in-bday-me", "bdayMe"]].forEach(function (f) {
+      if (document.activeElement !== $(f[0])) $(f[0]).value = P[f[1]] || (f[1] === "bdayLove" ? (OL.partner && OL.partner.bday) || "" : "");
+    });
+    var supported = "Notification" in window;
+    var perm = supported ? Notification.permission : "denied";
+    $("sw-notif").setAttribute("aria-checked", String(!!P.notif && perm === "granted"));
+    $("notif-note").textContent = !supported ? t("notifNo") : perm === "denied" ? t("notifDenied") : t("notifNote");
+  }
+  $("sw-notif").addEventListener("click", function () {
+    if (!("Notification" in window)) { renderSettingsExtra(); return; }
+    if (P.notif) { P.notif = false; save(); renderSettingsExtra(); return; }
+    var r = Notification.requestPermission(function () {});
+    Promise.resolve(r).then(function (res) {
+      res = res || Notification.permission;
+      P.notif = res === "granted"; save(); renderSettingsExtra();
+      if (P.notif) notifyNow("🌙 Noche Duo", t("notifNote"), "test");
+    });
+  });
+  function notifyNow(title, body, tag) {
+    if (!P.notif || !("Notification" in window) || Notification.permission !== "granted") return;
+    var opts = { body: body, tag: tag || "nd", icon: "icon-192.png", badge: "icon-192.png", vibrate: [120, 80, 120], renotify: true };
+    try {
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) navigator.serviceWorker.ready.then(function (reg) { reg.showNotification(title, opts); });
+      else new Notification(title, opts);
+    } catch (e) {}
+  }
+  function notifyIfHidden(title, body, tag) { if (document.hidden) notifyNow(title, body, tag); }
+
+  /* ================= Install as an app (PWA) ================= */
+  var installEvt = null;
+  var isStandalone = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true;
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  var webOrigin = /^https?:$/.test(location.protocol);
+  window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); installEvt = e; if (current === "home") renderInstall(); });
+  window.addEventListener("appinstalled", function () { installEvt = null; isStandalone = true; if (current === "home") renderInstall(); });
+  function renderInstall() {
+    var show_ = webOrigin && !isStandalone && (!!installEvt || isIOS);
+    $("install-card").hidden = !show_;
+    if (!show_) return;
+    $("install-text").textContent = installEvt ? t("installAndroid") : t("installIOS");
+    $("install-btn").hidden = !installEvt;
+  }
+  $("install-btn").addEventListener("click", function () {
+    if (!installEvt) return;
+    installEvt.prompt();
+    Promise.resolve(installEvt.userChoice).then(function () { installEvt = null; renderInstall(); });
+  });
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+    window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
+  }
+  setInterval(function () { if (current === "home") renderDaily(); }, 60000);
+
+  /* ================= Goodnight: moon crossing + lullaby + soft heartbeat vibration ================= */
+  var gnTimer = null;
+  function lullaby() { [[523, 0], [659, 0.45], [784, 0.9], [659, 1.35], [1047, 1.8], [784, 2.5]].forEach(function (n) { note(n[0], n[1], 1.1, "sine", 0.09); }); }
+  function crossFx(text) {
+    var el = $("moonx"), st = $("moonx-stars");
+    $("moonx-t").textContent = text;
+    st.innerHTML = "";
+    for (var i = 0; i < 26; i++) {
+      var sp = document.createElement("span");
+      sp.className = "twk" + (i % 5 === 0 ? " g" : "");
+      sp.style.left = (Math.random() * 100) + "%"; sp.style.top = (Math.random() * 90) + "%";
+      sp.style.animationDelay = (Math.random() * 1.8).toFixed(2) + "s";
+      st.appendChild(sp);
+    }
+    el.hidden = false;
+    Array.prototype.forEach.call(el.querySelectorAll(".xmoon, p"), function (n) { n.style.animation = "none"; void n.offsetWidth; n.style.animation = ""; });
+    lullaby();
+    buzz([90, 120, 90, 700, 90, 120, 90, 700, 90, 120, 90]);
+    clearTimeout(gnTimer); gnTimer = setTimeout(function () { el.hidden = true; }, 5600);
+  }
+  $("moonx").addEventListener("click", function () { clearTimeout(gnTimer); $("moonx").hidden = true; });
+  $("gn-home").addEventListener("click", function () {
+    if (P.couple && OL.db && OL.partnerJoined) { sendGN(); $("gn-note").hidden = true; return; }
+    crossFx(t("gnBoth")(nameMid()));
+    $("gn-note").textContent = t("gnLocalNote"); $("gn-note").hidden = false;
+  });
+
+  /* ================= Night sky with shooting stars ================= */
+  var cv = $("stars"), cx = cv.getContext("2d"), stars = [], shoot = null, nextShoot = 2500;
+  function sizeStars() {
+    var dpr = window.devicePixelRatio || 1;
+    cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    stars = [];
+    var n = Math.round(innerWidth * innerHeight / 5000);
+    for (var i = 0; i < n; i++) stars.push({ x: Math.random() * innerWidth, y: Math.random() * innerHeight, r: Math.random() * 1.2 + 0.2, p: Math.random() * Math.PI * 2 });
+    sizeFx(); drawStars(0);
+  }
+  function drawStars(time) {
+    cx.clearRect(0, 0, innerWidth, innerHeight);
+    for (var i = 0; i < stars.length; i++) {
+      var s = stars[i];
+      cx.globalAlpha = reduce ? 0.6 : 0.35 + 0.45 * (0.5 + 0.5 * Math.sin(time / 900 + s.p));
+      cx.fillStyle = i % 9 === 0 ? "#f0c674" : "#ffffff";
+      cx.beginPath(); cx.arc(s.x, s.y, s.r, 0, Math.PI * 2); cx.fill();
+    }
+    if (shoot) {
+      var k = (time - shoot.t0) / 900;
+      if (k >= 1) shoot = null;
+      else {
+        var x = shoot.x + shoot.dx * k, y = shoot.y + shoot.dy * k;
+        var grad = cx.createLinearGradient(x, y, x - shoot.dx * 0.25, y - shoot.dy * 0.25);
+        grad.addColorStop(0, "rgba(255,255,255," + (1 - k) + ")"); grad.addColorStop(1, "rgba(255,255,255,0)");
+        cx.globalAlpha = 1; cx.strokeStyle = grad; cx.lineWidth = 1.6;
+        cx.beginPath(); cx.moveTo(x, y); cx.lineTo(x - shoot.dx * 0.25, y - shoot.dy * 0.25); cx.stroke();
+      }
+    } else if (time > nextShoot) {
+      shoot = { t0: time, x: Math.random() * innerWidth * 0.7, y: Math.random() * innerHeight * 0.35, dx: 260 + Math.random() * 160, dy: 120 + Math.random() * 80 };
+      nextShoot = time + 5000 + Math.random() * 7000;
+    }
+    cx.globalAlpha = 1;
+  }
+  function loop(time) { drawStars(time); requestAnimationFrame(loop); }
+  addEventListener("resize", sizeStars);
+  sizeStars();
+  if (!reduce) requestAnimationFrame(loop);
+
+  /* ================= Start ================= */
+  load();
+  sealOpen = false;
+  show("home");
+  if (P.couple && olAvailable()) olAttach();
+})();
+</script>
+</body>
+</html>
