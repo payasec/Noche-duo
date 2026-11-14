@@ -234,6 +234,30 @@ a.btn { display: block; text-decoration: none; text-align: center; }
 #moonx .twk { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #fff; animation: twk 1.8s ease-in-out infinite; }
 #moonx .twk.g { background: var(--gold); }
 @keyframes twk { 0%, 100% { opacity: 0.15; transform: scale(0.6); } 50% { opacity: 1; transform: scale(1.4); } }
+/* Wave 1: photo, overlays, PIN */
+.who { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.cphoto { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold); flex: none; box-shadow: 0 0 16px -4px rgba(240,198,116,0.6); }
+.cphoto.big { width: 120px; height: 120px; align-self: center; }
+.ovl { position: fixed; inset: 0; z-index: 90; background: radial-gradient(90% 70% at 50% 30%, rgb(30,24,66), rgb(8,6,20)); display: grid; place-items: center; padding: 24px 20px; overflow-y: auto; }
+.ovl-in { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 16px; text-align: center; }
+.ovl-in h1 { margin: 0; }
+.pindots { display: flex; justify-content: center; gap: 16px; }
+.pindots i { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--gold); display: block; transition: background .15s; }
+.pindots i.on { background: var(--gold); }
+.pindots.shake { animation: shake .4s; }
+@keyframes shake { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 12px; }
+.key { height: 62px; border-radius: 18px; border: 1px solid var(--line); background: rgba(255,255,255,0.05); color: var(--ink); font: 500 1.5rem var(--display); cursor: pointer; }
+.key:active { background: rgba(240,198,116,0.2); }
+.key:focus-visible, .langbig:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.key.blank { visibility: hidden; }
+.onb-dots { display: flex; justify-content: center; gap: 8px; }
+.onb-dots i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.2); display: block; }
+.onb-dots i.on { background: var(--gold); width: 22px; border-radius: 8px; }
+.langbig { padding: 14px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,255,255,0.04); color: var(--ink); font: 500 1.05rem var(--body); cursor: pointer; }
+.langbig[aria-pressed="true"] { border-color: var(--gold); background: rgba(240,198,116,0.14); }
+.onb-moon { width: 96px; height: 96px; margin: 0 auto; }
+.left { text-align: left; }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -276,7 +300,7 @@ a.btn { display: block; text-decoration: none; text-align: center; }
     </div>
     <div class="card" id="profile-card">
       <div class="couple">
-        <div class="names" id="names"></div>
+        <div class="who"><img id="couple-photo" class="cphoto" alt="" hidden><div class="names" id="names"></div></div>
         <div class="flame" id="flame" title="">
           <svg width="20" height="22" viewBox="0 0 20 24" aria-hidden="true"><path d="M10 1c1 4 6 6 6 13a6 6 0 0 1-12 0c0-3 2-5 3-6 0 2 1 3 2 3 0-4-1-7 1-10z" fill="currentColor"/></svg>
           <span id="flame-n">0</span>
@@ -287,6 +311,7 @@ a.btn { display: block; text-decoration: none; text-align: center; }
       <h3 data-i="badges"></h3>
       <div class="badges" id="badges"></div>
       <p class="badge-names" id="badge-hint"></p>
+      <button class="linkbtn" id="month-btn" data-i="monthBtn"></button>
     </div>
     <div class="card" id="daily-card">
       <div class="rowb"><h3 data-i="dailyTitle"></h3><span class="small" id="daily-left"></span></div>
@@ -379,6 +404,19 @@ a.btn { display: block; text-decoration: none; text-align: center; }
       <div class="field"><label for="in-me" data-i="myName"></label><input id="in-me" class="txt" maxlength="20" autocomplete="off"></div>
       <div class="field"><label for="in-love" data-i="loveName"></label><input id="in-love" class="txt" maxlength="20" autocomplete="off"></div>
       <div class="field"><label for="in-phone" data-i="phoneLabel"></label><input id="in-phone" class="txt" type="tel" inputmode="tel" maxlength="20" autocomplete="off" placeholder="+509 …"></div>
+    </div>
+    <div class="card">
+      <h2 data-i="photoTitle"></h2>
+      <img id="set-photo" class="cphoto big" alt="" hidden>
+      <label class="btn btn-ghost filelbl" for="in-photo"><span data-i="photoPick"></span><input type="file" id="in-photo" accept="image/*"></label>
+      <p class="small" data-i="photoShared"></p>
+      <button class="linkbtn" id="photo-remove" data-i="photoRemove" hidden></button>
+    </div>
+    <div class="card">
+      <div class="setrow"><span id="lbl-lite" data-i="lite"></span><button class="switch" id="sw-lite" role="switch" aria-checked="false" aria-labelledby="lbl-lite"></button></div>
+      <p class="small" data-i="liteNote"></p>
+      <div class="setrow"><span data-i="pinTitle"></span><button class="btn btn-ghost" id="pin-set" style="width:auto;padding:9px 16px"></button></div>
+      <p class="small" id="pin-note"></p>
     </div>
     <div class="card">
       <h2 data-i="datesTitle"></h2>
@@ -546,6 +584,45 @@ a.btn { display: block; text-decoration: none; text-align: center; }
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.2 0 3.6 1.2 5.3 3.1 1.7-1.9 3.1-3.1 5.3-3.1 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z" fill="#ff7a93"/></svg>
   <p id="heartfx-t"></p>
 </div></div>
+<div class="ovl" id="lock" hidden role="dialog" aria-modal="true" aria-labelledby="lock-title">
+  <div class="ovl-in">
+    <svg class="onb-moon" viewBox="0 0 32 32" aria-hidden="true" style="width:56px;height:56px"><path d="M21 4a12 12 0 1 0 7 21A10 10 0 0 1 21 4z" fill="#f0c674"/></svg>
+    <h2 id="lock-title"></h2>
+    <div class="pindots" id="pin-dots"><i></i><i></i><i></i><i></i></div>
+    <p class="err" id="pin-err" aria-live="polite"></p>
+    <div class="keypad" id="keypad"></div>
+    <button class="linkbtn" id="pin-cancel" data-i="pinCancel"></button>
+    <button class="linkbtn" id="pin-forgot" data-i="pinForgot"></button>
+    <p class="small" id="pin-forgot-t" data-i="pinForgotT" hidden></p>
+  </div>
+</div>
+<div class="ovl" id="onb" hidden role="dialog" aria-modal="true">
+  <div class="ovl-in">
+    <div class="onb-dots" id="onb-dots"><i></i><i></i><i></i></div>
+    <div class="stack" id="onb-1">
+      <svg class="onb-moon" viewBox="0 0 32 32" aria-hidden="true"><path d="M21 4a12 12 0 1 0 7 21A10 10 0 0 1 21 4z" fill="#f0c674"/><path d="M25 22.5c.9-.9 2.4-.9 3 .3.6-1.2 2.1-1.2 3-.3.9 1-.1 2.6-3 4.3-2.9-1.7-3.9-3.3-3-4.3z" fill="#ff7a93" transform="translate(-4 -2)"/></svg>
+      <h1 data-i="homeTitle"></h1>
+      <p class="tag" data-i="tagline"></p>
+      <p class="small" data-i="onbLang"></p>
+      <button class="langbig" data-lang="fr" type="button">Français</button>
+      <button class="langbig" data-lang="kr" type="button">Kreyòl</button>
+      <button class="langbig" data-lang="en" type="button">English</button>
+    </div>
+    <div class="stack left" id="onb-2" hidden>
+      <h2 class="center" data-i="onb2Title"></h2>
+      <div class="field"><label for="onb-me" data-i="myName"></label><input id="onb-me" class="txt" maxlength="20" autocomplete="off"></div>
+      <div class="field"><label for="onb-love" data-i="loveName"></label><input id="onb-love" class="txt" maxlength="20" autocomplete="off"></div>
+    </div>
+    <div class="stack" id="onb-3" hidden>
+      <h2 data-i="onb3Title"></h2>
+      <p class="tag" data-i="onb3Text"></p>
+      <button class="btn btn-gold" id="onb-create" data-i="linkCreate"></button>
+      <button class="btn btn-ghost" id="onb-join" data-i="linkJoin"></button>
+    </div>
+    <button class="btn btn-gold" id="onb-next" data-i="onbNext"></button>
+    <button class="linkbtn" id="onb-later" data-i="onbLater" hidden></button>
+  </div>
+</div>
 <div id="moonx" hidden aria-live="polite"><div id="moonx-stars"></div><div class="xmoon"></div><p id="moonx-t"></p></div>
 <div class="fxlayer" id="moonfx" hidden><div>
   <div class="bigmoon"></div>
@@ -862,7 +939,21 @@ a.btn { display: block; text-decoration: none; text-align: center; }
       installBtn: "Installer l'appli",
       nCall: function (n) { return n + " t'appelle 📞"; }, nGN: function (n) { return n + " te dit bonne nuit 🌙"; },
       gnHome: "🌙 Dire bonne nuit", gnTogether: "Bonne nuit à vous deux 🌙",
-      gnLocalNote: "Dis-le-lui aussi au téléphone 😉 Une fois en ligne, la lune traversera aussi son écran."
+      gnLocalNote: "Dis-le-lui aussi au téléphone 😉 Une fois en ligne, la lune traversera aussi son écran.",
+      monthBtn: "📊 Votre mois en Noche Duo", monthTitle: "Votre mois",
+      mStatFlame: "jours de Flamme", mStatWins: "missions réussies", mStatSync: "réponses identiques", mStatDaily: "défis du jour", mStatPulse: "pensées envoyées", mStatGN: "bonnes nuits",
+      mCardTitle: "Notre mois en Noche Duo", mDare: "Et vous, vous êtes à combien ?",
+      photoTitle: "Photo du couple", photoPick: "Choisir une photo", photoRemove: "Retirer la photo",
+      photoShared: "Elle s'affiche aussi chez ton amour quand vous êtes reliés.",
+      lite: "Économie de données", liteNote: "Moins d'animations et des appels plus légers, pour économiser ton forfait.",
+      pinTitle: "Code PIN", pinSet: "Ajouter", pinRemoveBtn: "Retirer",
+      pinOn: "Noche Duo demande ton code à chaque ouverture.", pinOff: "Protège tes messages si quelqu'un prend ton téléphone.",
+      pinEnter: "Entre ton code", pinNew: "Choisis un code à 4 chiffres", pinConfirm: "Confirme ton code", pinCurrent: "Entre ton code actuel",
+      pinWrong: "Code incorrect", pinMismatch: "Les deux codes sont différents. Recommence.", pinCancel: "Annuler", pinForgot: "Code oublié ?",
+      pinForgotT: "Sans le code, il faut effacer les données de Noche Duo dans Chrome : ⋮ → Paramètres → Paramètres des sites → Toutes les données → payasec.github.io. Ta progression sur ce téléphone sera perdue.",
+      onbLang: "Choisis ta langue", onb2Title: "Qui joue ?", onb3Title: "Invite ton amour",
+      onb3Text: "Reliez vos deux téléphones pour jouer ensemble, vous envoyer des pensées et vous dire bonne nuit.",
+      onbNext: "Continuer", onbLater: "Plus tard", onbStart: "Commencer"
     },
     kr: {
       modeLabel: "Mòd · Misyon Sekrè",
@@ -1007,7 +1098,21 @@ a.btn { display: block; text-decoration: none; text-align: center; }
       installBtn: "Enstale aplikasyon an",
       nCall: function (n) { return n + " ap rele w 📞"; }, nGN: function (n) { return n + " di w bòn nwit 🌙"; },
       gnHome: "🌙 Di bòn nwit", gnTogether: "Bòn nwit pou nou de 🌙",
-      gnLocalNote: "Di l li nan telefòn nan tou 😉 Lè nou an liy, lalin nan ap travèse ekran pa l tou."
+      gnLocalNote: "Di l li nan telefòn nan tou 😉 Lè nou an liy, lalin nan ap travèse ekran pa l tou.",
+      monthBtn: "📊 Mwa nou nan Noche Duo", monthTitle: "Mwa nou",
+      mStatFlame: "jou Flanm", mStatWins: "misyon reyisi", mStatSync: "repons menm bagay", mStatDaily: "defi jou a", mStatPulse: "panse voye", mStatGN: "bòn nwit",
+      mCardTitle: "Mwa nou nan Noche Duo", mDare: "E nou menm, konbyen nou genyen ?",
+      photoTitle: "Foto koup la", photoPick: "Chwazi yon foto", photoRemove: "Retire foto a",
+      photoShared: "L ap parèt lakay lanmou w tou lè nou konekte.",
+      lite: "Ekonomi done", liteNote: "Mwens animasyon ak apèl ki pi lejè, pou w ekonomize plan done w.",
+      pinTitle: "Kòd PIN", pinSet: "Mete", pinRemoveBtn: "Retire",
+      pinOn: "Noche Duo ap mande kòd ou chak fwa w louvri l.", pinOff: "Pwoteje mesaj ou yo si yon moun pran telefòn ou.",
+      pinEnter: "Mete kòd ou", pinNew: "Chwazi yon kòd 4 chif", pinConfirm: "Konfime kòd ou", pinCurrent: "Mete kòd ou genyen kounye a",
+      pinWrong: "Kòd la pa bon", pinMismatch: "De kòd yo pa menm. Rekòmanse.", pinCancel: "Anile", pinForgot: "Ou bliye kòd la ?",
+      pinForgotT: "San kòd la, fòk ou efase done Noche Duo nan Chrome : ⋮ → Paramèt → Paramèt sit yo → Tout done yo → payasec.github.io. Pwogrè w sou telefòn sa a ap pèdi.",
+      onbLang: "Chwazi lang ou", onb2Title: "Kiyès k ap jwe ?", onb3Title: "Envite lanmou w",
+      onb3Text: "Konekte de telefòn nou yo pou nou jwe ansanm, voye panse epi di bòn nwit.",
+      onbNext: "Kontinye", onbLater: "Pita", onbStart: "Kòmanse"
     },
     en: {
       modeLabel: "Mode · Secret Mission",
@@ -1152,7 +1257,21 @@ a.btn { display: block; text-decoration: none; text-align: center; }
       installBtn: "Install the app",
       nCall: function (n) { return n + " is calling you 📞"; }, nGN: function (n) { return n + " says goodnight 🌙"; },
       gnHome: "🌙 Say goodnight", gnTogether: "Goodnight to you both 🌙",
-      gnLocalNote: "Say it on the phone too 😉 Once you're online, the moon will cross their screen too."
+      gnLocalNote: "Say it on the phone too 😉 Once you're online, the moon will cross their screen too.",
+      monthBtn: "📊 Your month in Noche Duo", monthTitle: "Your month",
+      mStatFlame: "days of Flame", mStatWins: "missions won", mStatSync: "matching answers", mStatDaily: "daily challenges", mStatPulse: "thoughts sent", mStatGN: "goodnights",
+      mCardTitle: "Our month in Noche Duo", mDare: "How about you two?",
+      photoTitle: "Couple photo", photoPick: "Choose a photo", photoRemove: "Remove photo",
+      photoShared: "It also shows on your love's phone when you're linked.",
+      lite: "Data saver", liteNote: "Fewer animations and lighter calls, to save your data plan.",
+      pinTitle: "PIN code", pinSet: "Add", pinRemoveBtn: "Remove",
+      pinOn: "Noche Duo asks for your code every time it opens.", pinOff: "Protect your messages if someone picks up your phone.",
+      pinEnter: "Enter your code", pinNew: "Choose a 4-digit code", pinConfirm: "Confirm your code", pinCurrent: "Enter your current code",
+      pinWrong: "Wrong code", pinMismatch: "The codes don't match. Try again.", pinCancel: "Cancel", pinForgot: "Forgot your code?",
+      pinForgotT: "Without the code, you need to clear Noche Duo's data in Chrome: ⋮ → Settings → Site settings → All site data → payasec.github.io. Your progress on this phone will be lost.",
+      onbLang: "Choose your language", onb2Title: "Who's playing?", onb3Title: "Invite your love",
+      onb3Text: "Link your two phones to play together, send thoughts and say goodnight.",
+      onbNext: "Continue", onbLater: "Later", onbStart: "Let's go"
     }
   };
 
@@ -1213,7 +1332,7 @@ a.btn { display: block; text-decoration: none; text-align: center; }
     if (P.lastDay !== today) { P.flame = P.lastDay === yesterdayKey() ? P.flame + 1 : 1; P.lastDay = today; }
     var earned = [];
     function give(id) { if (P.badges.indexOf(id) < 0) { P.badges.push(id); earned.push(id); } }
-    give("first");
+    give("first"); stat("rounds"); if (res.spy) stat("wins");
     if (res.spy) give("spy");
     if (res.right) give("detect");
     if (res.caught) give("caught");
@@ -1261,7 +1380,7 @@ a.btn { display: block; text-decoration: none; text-align: center; }
   function confetti(big) {
     if (reduce) return;
     var cols = ["#f0c674", "#ff7a93", "#ffffff", "#ff9a3c", "#c9b8ff"];
-    var n = big ? 140 : 70;
+    var n = P.lite ? 20 : (big ? 140 : 70);
     for (var i = 0; i < n; i++) {
       parts.push({ x: innerWidth / 2 + (Math.random() - 0.5) * 80, y: innerHeight * 0.35, vx: (Math.random() - 0.5) * 11, vy: -Math.random() * 11 - 4,
         g: 0.28, r: Math.random() * 5 + 3, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.3, c: cols[i % cols.length], heart: i % 6 === 0, life: 1 });
@@ -1321,6 +1440,7 @@ a.btn { display: block; text-decoration: none; text-align: center; }
   var sealOpen = false, pendingAcc = null, badgeSel = null;
 
   function renderProfile() {
+    var cp = $("couple-photo"); cp.hidden = !photoURL; if (photoURL) cp.src = photoURL;
     var me = P.me || t("me"), love = nameStart();
     $("names").innerHTML = "";
     var a = document.createElement("span"); a.textContent = me;
@@ -1359,14 +1479,14 @@ a.btn { display: block; text-decoration: none; text-align: center; }
     $("laugh-status").textContent = laughURL ? t("laughSet") : t("laughNone");
     $("laugh-btns").hidden = !laughURL;
     $("reset").textContent = resetArmed ? t("resetSure") : t("reset");
-    var lbl = document.querySelector(".filelbl > span"); if (lbl) lbl.textContent = t("laughImport");
+    var lbl = $("in-laugh").parentNode.querySelector("span"); if (lbl) lbl.textContent = t("laughImport");
     renderUnlink();
   }
 
   function render() {
     applyText();
     if (current === "home") { renderProfile(); renderOnline(); renderCallCard(); renderModes(); renderDaily(); renderStory(); renderInstall(); }
-    if (current === "settings") renderSettingsExtra();
+    if (current === "settings") { renderSettingsExtra(); renderSettingsW1(); }
     if (current === "sync") renderSync();
     if (current === "settings") renderSettings();
     renderCallbar();
@@ -1504,9 +1624,9 @@ a.btn { display: block; text-decoration: none; text-align: center; }
     shareText = "Noche Duo 🌙 · " + t("round") + " " + S.round + "\n" + head + (res.right ? "\n" + t("cDetect") : "") + "\n" + (res.pts > 0 ? "+" : "") + res.pts + " · 🔥 " + t("cFlame")(f) + " · " + L(LEVELS[levelOf(P.xp)]) + "\n" + t("cDare");
     return c;
   }
-  function openShare() {
+  function openShare(builder, title) {
     var go = function () {
-      var c = buildCard();
+      var c = (typeof builder === "function" ? builder : buildCard)();
       var url = c.toDataURL("image/png");
       $("share-img").src = url; $("share-img").alt = shareText;
       $("share-dl").href = url;
@@ -1514,13 +1634,14 @@ a.btn { display: block; text-decoration: none; text-align: center; }
       try { c.toBlob(function (b) { shareBlob = b; }, "image/png"); } catch (e) {}
       var canNative = !!navigator.share;
       $("share-native").hidden = !canNative;
-      $("modal").hidden = false; applyText();
+      $("modal").hidden = false; applyText(); if (title) $("modal-title").textContent = title;
       $("share-copy").textContent = t("copy");
       $("modal-close").focus();
     };
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(go, go); else go();
   }
   $("share").addEventListener("click", function () { sfx("tap"); openShare(); });
+  $("month-btn").addEventListener("click", function () { sfx("tap"); openShare(buildMonthCard, t("monthTitle")); });
   $("modal-close").addEventListener("click", function () { $("modal").hidden = true; $("share").focus(); });
   $("modal").addEventListener("click", function (e) { if (e.target === $("modal")) $("modal").hidden = true; });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("modal").hidden) $("modal").hidden = true; });
@@ -1741,6 +1862,7 @@ a.btn { display: block; text-decoration: none; text-align: center; }
       watch(base + "/live/" + mySlot() + "/goodnight", function (s) { OL.myGN = s.val() || 0; checkGN(); });
       watch(base + "/live/call", function (s) { onCall(s.val()); });
       watch(base + "/live/shared/syncN", function (s) { onSharedSync(s.val()); });
+      watch(base + "/live/shared/photo", function (s) { onSharedPhoto(s.val()); });
       watch(base + "/live/shared/dates", function (s) { onSharedDates(s.val()); });
       watch(base + "/live/callIce/" + otherSlot(), function (s) { onRemoteIce(s.val()); });
       olAnnounce(); pubGame();
@@ -1787,7 +1909,7 @@ a.btn { display: block; text-decoration: none; text-align: center; }
   function sendPulse() {
     if (!OL.db || !P.couple) return;
     if (Date.now() - OL.lastPulse < 3000) return;
-    OL.lastPulse = Date.now();
+    OL.lastPulse = Date.now(); stat("pulses"); save();
     myLive().child("pulse").set({ at: TS(), n: Math.random().toString(36).slice(2) }).then(function () { olNote(t("pulseSent")); }, function () { olNote(t("linkNet")); });
     sfx("tap"); buzz(40); confetti(false);
   }
@@ -1798,7 +1920,7 @@ a.btn { display: block; text-decoration: none; text-align: center; }
   }
   function checkGN() {
     var a = OL.myGN, b = OL.partner && OL.partner.goodnight;
-    if (b && b !== OL.lastGNNotified && srvNow() - b < 600000) { OL.lastGNNotified = b; notifyIfHidden("🌙 Noche Duo", t("nGN")(nameStart()), "gn"); if (!document.hidden) crossFx(t("nGN")(nameStart())); }
+    if (b && b !== OL.lastGNNotified && srvNow() - b < 600000) { OL.lastGNNotified = b; notifyIfHidden("🌙 Noche Duo", t("nGN")(nameStart()), "gn"); if (!document.hidden) crossFx(t("nGN")(nameStart()), false); }
     if (!a || !b || Math.abs(a - b) > 3 * 3600000) return;
     var latest = Math.max(a, b);
     if (P.gnShown === latest || srvNow() - latest > 12 * 3600000) return;
@@ -2008,7 +2130,7 @@ a.btn { display: block; text-decoration: none; text-align: center; }
     pc.ontrack = function (e) { var a = $("remote-audio"); a.srcObject = e.streams[0]; var pr = a.play(); if (pr && pr.catch) pr.catch(function () {}); };
     function watchState() {
       var cs = pc.connectionState || pc.iceConnectionState;
-      if (cs === "connected" || cs === "completed") { if (CALL.state !== "incall") setCallState("incall"); }
+      if (cs === "connected" || cs === "completed") { if (CALL.state !== "incall") { setCallState("incall"); liteBitrate(pc); } }
       else if (cs === "failed") { endCall("fail"); }
     }
     pc.onconnectionstatechange = watchState; pc.oniceconnectionstatechange = watchState;
@@ -2125,6 +2247,7 @@ a.btn { display: block; text-decoration: none; text-align: center; }
     var today = dayKey();
     if (P.lastDay !== today) { P.flame = P.lastDay === yesterdayKey() ? P.flame + 1 : 1; P.lastDay = today; }
     if (P.flame >= 3) award("flame3");
+    var ms = monthStats(); ms.flame = Math.max(ms.flame || 0, P.flame);
   }
 
   /* ================= Modes ================= */
@@ -2159,7 +2282,7 @@ a.btn { display: block; text-decoration: none; text-align: center; }
   }
   $("daily-done").addEventListener("click", function () {
     if (P.dailyDone === dayKey()) return;
-    P.dailyDone = dayKey(); addXP(3); touchDay(); award("daily"); save();
+    P.dailyDone = dayKey(); addXP(3); touchDay(); award("daily"); stat("daily"); save();
     sfx("win"); confetti(false); buzz([60, 40, 120]);
     if (P.couple && OL.db) myLive().update({ daily: P.dailyDone }).catch(function () {});
     render();
@@ -2244,7 +2367,7 @@ a.btn { display: block; text-decoration: none; text-align: center; }
   function partnerSyncPick() { var ps = OL.partner && OL.partner.sync; return ps && ps.n === S.syncN && (ps.pick === 0 || ps.pick === 1) ? ps.pick : null; }
   function resolveSync(match) {
     if (S.syncDone) return;
-    S.syncDone = true; S.syncMatch = match; touchDay();
+    S.syncDone = true; S.syncMatch = match; touchDay(); if (match) stat("syncs");
     if (match) {
       S.streak = (S.streak || 0) + 1; addXP(1);
       P.syncBest = Math.max(P.syncBest || 0, S.streak);
@@ -2371,7 +2494,8 @@ a.btn { display: block; text-decoration: none; text-align: center; }
   /* ================= Goodnight: moon crossing + lullaby + soft heartbeat vibration ================= */
   var gnTimer = null;
   function lullaby() { [[523, 0], [659, 0.45], [784, 0.9], [659, 1.35], [1047, 1.8], [784, 2.5]].forEach(function (n) { note(n[0], n[1], 1.1, "sine", 0.09); }); }
-  function crossFx(text) {
+  function crossFx(text, mine) {
+    if (mine !== false) { stat("gn"); save(); }
     var el = $("moonx"), st = $("moonx-stars");
     $("moonx-t").textContent = text;
     st.innerHTML = "";
@@ -2394,6 +2518,171 @@ a.btn { display: block; text-decoration: none; text-align: center; }
     crossFx(t("gnBoth")(nameMid()));
     $("gn-note").textContent = t("gnLocalNote"); $("gn-note").hidden = false;
   });
+
+  /* ================= Wave 1: monthly stats, couple photo, data saver, PIN, onboarding ================= */
+  function monthKey() { var d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1); }
+  function monthStats() { P.stats = P.stats || {}; var k = monthKey(); P.stats[k] = P.stats[k] || {}; return P.stats[k]; }
+  function stat(k, n) { var m = monthStats(); m[k] = (m[k] || 0) + (n || 1); }
+
+  function buildMonthCard() {
+    var m = monthStats(), W = 1080, H = 1350, c = document.createElement("canvas"); c.width = W; c.height = H;
+    var g = c.getContext("2d");
+    var bg = g.createRadialGradient(W / 2, 0, 50, W / 2, H * 0.3, H); bg.addColorStop(0, "#2a2257"); bg.addColorStop(0.6, "#120f2b"); bg.addColorStop(1, "#0a0818");
+    g.fillStyle = bg; g.fillRect(0, 0, W, H);
+    var r = rng(hash("month" + monthKey()));
+    for (var i = 0; i < 200; i++) { g.globalAlpha = 0.25 + r() * 0.6; g.fillStyle = i % 8 === 0 ? "#f0c674" : "#fff"; g.beginPath(); g.arc(r() * W, r() * H, r() * 2.2 + 0.4, 0, 7); g.fill(); }
+    g.globalAlpha = 1; g.textAlign = "center";
+    g.save(); g.shadowColor = "rgba(240,198,116,0.7)"; g.shadowBlur = 50; g.fillStyle = "#f0c674"; g.beginPath(); g.arc(W / 2, 170, 70, 0, 7); g.fill(); g.restore();
+    g.fillStyle = "#1c1740"; g.beginPath(); g.arc(W / 2 + 36, 148, 64, 0, 7); g.fill();
+    var loc = { fr: "fr-FR", kr: "fr-FR", en: "en-US" }[S.lang] || "fr-FR";
+    var month = new Date().toLocaleDateString(loc, { month: "long", year: "numeric" });
+    g.fillStyle = "#f4eee4"; g.font = "700 76px Fraunces, Georgia, serif"; g.fillText(t("mCardTitle"), W / 2, 330);
+    g.fillStyle = "#a9a3c4"; g.font = "500 40px 'DM Sans', system-ui, sans-serif"; g.fillText(month.charAt(0).toUpperCase() + month.slice(1), W / 2, 390);
+    if (P.me || partnerName()) { g.fillStyle = "#ff7a93"; g.font = "italic 500 50px Fraunces, Georgia, serif"; g.fillText((P.me || t("me")) + "  ♥  " + nameStart(), W / 2, 470); }
+    var tiles = [["🔥", m.flame || 0, t("mStatFlame")], ["🕵️", m.wins || 0, t("mStatWins")], ["⚡", m.syncs || 0, t("mStatSync")], ["🎯", m.daily || 0, t("mStatDaily")], ["💓", m.pulses || 0, t("mStatPulse")], ["🌙", m.gn || 0, t("mStatGN")]];
+    tiles.forEach(function (tl, i) {
+      var col = i % 2, row = Math.floor(i / 2), x = 110 + col * 440, y = 540 + row * 230, w = 420, h = 200;
+      g.fillStyle = "rgba(255,255,255,0.06)"; g.strokeStyle = "rgba(240,198,116,0.4)"; g.lineWidth = 3; roundRect(g, x, y, w, h, 32); g.fill(); g.stroke();
+      g.textAlign = "left"; g.font = "56px system-ui"; g.fillText(tl[0], x + 32, y + 88);
+      g.fillStyle = "#f0c674"; g.font = "700 88px Fraunces, Georgia, serif"; g.fillText(String(tl[1]), x + 120, y + 100);
+      g.fillStyle = "#c9c3e0"; g.font = "500 34px 'DM Sans', system-ui, sans-serif"; g.fillText(tl[2], x + 32, y + 162);
+      g.textAlign = "center";
+    });
+    g.fillStyle = "#f0c674"; g.font = "700 40px 'DM Sans', system-ui, sans-serif"; g.fillText("✦ " + L(LEVELS[levelOf(P.xp)]) + " · " + P.xp + " XP", W / 2, 1250);
+    g.fillStyle = "#f4eee4"; g.font = "italic 500 42px Fraunces, Georgia, serif"; g.fillText(t("mDare"), W / 2, 1310);
+    shareText = "Noche Duo 🌙 · " + t("mCardTitle") + " (" + month + ")\n" + tiles.map(function (tl) { return tl[0] + " " + tl[1] + " " + tl[2]; }).join("\n") + "\n" + t("mDare");
+    return c;
+  }
+
+  var photoURL = null;
+  function setPhoto(url, publish) {
+    photoURL = url || null;
+    if (photoURL) lsSet("nd-photo", photoURL); else lsDel("nd-photo");
+    if (publish && P.couple && OL.db) OL.db.ref(olBase() + "/live/shared/photo").set(photoURL || null).catch(function () {});
+    if (current === "home") renderProfile();
+    if (current === "settings") renderSettingsW1();
+  }
+  function onSharedPhoto(v) {
+    if (!v) { if (photoURL && !OL.photoSynced) { OL.photoSynced = true; setPhoto(photoURL, true); } return; }
+    OL.photoSynced = true;
+    if (v !== photoURL) setPhoto(v, false);
+  }
+  $("in-photo").addEventListener("change", function () {
+    var f = this.files && this.files[0]; this.value = "";
+    if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function () {
+      var img = new Image();
+      img.onload = function () {
+        var S2 = 320, c = document.createElement("canvas"); c.width = S2; c.height = S2;
+        var side = Math.min(img.width, img.height), sx = (img.width - side) / 2, sy = (img.height - side) / 2;
+        c.getContext("2d").drawImage(img, sx, sy, side, side, 0, 0, S2, S2);
+        setPhoto(c.toDataURL("image/jpeg", 0.8), true); sfx("badge");
+      };
+      img.src = rd.result;
+    };
+    rd.readAsDataURL(f);
+  });
+  $("photo-remove").addEventListener("click", function () { setPhoto(null, true); sfx("tap"); });
+
+  function liteBitrate(pc) {
+    if (!P.lite || !pc || !pc.getSenders) return;
+    pc.getSenders().forEach(function (sd) {
+      if (!sd.track || sd.track.kind !== "audio" || !sd.getParameters) return;
+      try { var pr = sd.getParameters(); if (!pr.encodings || !pr.encodings.length) pr.encodings = [{}]; pr.encodings[0].maxBitrate = 24000; sd.setParameters(pr).catch(function () {}); } catch (e) {}
+    });
+  }
+  $("sw-lite").addEventListener("click", function () {
+    P.lite = !P.lite; save(); sfx("tap"); renderSettingsW1();
+    if (P.lite) drawStars(0);
+  });
+
+  function renderSettingsW1() {
+    $("set-photo").hidden = !photoURL; if (photoURL) $("set-photo").src = photoURL;
+    $("photo-remove").hidden = !photoURL;
+    $("in-photo").parentNode.querySelector("span").textContent = t("photoPick");
+    $("sw-lite").setAttribute("aria-checked", String(!!P.lite));
+    $("pin-set").textContent = P.pinHash ? t("pinRemoveBtn") : t("pinSet");
+    $("pin-note").textContent = P.pinHash ? t("pinOn") : t("pinOff");
+  }
+
+  /* PIN lock */
+  var lockSt = { mode: null, buf: "", first: "" }, hiddenAt = 0;
+  function pinHash(pin) { return hash("nd-pin|" + pin).toString(36); }
+  (function buildKeypad() {
+    var kp = $("keypad");
+    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "⌫"].forEach(function (k) {
+      var b = document.createElement("button"); b.type = "button"; b.className = "key" + (k === "" ? " blank" : ""); b.textContent = k;
+      if (k === "⌫") b.setAttribute("aria-label", "Effacer");
+      if (k !== "") b.addEventListener("click", function () { pinKey(k); });
+      kp.appendChild(b);
+    });
+  })();
+  function renderLock() {
+    $("lock-title").textContent = t({ unlock: "pinEnter", set1: "pinNew", set2: "pinConfirm", remove: "pinCurrent" }[lockSt.mode]);
+    Array.prototype.forEach.call($("pin-dots").children, function (d, i) { d.classList.toggle("on", i < lockSt.buf.length); });
+    $("pin-cancel").textContent = t("pinCancel"); $("pin-cancel").hidden = lockSt.mode === "unlock";
+    $("pin-forgot").textContent = t("pinForgot"); $("pin-forgot").hidden = lockSt.mode !== "unlock";
+    $("pin-forgot-t").textContent = t("pinForgotT");
+  }
+  function openLock(mode) { lockSt = { mode: mode, buf: "", first: "" }; $("pin-err").textContent = ""; $("pin-forgot-t").hidden = true; $("lock").hidden = false; renderLock(); }
+  function closeLock() { $("lock").hidden = true; lockSt.mode = null; if (current === "settings") renderSettingsW1(); }
+  function pinFail(msgKey) {
+    $("pin-err").textContent = t(msgKey); buzz([60, 40, 60]);
+    var d = $("pin-dots"); d.classList.remove("shake"); void d.offsetWidth; d.classList.add("shake");
+    lockSt.buf = ""; renderLock();
+  }
+  function pinKey(k) {
+    if (!lockSt.mode) return;
+    if (k === "⌫") { lockSt.buf = lockSt.buf.slice(0, -1); renderLock(); return; }
+    if (lockSt.buf.length >= 4) return;
+    lockSt.buf += k; sfx("tap"); renderLock();
+    if (lockSt.buf.length < 4) return;
+    var b = lockSt.buf;
+    (function () {
+      if (lockSt.mode === "unlock") { if (pinHash(b) === P.pinHash) { closeLock(); sfx("reveal"); } else pinFail("pinWrong"); }
+      else if (lockSt.mode === "remove") { if (pinHash(b) === P.pinHash) { delete P.pinHash; save(); closeLock(); } else pinFail("pinWrong"); }
+      else if (lockSt.mode === "set1") { lockSt.first = b; lockSt.buf = ""; lockSt.mode = "set2"; $("pin-err").textContent = ""; renderLock(); }
+      else if (lockSt.mode === "set2") { if (b === lockSt.first) { P.pinHash = pinHash(b); save(); closeLock(); sfx("badge"); } else { lockSt.mode = "set1"; pinFail("pinMismatch"); } }
+    })();
+  }
+  document.addEventListener("keydown", function (e) { if (!lockSt.mode) return; if (/^[0-9]$/.test(e.key)) pinKey(e.key); else if (e.key === "Backspace") pinKey("⌫"); });
+  $("pin-set").addEventListener("click", function () { sfx("tap"); openLock(P.pinHash ? "remove" : "set1"); });
+  $("pin-cancel").addEventListener("click", function () { closeLock(); });
+  $("pin-forgot").addEventListener("click", function () { $("pin-forgot-t").hidden = false; });
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) hiddenAt = Date.now();
+    else if (P.pinHash && hiddenAt && Date.now() - hiddenAt > 120000 && !lockSt.mode) openLock("unlock");
+  });
+
+  /* Onboarding */
+  var onbStep = 1;
+  function renderOnb() {
+    applyText();
+    [1, 2, 3].forEach(function (i) { $("onb-" + i).hidden = i !== onbStep; });
+    Array.prototype.forEach.call($("onb-dots").children, function (d, i) { d.classList.toggle("on", i === onbStep - 1); });
+    document.querySelectorAll(".langbig").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-lang") === S.lang); });
+    $("onb-next").hidden = onbStep === 3;
+    $("onb-later").hidden = onbStep !== 3;
+    $("onb-later").textContent = t("onbLater");
+    var avail = olAvailable();
+    $("onb-create").hidden = !avail; $("onb-join").hidden = !avail;
+    if (onbStep === 3 && !avail) { $("onb-later").textContent = t("onbStart"); }
+  }
+  function openOnb() { onbStep = 1; $("onb").hidden = false; renderOnb(); }
+  function finishOnb() { P.onboarded = true; save(); $("onb").hidden = true; show("home"); }
+  document.querySelectorAll(".langbig").forEach(function (b) {
+    b.addEventListener("click", function () { S.lang = b.getAttribute("data-lang"); save(); sfx("tap"); renderOnb(); });
+  });
+  $("onb-next").addEventListener("click", function () {
+    sfx("tap");
+    if (onbStep === 2) { P.me = $("onb-me").value.trim(); P.love = $("onb-love").value.trim(); save(); }
+    onbStep = Math.min(3, onbStep + 1); renderOnb();
+    if (onbStep === 2) setTimeout(function () { $("onb-me").focus(); }, 50);
+  });
+  $("onb-later").addEventListener("click", function () { finishOnb(); });
+  $("onb-create").addEventListener("click", function () { finishOnb(); olCreate(); setTimeout(function () { $("online-card").scrollIntoView({ block: "center" }); }, 100); });
+  $("onb-join").addEventListener("click", function () { finishOnb(); $("ol-joinbox").hidden = false; setTimeout(function () { $("online-card").scrollIntoView({ block: "center" }); $("ol-code").focus(); }, 100); });
 
   /* ================= Night sky with shooting stars ================= */
   var cv = $("stars"), cx = cv.getContext("2d"), stars = [], shoot = null, nextShoot = 2500;
@@ -2429,15 +2718,17 @@ a.btn { display: block; text-decoration: none; text-align: center; }
     }
     cx.globalAlpha = 1;
   }
-  function loop(time) { drawStars(time); requestAnimationFrame(loop); }
+  function loop(time) { if (!P.lite) drawStars(time); requestAnimationFrame(loop); }
   addEventListener("resize", sizeStars);
   sizeStars();
   if (!reduce) requestAnimationFrame(loop);
 
   /* ================= Start ================= */
   load();
+  photoURL = lsGet("nd-photo");
   sealOpen = false;
   show("home");
+  if (P.pinHash) openLock("unlock"); else if (!P.onboarded && !P.me) openOnb();
   if (P.couple && olAvailable()) olAttach();
 })();
 </script>
