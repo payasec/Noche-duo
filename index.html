@@ -557,6 +557,14 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
 .vplay i { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: rgba(28,22,49,0.15); font-style: normal; }
 .msg.theirs .vplay i { background: rgba(255,255,255,0.12); }
 .older-btn { align-self: center; margin: 4px 0 8px; }
+.sgroup { border: 1px solid var(--line); border-radius: 20px; background: rgba(255,255,255,0.03); }
+.sgroup > summary { list-style: none; display: flex; align-items: center; gap: 12px; padding: 16px 18px; cursor: pointer; font: 600 1.02rem var(--body); color: var(--ink); min-height: 56px; }
+.sgroup > summary::-webkit-details-marker { display: none; }
+.sgroup > summary:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; border-radius: 20px; }
+.sgroup .sgi { font-size: 1.2rem; }
+.sgroup .chev { margin-left: auto; font-style: normal; color: var(--muted); transition: transform .2s; }
+.sgroup[open] > summary .chev { transform: rotate(180deg); }
+.sg-body { display: flex; flex-direction: column; gap: 12px; padding: 0 8px 10px; }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -599,25 +607,6 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       <p class="small" data-i="invText" style="margin:0"></p>
       <button class="btn btn-gold" id="inv-join" data-i="invJoin"></button>
       <p class="err" id="inv-err" aria-live="polite"></p>
-    </div>
-    <div class="card" id="install-card" hidden>
-      <b data-i="installTitle"></b>
-      <p class="small" id="install-text"></p>
-      <button class="btn btn-gold" id="install-btn" data-i="installBtn" hidden></button>
-    </div>
-    <div class="card" id="profile-card">
-      <div class="couple">
-        <div class="who"><img id="couple-photo" class="cphoto" alt="" hidden><div class="names" id="names"></div></div>
-        <div class="flame" id="flame" title="">
-          <svg width="20" height="22" viewBox="0 0 20 24" aria-hidden="true"><path d="M10 1c1 4 6 6 6 13a6 6 0 0 1-12 0c0-3 2-5 3-6 0 2 1 3 2 3 0-4-1-7 1-10z" fill="currentColor"/></svg>
-          <span id="flame-n">0</span>
-        </div>
-      </div>
-      <div class="level-row"><span><span data-i="level"></span> · <b id="level-name"></b></span><span class="small" id="level-xp"></span></div>
-      <div class="bar"><i id="level-bar"></i></div>
-      <h3 data-i="badges"></h3>
-      <div class="badges" id="badges"></div>
-      <p class="badge-names" id="badge-hint"></p>
     </div>
     <div class="card away-card" id="away-card" hidden>
       <div class="rowb"><h3 data-i="awayTitle"></h3><button class="linkbtn" id="away-all" data-i="awayAll"></button></div>
@@ -692,6 +681,12 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
         <p class="err" id="reu-err" aria-live="polite"></p>
       </div>
     </div>
+    <div class="card" id="daily-card">
+      <div class="rowb"><h3 data-i="dailyTitle"></h3><span class="small" id="daily-left"></span></div>
+      <p class="daily-text" id="daily-text"></p>
+      <button class="btn btn-gold" id="daily-done" data-i="dailyDone"></button>
+      <p class="small" id="daily-status"></p>
+    </div>
     <div class="card" id="garden-card" hidden>
       <div class="rowb"><h3 data-i="gdTitle"></h3><span class="pill" id="gd-stage"></span></div>
       <div class="gd-scene" id="gd-scene"><div id="gd-svg"></div></div>
@@ -701,20 +696,33 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       <button class="btn btn-gold" id="gd-water"></button>
       <p class="small center" id="gd-note" style="margin:0"></p>
     </div>
+    <div class="card" id="profile-card">
+      <div class="couple">
+        <div class="who"><img id="couple-photo" class="cphoto" alt="" hidden><div class="names" id="names"></div></div>
+        <div class="flame" id="flame" title="">
+          <svg width="20" height="22" viewBox="0 0 20 24" aria-hidden="true"><path d="M10 1c1 4 6 6 6 13a6 6 0 0 1-12 0c0-3 2-5 3-6 0 2 1 3 2 3 0-4-1-7 1-10z" fill="currentColor"/></svg>
+          <span id="flame-n">0</span>
+        </div>
+      </div>
+      <div class="level-row"><span><span data-i="level"></span> · <b id="level-name"></b></span><span class="small" id="level-xp"></span></div>
+      <div class="bar"><i id="level-bar"></i></div>
+      <h3 data-i="badges"></h3>
+      <div class="badges" id="badges"></div>
+      <p class="badge-names" id="badge-hint"></p>
+    </div>
     <div class="card" id="wx-card" hidden>
       <h3 data-i="wxTitle"></h3>
       <div class="wxgrid"><div class="wxside" id="wx-me"></div><div class="wxside" id="wx-love"></div></div>
       <p class="small" id="wx-line" hidden></p>
     </div>
-    <div class="card" id="daily-card">
-      <div class="rowb"><h3 data-i="dailyTitle"></h3><span class="small" id="daily-left"></span></div>
-      <p class="daily-text" id="daily-text"></p>
-      <button class="btn btn-gold" id="daily-done" data-i="dailyDone"></button>
-      <p class="small" id="daily-status"></p>
-    </div>
     <div class="card" id="gn-card">
       <button class="btn btn-ghost" id="gn-home" data-i="gnHome"></button>
       <p class="small center" id="gn-note" hidden></p>
+    </div>
+    <div class="card" id="install-card" hidden>
+      <b data-i="installTitle"></b>
+      <p class="small" id="install-text"></p>
+      <button class="btn btn-gold" id="install-btn" data-i="installBtn" hidden></button>
     </div>
   </section>
 
@@ -833,98 +841,110 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
   </section>
 
   <section id="s-settings" class="screen stack" hidden>
-    <div class="card">
-      <div class="setrow"><span data-i="langTitle"></span>
-        <div class="lang" role="group" aria-label="Langue">
-          <button id="lang-fr" aria-pressed="true">FR</button>
-          <button id="lang-kr" aria-pressed="false">KR</button>
-          <button id="lang-en" aria-pressed="false">EN</button>
+    <details class="sgroup" open><summary><span class="sgi" aria-hidden="true">👤</span><b data-i="sgUs"></b><i class="chev" aria-hidden="true">⌄</i></summary><div class="sg-body">
+      <div class="card">
+        <div class="field"><label for="in-me" data-i="myName"></label><input id="in-me" class="txt" maxlength="20" autocomplete="off"></div>
+        <div class="field"><label for="in-love" data-i="loveName"></label><input id="in-love" class="txt" maxlength="20" autocomplete="off"></div>
+        <div class="field"><label for="in-phone" data-i="phoneLabel"></label><input id="in-phone" class="txt" type="tel" inputmode="tel" maxlength="20" autocomplete="off" placeholder="+509 …"></div>
+      </div>
+      <div class="card">
+        <h2 data-i="datesTitle"></h2>
+        <div class="field"><label for="in-since" data-i="sinceLabel"></label><input id="in-since" class="txt" type="date"></div>
+        <div class="field"><label for="in-reunion" data-i="reunionLabel"></label><input id="in-reunion" class="txt" type="date"></div>
+        <div class="field"><label for="in-bday-love" data-i="bdayLoveLabel"></label><input id="in-bday-love" class="txt" type="date"></div>
+        <div class="field"><label for="in-bday-me" data-i="bdayMeLabel"></label><input id="in-bday-me" class="txt" type="date"></div>
+      </div>
+    </div></details>
+    <details class="sgroup"><summary><span class="sgi" aria-hidden="true">📸</span><b data-i="sgPhotos"></b><i class="chev" aria-hidden="true">⌄</i></summary><div class="sg-body">
+      <div class="card">
+        <h2 data-i="photoTitle"></h2>
+        <img id="set-photo" class="cphoto big" alt="" hidden>
+        <label class="btn btn-ghost filelbl" for="in-photo"><span data-i="photoPick"></span><input type="file" id="in-photo" accept="image/*"></label>
+        <p class="small" data-i="photoShared"></p>
+        <button class="linkbtn" id="photo-remove" data-i="photoRemove" hidden></button>
+      </div>
+      <div class="card" id="faces-card" hidden>
+        <h2 data-i="faceTitle"></h2>
+        <div class="face-row">
+          <label class="face-slot" for="in-face-me"><span class="face-circle" id="face-me"></span><b id="face-me-l"></b><span data-i="faceChange"></span><input type="file" id="in-face-me" accept="image/*"></label>
+          <label class="face-slot" for="in-face-love"><span class="face-circle" id="face-love"></span><b id="face-love-l"></b><span data-i="faceChange"></span><input type="file" id="in-face-love" accept="image/*"></label>
+        </div>
+        <p class="small" data-i="faceHint" style="margin:0"></p>
+      </div>
+      <div class="card">
+        <h2 data-i="hugPhotoTitle"></h2>
+        <img id="set-hug" class="hug-prev" alt="" hidden>
+        <label class="btn btn-ghost filelbl" for="in-hug"><span data-i="hugPick"></span><input type="file" id="in-hug" accept="image/*"></label>
+        <p class="small" data-i="hugPhotoHint"></p>
+        <button class="linkbtn" id="hug-remove" data-i="photoRemove" hidden></button>
+      </div>
+    </div></details>
+    <details class="sgroup"><summary><span class="sgi" aria-hidden="true">🔔</span><b data-i="sgNotif"></b><i class="chev" aria-hidden="true">⌄</i></summary><div class="sg-body">
+      <div class="card">
+        <div class="setrow"><span id="lbl-notif" data-i="notif"></span><button class="switch" id="sw-notif" role="switch" aria-checked="false" aria-labelledby="lbl-notif"></button></div>
+        <p class="small" id="notif-note"></p>
+        <div class="setrow"><span id="lbl-sound" data-i="sound"></span><button class="switch" id="sw-sound" role="switch" aria-checked="true" aria-labelledby="lbl-sound"></button></div>
+      </div>
+      <div class="card">
+        <h2 data-i="laughTitle"></h2>
+        <p class="small" data-i="laughHint"></p>
+        <p class="note" id="laugh-status"></p>
+        <label class="btn btn-gold filelbl" for="in-laugh"><span data-i="laughImport"></span><input type="file" id="in-laugh" accept="audio/*"></label>
+        <div class="btnrow" id="laugh-btns">
+          <button class="btn btn-ghost" id="laugh-test" data-i="laughTest"></button>
+          <button class="btn btn-ghost" id="laugh-remove" data-i="laughRemove"></button>
+        </div>
+        <p class="err" id="laugh-err" aria-live="polite"></p>
+      </div>
+    </div></details>
+    <details class="sgroup"><summary><span class="sgi" aria-hidden="true">🌤️</span><b data-i="sgWx"></b><i class="chev" aria-hidden="true">⌄</i></summary><div class="sg-body">
+      <div class="card">
+        <h2 data-i="wxTitle"></h2>
+        <div class="field"><label for="in-city" data-i="wxCityLabel"></label><div class="guessrow"><input id="in-city" class="txt" maxlength="60" autocomplete="off" placeholder="Port-au-Prince"><button class="btn btn-gold" id="city-ok">OK</button></div></div>
+        <p class="small" id="city-msg" aria-live="polite"></p>
+        <div class="setrow"><span id="lbl-wx" data-i="wxShare"></span><button class="switch" id="sw-wx" role="switch" aria-checked="false" aria-labelledby="lbl-wx"></button></div>
+        <p class="small" data-i="wxNote"></p>
+      </div>
+    </div></details>
+    <details class="sgroup"><summary><span class="sgi" aria-hidden="true">🌍</span><b data-i="sgApp"></b><i class="chev" aria-hidden="true">⌄</i></summary><div class="sg-body">
+      <div class="card">
+        <div class="setrow"><span data-i="langTitle"></span>
+          <div class="lang" role="group" aria-label="Langue">
+            <button id="lang-fr" aria-pressed="true">FR</button>
+            <button id="lang-kr" aria-pressed="false">KR</button>
+            <button id="lang-en" aria-pressed="false">EN</button>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="card">
-      <div class="field"><label for="in-me" data-i="myName"></label><input id="in-me" class="txt" maxlength="20" autocomplete="off"></div>
-      <div class="field"><label for="in-love" data-i="loveName"></label><input id="in-love" class="txt" maxlength="20" autocomplete="off"></div>
-      <div class="field"><label for="in-phone" data-i="phoneLabel"></label><input id="in-phone" class="txt" type="tel" inputmode="tel" maxlength="20" autocomplete="off" placeholder="+509 …"></div>
-    </div>
-    <div class="card">
-      <h2 data-i="photoTitle"></h2>
-      <img id="set-photo" class="cphoto big" alt="" hidden>
-      <label class="btn btn-ghost filelbl" for="in-photo"><span data-i="photoPick"></span><input type="file" id="in-photo" accept="image/*"></label>
-      <p class="small" data-i="photoShared"></p>
-      <button class="linkbtn" id="photo-remove" data-i="photoRemove" hidden></button>
-    </div>
-    <div class="card" id="faces-card" hidden>
-      <h2 data-i="faceTitle"></h2>
-      <div class="face-row">
-        <label class="face-slot" for="in-face-me"><span class="face-circle" id="face-me"></span><b id="face-me-l"></b><span data-i="faceChange"></span><input type="file" id="in-face-me" accept="image/*"></label>
-        <label class="face-slot" for="in-face-love"><span class="face-circle" id="face-love"></span><b id="face-love-l"></b><span data-i="faceChange"></span><input type="file" id="in-face-love" accept="image/*"></label>
+      <div class="card">
+        <div class="setrow"><span id="lbl-lite" data-i="lite"></span><button class="switch" id="sw-lite" role="switch" aria-checked="false" aria-labelledby="lbl-lite"></button></div>
+        <p class="small" data-i="liteNote"></p>
+        <div class="setrow"><span data-i="pinTitle"></span><button class="btn btn-ghost" id="pin-set" style="width:auto;padding:9px 16px"></button></div>
+        <p class="small" id="pin-note"></p>
       </div>
-      <p class="small" data-i="faceHint" style="margin:0"></p>
-    </div>
-    <div class="card">
-      <h2 data-i="hugPhotoTitle"></h2>
-      <img id="set-hug" class="hug-prev" alt="" hidden>
-      <label class="btn btn-ghost filelbl" for="in-hug"><span data-i="hugPick"></span><input type="file" id="in-hug" accept="image/*"></label>
-      <p class="small" data-i="hugPhotoHint"></p>
-      <button class="linkbtn" id="hug-remove" data-i="photoRemove" hidden></button>
-    </div>
-    <div class="card">
-      <div class="setrow"><span id="lbl-lite" data-i="lite"></span><button class="switch" id="sw-lite" role="switch" aria-checked="false" aria-labelledby="lbl-lite"></button></div>
-      <p class="small" data-i="liteNote"></p>
-      <div class="setrow"><span data-i="pinTitle"></span><button class="btn btn-ghost" id="pin-set" style="width:auto;padding:9px 16px"></button></div>
-      <p class="small" id="pin-note"></p>
-    </div>
-    <div class="card">
-      <h2 data-i="datesTitle"></h2>
-      <div class="field"><label for="in-since" data-i="sinceLabel"></label><input id="in-since" class="txt" type="date"></div>
-      <div class="field"><label for="in-reunion" data-i="reunionLabel"></label><input id="in-reunion" class="txt" type="date"></div>
-      <div class="field"><label for="in-bday-love" data-i="bdayLoveLabel"></label><input id="in-bday-love" class="txt" type="date"></div>
-      <div class="field"><label for="in-bday-me" data-i="bdayMeLabel"></label><input id="in-bday-me" class="txt" type="date"></div>
-    </div>
-    <div class="card">
-      <h2 data-i="wxTitle"></h2>
-      <div class="field"><label for="in-city" data-i="wxCityLabel"></label><div class="guessrow"><input id="in-city" class="txt" maxlength="60" autocomplete="off" placeholder="Port-au-Prince"><button class="btn btn-gold" id="city-ok">OK</button></div></div>
-      <p class="small" id="city-msg" aria-live="polite"></p>
-      <div class="setrow"><span id="lbl-wx" data-i="wxShare"></span><button class="switch" id="sw-wx" role="switch" aria-checked="false" aria-labelledby="lbl-wx"></button></div>
-      <p class="small" data-i="wxNote"></p>
-    </div>
-    <div class="card">
-      <div class="setrow"><span id="lbl-notif" data-i="notif"></span><button class="switch" id="sw-notif" role="switch" aria-checked="false" aria-labelledby="lbl-notif"></button></div>
-      <p class="small" id="notif-note"></p>
-      <div class="setrow"><span id="lbl-sound" data-i="sound"></span><button class="switch" id="sw-sound" role="switch" aria-checked="true" aria-labelledby="lbl-sound"></button></div>
-    </div>
-    <div class="card">
-      <h2 data-i="laughTitle"></h2>
-      <p class="small" data-i="laughHint"></p>
-      <p class="note" id="laugh-status"></p>
-      <label class="btn btn-gold filelbl" for="in-laugh"><span data-i="laughImport"></span><input type="file" id="in-laugh" accept="audio/*"></label>
-      <div class="btnrow" id="laugh-btns">
-        <button class="btn btn-ghost" id="laugh-test" data-i="laughTest"></button>
-        <button class="btn btn-ghost" id="laugh-remove" data-i="laughRemove"></button>
+    </div></details>
+    <details class="sgroup"><summary><span class="sgi" aria-hidden="true">🛡️</span><b data-i="sgAccount"></b><i class="chev" aria-hidden="true">⌄</i></summary><div class="sg-body">
+      <div class="card" id="acc-card">
+        <h2 data-i="accTitle"></h2>
+        <p class="small" id="acc-status"></p>
+        <button class="btn btn-gold" id="acc-google"><span>G</span> <span data-i="accBtn"></span></button>
+        <p class="small" data-i="accRestoreHint"></p>
+        <p class="err" id="acc-err" aria-live="polite"></p>
       </div>
-      <p class="err" id="laugh-err" aria-live="polite"></p>
-    </div>
-    <div class="card">
-      <button class="btn btn-ghost" id="unlink" hidden></button>
-      <button class="btn btn-ghost" id="reset" data-i="reset"></button>
-    </div>
-    <div class="card" id="acc-card">
-      <h2 data-i="accTitle"></h2>
-      <p class="small" id="acc-status"></p>
-      <button class="btn btn-gold" id="acc-google"><span>G</span> <span data-i="accBtn"></span></button>
-      <p class="small" data-i="accRestoreHint"></p>
-      <p class="err" id="acc-err" aria-live="polite"></p>
-    </div>
-    <div class="card">
-      <h2 data-i="delTitle"></h2>
-      <p class="small" data-i="delNote"></p>
-      <button class="btn btn-ghost" id="del-all" style="border-color:var(--bad);color:var(--bad)"></button>
-    </div>
-    <button class="btn btn-gold" id="settings-done" data-i="done"></button>
+      <div class="card">
+        <button class="btn btn-ghost" id="unlink" hidden></button>
+        <button class="btn btn-ghost" id="reset" data-i="reset"></button>
+      </div>
+      <div class="card">
+        <h2 data-i="delTitle"></h2>
+        <p class="small" data-i="delNote"></p>
+        <button class="btn btn-ghost" id="del-all" style="border-color:var(--bad);color:var(--bad)"></button>
+      </div>
+    </div></details>
     <div class="card"><button class="btn btn-ghost" id="share-app" data-i="shareApp"></button></div>
-    <p class="small center" id="app-version">Noche Duo · version 27 · <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--muted)">Confidentialité</a> · <a href="delete.html" target="_blank" rel="noopener" style="color:var(--muted)">Supprimer mon compte</a></p>
-  </section>
+    <p class="small center" id="app-version">Noche Duo · version 28 · <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--muted)">Confidentialité</a> · <a href="delete.html" target="_blank" rel="noopener" style="color:var(--muted)">Supprimer mon compte</a></p>
+  
+    <button class="btn btn-gold" id="settings-done" data-i="done"></button></section>
 
   <!-- CREATED -->
   <section id="s-created" class="screen" hidden>
@@ -1613,7 +1633,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       hugBtn: "Câlin", hugMsg: "Gros câlin", hugBackMsg: "Câlin rendu", hugIn: function (n) { return n + " te fait un gros câlin 🤗"; }, hugBackIn: function (n) { return n + " te rend ton câlin 💞"; },
       hugSent: function (n) { return "Câlin envoyé à " + n + " 🤗"; }, hugBack: "🤗 Lui rendre son câlin", hugPhotoTitle: "Photo câlin", hugPick: "Choisir une photo de vous deux",
       hugPhotoHint: "Une photo où vous vous serrez dans les bras : elle apparaît quand vous vous envoyez un câlin, sur vos deux téléphones.", hugTip: "Ajoute une photo de vous deux dans Réglages → Photo câlin : le câlin sera encore plus réel.",
-      chOlder: "Voir les messages plus anciens", chLoadFail: "Impossible de charger", actTitle: "Activité", actEmpty: "Rien de nouveau pour l'instant. Les appels, câlins, pensées et bonnes nuits de ton amour s'affichent ici.", awayTitle: "🔔 Pendant ton absence", awayAll: "Tout voir",
+      chOlder: "Voir les messages plus anciens", chLoadFail: "Impossible de charger", sgUs: "Nous deux : prénoms, téléphone, dates", sgPhotos: "Photos du couple, visages, câlin", sgNotif: "Notifications, son et rire", sgWx: "Météo", sgApp: "Langue, économie de données, code secret", sgAccount: "Compte, sauvegarde et suppression", wxAddBtn: "📍 Ajouter ma ville", actTitle: "Activité", actEmpty: "Rien de nouveau pour l'instant. Les appels, câlins, pensées et bonnes nuits de ton amour s'affichent ici.", awayTitle: "🔔 Pendant ton absence", awayAll: "Tout voir",
       fPulse: function (n) { return n + " a pensé à toi 💓"; }, fGn: function (n) { return n + " t'a dit bonne nuit 🌙"; }, fHug: function (n) { return n + " t'a fait un gros câlin 🤗"; }, fHugBack: function (n) { return n + " t'a rendu ton câlin 💞"; },
       fWater: function (n) { return n + " a arrosé votre arbre 💧"; }, fLetter: function (n) { return n + " t'a écrit une lettre 💌"; }, fDream: function (n, x) { return n + " a ajouté un rêve : « " + x + " »"; },
       fTouch: function (n) { return n + " voulait te toucher à distance 👆"; }, fMood: function (n, x) { return n + " se sent " + x; }, fMissed: function (n, v) { return (v ? "Appel vidéo manqué de " : "Appel manqué de ") + n; },
@@ -1857,7 +1877,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       hugBtn: "Akolad", hugMsg: "Gwo akolad", hugBackMsg: "Akolad retounen", hugIn: function (n) { return n + " ba w yon gwo akolad 🤗"; }, hugBackIn: function (n) { return n + " remèt ou akolad ou 💞"; },
       hugSent: function (n) { return "Akolad voye bay " + n + " 🤗"; }, hugBack: "🤗 Remèt li akolad li", hugPhotoTitle: "Foto akolad", hugPick: "Chwazi yon foto nou de a",
       hugPhotoHint: "Yon foto kote nou anbrase : li parèt lè nou voye yon akolad, sou de telefòn nou yo.", hugTip: "Mete yon foto nou de nan Paramèt → Foto akolad : akolad la ap pi reyèl.",
-      chOlder: "Wè ansyen mesaj yo", chLoadFail: "Pa ka chaje", actTitle: "Aktivite", actEmpty: "Anyen nouvo pou kounye a. Apèl, akolad, panse ak bòn nwit lanmou w ap parèt isit la.", awayTitle: "🔔 Pandan w pa t la", awayAll: "Wè tout",
+      chOlder: "Wè ansyen mesaj yo", chLoadFail: "Pa ka chaje", sgUs: "Nou de : non, telefòn, dat", sgPhotos: "Foto koup la, figi, akolad", sgNotif: "Notifikasyon, son ak ri", sgWx: "Tan", sgApp: "Lang, ekonomi done, kòd sekrè", sgAccount: "Kont, sovgad ak efase", wxAddBtn: "📍 Mete vil mwen", actTitle: "Aktivite", actEmpty: "Anyen nouvo pou kounye a. Apèl, akolad, panse ak bòn nwit lanmou w ap parèt isit la.", awayTitle: "🔔 Pandan w pa t la", awayAll: "Wè tout",
       fPulse: function (n) { return n + " panse a ou 💓"; }, fGn: function (n) { return n + " di w bòn nwit 🌙"; }, fHug: function (n) { return n + " ba w yon gwo akolad 🤗"; }, fHugBack: function (n) { return n + " remèt ou akolad ou 💞"; },
       fWater: function (n) { return n + " wouze pyebwa nou an 💧"; }, fLetter: function (n) { return n + " ekri w yon lèt 💌"; }, fDream: function (n, x) { return n + " ajoute yon rèv : « " + x + " »"; },
       fTouch: function (n) { return n + " te vle manyen w a distans 👆"; }, fMood: function (n, x) { return n + " santi l " + x; }, fMissed: function (n, v) { return (v ? "Apèl videyo ou rate nan men " : "Apèl ou rate nan men ") + n; },
@@ -2101,7 +2121,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       hugBtn: "Hug", hugMsg: "Big hug", hugBackMsg: "Hug returned", hugIn: function (n) { return n + " sends you a big hug 🤗"; }, hugBackIn: function (n) { return n + " hugs you back 💞"; },
       hugSent: function (n) { return "Hug sent to " + n + " 🤗"; }, hugBack: "🤗 Hug back", hugPhotoTitle: "Hug photo", hugPick: "Choose a photo of you two",
       hugPhotoHint: "A photo of you two hugging: it appears on both phones when you send each other a hug.", hugTip: "Add a photo of you two in Settings → Hug photo to make the hug feel even more real.",
-      chOlder: "See older messages", chLoadFail: "Could not load", actTitle: "Activity", actEmpty: "Nothing new yet. Your love's calls, hugs, thoughts and goodnights show up here.", awayTitle: "🔔 While you were away", awayAll: "See all",
+      chOlder: "See older messages", chLoadFail: "Could not load", sgUs: "Us: names, phone, dates", sgPhotos: "Couple photo, faces, hug", sgNotif: "Notifications, sound and laugh", sgWx: "Weather", sgApp: "Language, data saver, secret code", sgAccount: "Account, backup and deletion", wxAddBtn: "📍 Add my city", actTitle: "Activity", actEmpty: "Nothing new yet. Your love's calls, hugs, thoughts and goodnights show up here.", awayTitle: "🔔 While you were away", awayAll: "See all",
       fPulse: function (n) { return n + " thought of you 💓"; }, fGn: function (n) { return n + " said goodnight 🌙"; }, fHug: function (n) { return n + " sent you a big hug 🤗"; }, fHugBack: function (n) { return n + " hugged you back 💞"; },
       fWater: function (n) { return n + " watered your tree 💧"; }, fLetter: function (n) { return n + " wrote you a letter 💌"; }, fDream: function (n, x) { return n + " added a dream: \"" + x + "\""; },
       fTouch: function (n) { return n + " wanted to touch you 👆"; }, fMood: function (n, x) { return n + " feels " + x; }, fMissed: function (n, v) { return (v ? "Missed video call from " : "Missed call from ") + n; },
@@ -2597,6 +2617,11 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
   /* Settings */
   var resetArmed = false;
   $("go-settings").addEventListener("click", function () { sfx("tap"); resetArmed = false; show("settings"); });
+  function revealSetting(id, focus) {
+    if (current !== "settings") show("settings");
+    var el = $(id), d = el && el.closest("details"); if (d) d.open = true;
+    setTimeout(function () { el.scrollIntoView({ block: "center", behavior: reduce ? "auto" : "smooth" }); if (focus) el.focus({ preventScroll: true }); }, 60);
+  }
   $("settings-done").addEventListener("click", function () { sfx("tap"); show(NAV.lastTab || "home"); });
   $("in-me").addEventListener("input", function () { P.me = this.value.trim(); save(); });
   $("in-love").addEventListener("input", function () { P.love = this.value.trim(); save(); });
@@ -3285,7 +3310,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       setTimeout(function () { confetti(true); sfx("win"); toast("🎉", t("celebrate"), sp[1]); }, 500);
     });
   }
-  $("story-edit").addEventListener("click", function () { sfx("tap"); show("settings"); setTimeout(function () { $("in-since").scrollIntoView({ block: "center" }); }, 50); });
+  $("story-edit").addEventListener("click", function () { sfx("tap"); revealSetting("in-since"); });
   function onSharedDates(v) {
     if (!v) { if (P.since || P.reunion) pubDates(); return; }
     var ch = false;
@@ -3980,7 +4005,10 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
   function wxSide(el, label, w, hint) {
     el.innerHTML = ""; el.className = "wxside";
     var lb = document.createElement("small"); lb.textContent = label; el.appendChild(lb);
-    if (!w || typeof w.t !== "number") { var u = document.createElement("small"); u.textContent = hint; el.appendChild(u); return; }
+    if (!w || typeof w.t !== "number") {
+      if (el.id === "wx-me") { var bt = document.createElement("button"); bt.type = "button"; bt.className = "btn btn-ghost"; bt.style.marginTop = "6px"; bt.textContent = t("wxAddBtn"); bt.addEventListener("click", function () { sfx("tap"); revealSetting("in-city", true); }); el.appendChild(bt); return; }
+      var u = document.createElement("small"); u.textContent = hint; el.appendChild(u); return;
+    }
     if (w.t >= 30) el.classList.add("hot"); else if (w.t <= 15) el.classList.add("cold");
     var em = document.createElement("span"); em.className = "em " + (wxKind(w.c) === 0 && w.d ? "sun" : "bob"); em.textContent = wxIcon(w); el.appendChild(em);
     var tp = document.createElement("span"); tp.className = "tp"; tp.textContent = Math.round(w.t) + " °C"; el.appendChild(tp);
@@ -3990,6 +4018,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
   function renderWeather() {
     var mine = P.wxShare !== false && P.wxNow ? P.wxNow : null, theirs = OL.partner && OL.partner.wx, linked = !!(P.couple && OL.partnerJoined);
     $("wx-card").hidden = !mine && !theirs && !linked;
+    $("gn-card").hidden = linked;
     if ($("wx-card").hidden) return;
     wxSide($("wx-me"), t("wxMe"), mine, t("wxAddCity"));
     wxSide($("wx-love"), t("wxLove")(nameMid()), theirs, t("wxUnknown"));
