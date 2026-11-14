@@ -309,6 +309,24 @@ select.txt { appearance: auto; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .ytwrap { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; background: #000; }
 .ytwrap iframe, .ytwrap #yt-player { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+/* Navigation: header + bottom tab bar */
+header { position: sticky; top: 0; z-index: 30; margin: -18px -18px 0; padding: 14px 18px 12px; background: linear-gradient(var(--sky) 70%, rgba(13,11,31,0)); min-height: 62px; }
+.hdr-title { flex: 1; margin: 0; font-family: var(--display); font-weight: 500; font-size: 1.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#hdr-back { flex: none; width: 38px; height: 38px; }
+.greet h1 { font-size: 1.9rem; margin: 2px 0 0; }
+.tabtitle { font-size: 1.9rem; margin: 4px 0 0; }
+.tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 62; display: grid; grid-template-columns: repeat(4, 1fr); max-width: 480px; margin: 0 auto; padding: 6px 8px calc(8px + env(safe-area-inset-bottom)); background: rgba(16,13,38,0.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid rgba(240,198,116,0.18); }
+.tabbar button { background: none; border: 0; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 2px; font: 500 0.72rem var(--body); cursor: pointer; border-radius: 12px; position: relative; }
+.tabbar svg { width: 25px; height: 25px; transition: transform .2s; }
+.tabbar button[aria-current="page"] { color: var(--gold); }
+.tabbar button[aria-current="page"] svg { transform: translateY(-1px) scale(1.08); }
+.tabbar button[aria-current="page"]::before { content: ""; position: absolute; top: 0; width: 28px; height: 3px; border-radius: 3px; background: var(--gold); }
+.tabbar button:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+.tabbar .dotnew { position: absolute; top: 4px; right: calc(50% - 18px); width: 9px; height: 9px; border-radius: 50%; background: var(--rose); border: 2px solid #100d26; }
+body.tabs .wrap { padding-bottom: 100px; }
+body.tabs.incall .wrap { padding-bottom: 180px; }
+body.tabs .callbar { bottom: calc(78px + env(safe-area-inset-bottom)); }
+body.tabs #vlayer.mini { bottom: calc(230px + env(safe-area-inset-bottom)); }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -322,16 +340,15 @@ select.txt { appearance: auto; }
 
 <div class="wrap">
   <header>
+    <button class="icon-btn" id="hdr-back" aria-label="Retour" hidden>
+      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    </button>
     <button class="brand" id="brand" aria-label="Noche Duo">
       <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><path d="M21 4a12 12 0 1 0 7 21A10 10 0 0 1 21 4z" fill="#f0c674"/></svg>
       <span>Noche Duo</span>
     </button>
+    <h2 class="hdr-title" id="hdr-title" hidden></h2>
     <div class="hdr-right">
-      <div class="lang" role="group" aria-label="Langue">
-        <button id="lang-fr" aria-pressed="true">FR</button>
-        <button id="lang-kr" aria-pressed="false">KR</button>
-        <button id="lang-en" aria-pressed="false">EN</button>
-      </div>
       <button class="icon-btn" id="go-settings" aria-label="Réglages">
         <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/><circle cx="16" cy="7" r="2.2" stroke="currentColor" stroke-width="1.8" fill="none"/><circle cx="10" cy="17" r="2.2" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
       </button>
@@ -340,10 +357,7 @@ select.txt { appearance: auto; }
 
   <!-- HOME -->
   <section id="s-home" class="screen stack">
-    <div>
-      <h1 data-i="homeTitle"></h1>
-      <p class="tag" data-i="tagline"></p>
-    </div>
+    <div class="greet"><p class="small" id="greet-date"></p><h1 id="greet"></h1></div>
     <div class="card" id="install-card" hidden>
       <b data-i="installTitle"></b>
       <p class="small" id="install-text"></p>
@@ -362,56 +376,6 @@ select.txt { appearance: auto; }
       <h3 data-i="badges"></h3>
       <div class="badges" id="badges"></div>
       <p class="badge-names" id="badge-hint"></p>
-      <button class="linkbtn" id="month-btn" data-i="monthBtn"></button>
-    </div>
-    <div class="card" id="wx-card" hidden>
-      <h3 data-i="wxTitle"></h3>
-      <div class="wxgrid"><div class="wxside" id="wx-me"></div><div class="wxside" id="wx-love"></div></div>
-      <p class="small" id="wx-line" hidden></p>
-    </div>
-    <div class="card" id="daily-card">
-      <div class="rowb"><h3 data-i="dailyTitle"></h3><span class="small" id="daily-left"></span></div>
-      <p class="daily-text" id="daily-text"></p>
-      <button class="btn btn-gold" id="daily-done" data-i="dailyDone"></button>
-      <p class="small" id="daily-status"></p>
-    </div>
-    <div class="card" id="gn-card">
-      <button class="btn btn-ghost" id="gn-home" data-i="gnHome"></button>
-      <p class="small center" id="gn-note" hidden></p>
-    </div>
-    <h3 data-i="chooseGame"></h3>
-    <div class="modes" role="group">
-      <button class="modetile" id="mode-mission" type="button"><b data-i="mMission"></b><span data-i="mMissionD"></span></button>
-      <button class="modetile" id="mode-sync" type="button"><b data-i="mSync"></b><span data-i="mSyncD"></span></button>
-      <button class="modetile" id="mode-quiz" type="button"><b data-i="mQuiz"></b><span data-i="mQuizD"></span></button>
-      <button class="modetile" id="mode-draw" type="button"><b data-i="mDraw"></b><span data-i="mDrawD"></span></button>
-    </div>
-    <div class="card">
-      <ol class="rules" id="rules"></ol>
-    </div>
-    <button class="btn btn-gold" id="go-together" data-i="playTogether" hidden></button>
-    <button class="btn btn-gold" id="go-create" data-i="create"></button>
-    <button class="btn btn-ghost" id="go-join" data-i="join"></button>
-    <button class="btn btn-ghost" id="go-resume" data-i="resume2" hidden></button>
-    <p class="small center" data-i="howTo"></p>
-    <div class="card" id="letters-card">
-      <div class="rowb"><h3 data-i="lettersTitle"></h3><span class="small" id="letters-count"></span></div>
-      <div class="stack" id="letters-list" style="gap:10px"></div>
-      <button class="btn btn-ghost" id="letter-write" data-i="letterWrite"></button>
-    </div>
-    <div class="card" id="dreams-card">
-      <h3 data-i="dreamsTitle"></h3>
-      <div class="stack" id="dreams-list" style="gap:10px"></div>
-      <div class="guessrow">
-        <label for="dream-in" class="small" style="position:absolute;left:-9999px" data-i="dreamsTitle"></label>
-        <input id="dream-in" class="txt" maxlength="80" autocomplete="off">
-        <button class="btn btn-gold" id="dream-add" data-i="dreamAdd"></button>
-      </div>
-    </div>
-    <div class="card" id="story-card">
-      <h3 data-i="storyTitle"></h3>
-      <div class="stack" id="story-lines" style="gap:10px"></div>
-      <button class="linkbtn" id="story-edit" data-i="storyEdit"></button>
     </div>
     <div class="card" id="online-card" hidden>
       <h3 data-i="onlineTitle"></h3>
@@ -458,6 +422,82 @@ select.txt { appearance: auto; }
         <p class="small center" id="ol-note" aria-live="polite"></p>
       </div>
     </div>
+    <div class="card" id="wx-card" hidden>
+      <h3 data-i="wxTitle"></h3>
+      <div class="wxgrid"><div class="wxside" id="wx-me"></div><div class="wxside" id="wx-love"></div></div>
+      <p class="small" id="wx-line" hidden></p>
+    </div>
+    <div class="card" id="daily-card">
+      <div class="rowb"><h3 data-i="dailyTitle"></h3><span class="small" id="daily-left"></span></div>
+      <p class="daily-text" id="daily-text"></p>
+      <button class="btn btn-gold" id="daily-done" data-i="dailyDone"></button>
+      <p class="small" id="daily-status"></p>
+    </div>
+    <div class="card" id="gn-card">
+      <button class="btn btn-ghost" id="gn-home" data-i="gnHome"></button>
+      <p class="small center" id="gn-note" hidden></p>
+    </div>
+  </section>
+
+  <section id="s-play" class="screen stack" hidden>
+    <h1 class="tabtitle" data-i="tabPlay"></h1>
+    <h3 data-i="chooseGame"></h3>
+    <div class="modes" role="group">
+      <button class="modetile" id="mode-mission" type="button"><b data-i="mMission"></b><span data-i="mMissionD"></span></button>
+      <button class="modetile" id="mode-sync" type="button"><b data-i="mSync"></b><span data-i="mSyncD"></span></button>
+      <button class="modetile" id="mode-quiz" type="button"><b data-i="mQuiz"></b><span data-i="mQuizD"></span></button>
+      <button class="modetile" id="mode-draw" type="button"><b data-i="mDraw"></b><span data-i="mDrawD"></span></button>
+    </div>
+    <div class="card">
+      <ol class="rules" id="rules"></ol>
+    </div>
+    <button class="btn btn-gold" id="go-together" data-i="playTogether" hidden></button>
+    <button class="btn btn-gold" id="go-create" data-i="create"></button>
+    <button class="btn btn-ghost" id="go-join" data-i="join"></button>
+    <button class="btn btn-ghost" id="go-resume" data-i="resume2" hidden></button>
+    <p class="small center" data-i="howTo"></p>
+  </section>
+
+  <section id="s-us" class="screen stack" hidden>
+    <h1 class="tabtitle" data-i="tabUs"></h1>
+    <div class="card" id="story-card">
+      <h3 data-i="storyTitle"></h3>
+      <div class="stack" id="story-lines" style="gap:10px"></div>
+      <button class="linkbtn" id="story-edit" data-i="storyEdit"></button>
+    </div>
+    <div class="card" id="letters-card">
+      <div class="rowb"><h3 data-i="lettersTitle"></h3><span class="small" id="letters-count"></span></div>
+      <div class="stack" id="letters-list" style="gap:10px"></div>
+      <button class="btn btn-ghost" id="letter-write" data-i="letterWrite"></button>
+    </div>
+    <div class="card" id="dreams-card">
+      <h3 data-i="dreamsTitle"></h3>
+      <div class="stack" id="dreams-list" style="gap:10px"></div>
+      <div class="guessrow">
+        <label for="dream-in" class="small" style="position:absolute;left:-9999px" data-i="dreamsTitle"></label>
+        <input id="dream-in" class="txt" maxlength="80" autocomplete="off">
+        <button class="btn btn-gold" id="dream-add" data-i="dreamAdd"></button>
+      </div>
+    </div>
+    <div class="card"><button class="btn btn-ghost" id="month-btn" data-i="monthBtn"></button></div>
+  </section>
+
+  <section id="s-together" class="screen stack" hidden>
+    <h1 class="tabtitle" data-i="tabTogether"></h1>
+    <div class="card" id="tg-empty" hidden>
+      <p class="tag" data-i="tgEmpty" style="margin:0"></p>
+      <button class="btn btn-gold" id="tg-link" data-i="linkCreate"></button>
+    </div>
+    <div class="card" id="call-card" hidden>
+      <h3 data-i="callTitle"></h3>
+      <button class="btn btn-rose" id="call-start" hidden></button>
+      <button class="btn btn-ghost" id="call-video" hidden></button>
+      <div class="btnrow" id="call-direct" hidden>
+        <a class="btn btn-ghost" id="call-tel" data-i="callPhone"></a>
+        <a class="btn btn-ghost" id="call-wa" target="_blank" rel="noopener" data-i="callWa"></a>
+      </div>
+      <p class="small" id="call-hint" hidden></p>
+    </div>
     <div class="card" id="music-card" hidden>
       <h3 data-i="muTitle"></h3>
       <div class="stack" id="mu-now" hidden style="gap:10px">
@@ -476,21 +516,19 @@ select.txt { appearance: auto; }
       <p class="small" data-i="muHint"></p>
       <p class="err" id="mu-err" aria-live="polite"></p>
     </div>
-    <div class="card" id="call-card" hidden>
-      <h3 data-i="callTitle"></h3>
-      <button class="btn btn-rose" id="call-start" hidden></button>
-      <button class="btn btn-ghost" id="call-video" hidden></button>
-      <div class="btnrow" id="call-direct" hidden>
-        <a class="btn btn-ghost" id="call-tel" data-i="callPhone"></a>
-        <a class="btn btn-ghost" id="call-wa" target="_blank" rel="noopener" data-i="callWa"></a>
-      </div>
-      <p class="small" id="call-hint" hidden></p>
-    </div>
   </section>
 
   <!-- SETTINGS -->
   <section id="s-settings" class="screen stack" hidden>
-    <h2 data-i="settings"></h2>
+    <div class="card">
+      <div class="setrow"><span data-i="langTitle"></span>
+        <div class="lang" role="group" aria-label="Langue">
+          <button id="lang-fr" aria-pressed="true">FR</button>
+          <button id="lang-kr" aria-pressed="false">KR</button>
+          <button id="lang-en" aria-pressed="false">EN</button>
+        </div>
+      </div>
+    </div>
     <div class="card">
       <div class="field"><label for="in-me" data-i="myName"></label><input id="in-me" class="txt" maxlength="20" autocomplete="off"></div>
       <div class="field"><label for="in-love" data-i="loveName"></label><input id="in-love" class="txt" maxlength="20" autocomplete="off"></div>
@@ -694,7 +732,6 @@ select.txt { appearance: auto; }
 
   <!-- WRITE A LETTER -->
   <section id="s-letter" class="screen stack" hidden>
-    <h2 data-i="letterWrite"></h2>
     <div class="card">
       <div class="field"><label for="lt-type" data-i="ltWhen"></label><select id="lt-type" class="txt"></select></div>
       <div class="field" id="lt-datef"><label for="lt-date" data-i="ltDate"></label><input id="lt-date" type="date" class="txt"></div>
@@ -742,6 +779,12 @@ select.txt { appearance: auto; }
   </section>
 </div>
 
+<nav class="tabbar" id="tabbar" aria-label="Navigation">
+  <button data-tab="home" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span data-i="tabHome"></span></button>
+  <button data-tab="play" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="11" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 10.5v4M6 12.5h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="15.5" cy="11.5" r="1.1" fill="currentColor"/><circle cx="17.5" cy="14" r="1.1" fill="currentColor"/></svg><span data-i="tabPlay"></span></button>
+  <button data-tab="us" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.3-8.9-8.6C1.7 8.2 3.7 4.7 7.1 4.7c2 0 3.3 1.1 4.9 2.9 1.6-1.8 2.9-2.9 4.9-2.9 3.4 0 5.4 3.5 4 6.7C19 15.7 12 20 12 20z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span data-i="tabUs"></span></button>
+  <button data-tab="together" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><rect x="3" y="14" width="4.5" height="6" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="16.5" y="14" width="4.5" height="6" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span data-i="tabTogether"></span></button>
+</nav>
 <div class="fxlayer" id="heartfx" hidden><div>
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.2 0 3.6 1.2 5.3 3.1 1.7-1.9 3.1-3.1 5.3-3.1 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z" fill="#ff7a93"/></svg>
   <p id="heartfx-t"></p>
@@ -1169,7 +1212,10 @@ select.txt { appearance: auto; }
       muTitle: "🎧 Écouter ensemble", muLabel: "Lien YouTube de la chanson", muHint: "Dans YouTube : Partager → Copier le lien, puis colle-le ici. La chanson démarre au même moment chez vous deux.",
       muStart: "Lancer", muBad: "Ce lien YouTube n'est pas reconnu.", muJoin: function (n) { return "🎧 Écouter avec " + n; },
       muBy: function (n) { return "Lancé par " + n; }, muSong: "Chanson YouTube", muPlay: "▶ Lecture pour nous deux", muPause: "⏸ Pause pour nous deux",
-      muResync: "↻ Resynchroniser", muStop: "Arrêter la musique", muStarted: function (n) { return n + " lance une chanson 🎧"; }
+      muResync: "↻ Resynchroniser", muStop: "Arrêter la musique", muStarted: function (n) { return n + " lance une chanson 🎧"; },
+      tabHome: "Accueil", tabPlay: "Jouer", tabUs: "Nous deux", tabTogether: "Ensemble", langTitle: "Langue",
+      hello: function (h) { return h < 12 ? "Bonjour" : h < 18 ? "Bon après-midi" : "Bonsoir"; },
+      tgEmpty: "Reliez vos deux téléphones pour vous appeler dans le jeu et écouter de la musique ensemble."
     },
     kr: {
       modeLabel: "Mòd · Misyon Sekrè",
@@ -1370,7 +1416,10 @@ select.txt { appearance: auto; }
       muTitle: "🎧 Koute ansanm", muLabel: "Lyen YouTube chante a", muHint: "Nan YouTube : Pataje → Kopye lyen an, epi kole l la a. Chante a kòmanse an menm tan lakay nou de.",
       muStart: "Lanse", muBad: "Nou pa rekonèt lyen YouTube sa a.", muJoin: function (n) { return "🎧 Koute ak " + n; },
       muBy: function (n) { return "Se " + n + " ki lanse l"; }, muSong: "Chante YouTube", muPlay: "▶ Jwe pou nou de", muPause: "⏸ Kanpe pou nou de",
-      muResync: "↻ Resenkronize", muStop: "Kanpe mizik la", muStarted: function (n) { return n + " lanse yon chante 🎧"; }
+      muResync: "↻ Resenkronize", muStop: "Kanpe mizik la", muStarted: function (n) { return n + " lanse yon chante 🎧"; },
+      tabHome: "Akèy", tabPlay: "Jwe", tabUs: "Nou de", tabTogether: "Ansanm", langTitle: "Lang",
+      hello: function (h) { return h < 12 ? "Bonjou" : h < 18 ? "Bon apremidi" : "Bonswa"; },
+      tgEmpty: "Konekte de telefòn nou yo pou nou rele nan jwèt la epi koute mizik ansanm."
     },
     en: {
       modeLabel: "Mode · Secret Mission",
@@ -1571,7 +1620,10 @@ select.txt { appearance: auto; }
       muTitle: "🎧 Listen together", muLabel: "YouTube link of the song", muHint: "In YouTube: Share → Copy link, then paste it here. The song starts at the same moment for both of you.",
       muStart: "Play", muBad: "This YouTube link isn't recognized.", muJoin: function (n) { return "🎧 Listen with " + n; },
       muBy: function (n) { return "Started by " + n; }, muSong: "YouTube song", muPlay: "▶ Play for both of us", muPause: "⏸ Pause for both of us",
-      muResync: "↻ Re-sync", muStop: "Stop the music", muStarted: function (n) { return n + " started a song 🎧"; }
+      muResync: "↻ Re-sync", muStop: "Stop the music", muStarted: function (n) { return n + " started a song 🎧"; },
+      tabHome: "Home", tabPlay: "Play", tabUs: "Us", tabTogether: "Together", langTitle: "Language",
+      hello: function (h) { return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"; },
+      tgEmpty: "Link your two phones to call in the game and listen to music together."
     }
   };
 
@@ -1718,7 +1770,7 @@ select.txt { appearance: auto; }
     document.querySelectorAll(".screen").forEach(function (s) { s.hidden = true; });
     var el = $("s-" + name); el.hidden = false;
     el.style.animation = "none"; void el.offsetWidth; el.style.animation = "";
-    current = name; render(); window.scrollTo(0, 0);
+    current = name; if (isTab(name)) NAV.lastTab = name; render(); window.scrollTo(0, 0); syncGuard();
   }
 
   function applyText() {
@@ -1784,8 +1836,8 @@ select.txt { appearance: auto; }
   }
 
   function render() {
-    applyText();
-    if (current === "home") { renderProfile(); renderOnline(); renderCallCard(); renderModes(); renderDaily(); renderStory(); renderInstall(); renderLetters(); renderDreams(); renderWeather(); renderMusic(); }
+    applyText(); updateChrome();
+    if (isTab()) { renderProfile(); renderOnline(); renderCallCard(); renderModes(); renderDaily(); renderStory(); renderInstall(); renderLetters(); renderDreams(); renderWeather(); renderMusic(); renderGreet(); renderTogether(); }
     if (current === "letter") renderLetterForm();
     if (current === "settings") renderWxSettings();
     if (current === "settings") { renderSettingsExtra(); renderSettingsW1(); }
@@ -1979,7 +2031,7 @@ select.txt { appearance: auto; }
   $("lang-en").addEventListener("click", function () { S.lang = "en"; sfx("tap"); save(); render(); });
   $("brand").addEventListener("click", function () {
     if (!playLaugh()) sfx("reveal");
-    if (current !== "home" && current !== "mission" && current !== "accuse" && current !== "reveal") show("home");
+    if (isTab()) show("home");
   });
 
   $("go-create").addEventListener("click", function () {
@@ -1998,7 +2050,7 @@ select.txt { appearance: auto; }
     S.code = v; S.role = "B"; S.round = 1; S.total = 0; newRoundState(); resetSyncAll(); save(); goMode();
   });
   $("code-in").addEventListener("keydown", function (e) { if (e.key === "Enter") $("join-go").click(); });
-  document.querySelectorAll("[data-home]").forEach(function (b) { b.addEventListener("click", function () { show("home"); }); });
+  document.querySelectorAll("[data-home]").forEach(function (b) { b.addEventListener("click", function () { show("play"); }); });
 
   $("seal").addEventListener("click", function () {
     sealOpen = !sealOpen;
@@ -2012,7 +2064,7 @@ select.txt { appearance: auto; }
     S.accusation = pendingAcc; pendingAcc = null; sfx("accuse"); buzz([40, 60, 40]); save(); pubGame(); show("mission");
   });
   $("go-reveal").addEventListener("click", function () { stopTimer(); sealOpen = false; sfx("reveal"); show("reveal"); });
-  $("quit").addEventListener("click", function () { S.code = null; S.role = null; newRoundState(); save(); show("home"); });
+  $("quit").addEventListener("click", function () { S.code = null; S.role = null; newRoundState(); save(); show("play"); });
 
   document.querySelectorAll(".yn").forEach(function (g) {
     var q = g.getAttribute("data-q");
@@ -2054,7 +2106,7 @@ select.txt { appearance: auto; }
   /* Settings */
   var resetArmed = false;
   $("go-settings").addEventListener("click", function () { sfx("tap"); resetArmed = false; show("settings"); });
-  $("settings-done").addEventListener("click", function () { sfx("tap"); show(S.code && current !== "settings" ? "mission" : "home"); });
+  $("settings-done").addEventListener("click", function () { sfx("tap"); show(NAV.lastTab || "home"); });
   $("in-me").addEventListener("input", function () { P.me = this.value.trim(); save(); });
   $("in-love").addEventListener("input", function () { P.love = this.value.trim(); save(); });
   $("sw-sound").addEventListener("click", function () { P.sound = !P.sound; save(); renderSettings(); sfx("tap"); });
@@ -2170,7 +2222,7 @@ select.txt { appearance: auto; }
       watch(base + "/live/shared/quizN", function (s) { onSharedQz(s.val()); });
       watch(base + "/live/shared/dreams", function (s) { onSharedDreams(s.val()); });
       watch(base + "/live/shared/music", function (s) { onSharedMusic(s.val()); });
-      watch(base + "/live/" + mySlot() + "/letters", function (s) { OL.myLetters = s.val() || {}; if (current === "home") renderLetters(); });
+      watch(base + "/live/" + mySlot() + "/letters", function (s) { OL.myLetters = s.val() || {}; if (isTab()) renderLetters(); });
       watch(base + "/live/shared/drawN", function (s) { onSharedDr(s.val()); });
       watch(base + "/live/shared/dates", function (s) { onSharedDates(s.val()); });
       watch(base + "/live/callIce/" + otherSlot(), function (s) { onRemoteIce(s.val()); });
@@ -2298,7 +2350,7 @@ select.txt { appearance: auto; }
     Array.prototype.forEach.call($("moods").children, function (b, i) { b.setAttribute("aria-pressed", OL.moodPick === i); });
     $("ol-musicfield").hidden = OL.moodPick !== 5;
   }
-  function renderOnlineSafe() { if (current === "home") { renderProfile(); renderOnline(); renderCallCard(); renderDaily(); renderStory(); renderLetters(); renderDreams(); renderWeather(); renderMusic(); } if (current === "sync") renderSync(); renderCallMission(); }
+  function renderOnlineSafe() { if (isTab()) { renderProfile(); renderOnline(); renderCallCard(); renderDaily(); renderStory(); renderLetters(); renderDreams(); renderWeather(); renderMusic(); renderTogether(); } if (current === "sync") renderSync(); renderCallMission(); }
 
   function renderPartnerGame() {
     var pg = $("partner-game"), duel = $("duel");
@@ -2684,7 +2736,7 @@ select.txt { appearance: auto; }
     var ch = false;
     if (v.since && v.since !== P.since) { P.since = v.since; ch = true; }
     if (v.reunion !== undefined && v.reunion !== P.reunion) { P.reunion = v.reunion || ""; ch = true; }
-    if (ch) { save(); if (current === "home") renderStory(); if (current === "settings") renderSettingsExtra(); }
+    if (ch) { save(); if (isTab()) renderStory(); if (current === "settings") renderSettingsExtra(); }
   }
   function pubDates() { if (P.couple && OL.db) OL.db.ref(olBase() + "/live/shared/dates").update({ since: P.since || null, reunion: P.reunion || null }).catch(function () {}); }
   [["in-since", "since", true], ["in-reunion", "reunion", true], ["in-bday-love", "bdayLove", false], ["in-bday-me", "bdayMe", false]].forEach(function (f) {
@@ -2776,7 +2828,7 @@ select.txt { appearance: auto; }
         .catch(local);
     } else local();
   });
-  $("y-quit").addEventListener("click", function () { S.code = null; S.role = null; newRoundState(); resetSyncAll(); save(); show("home"); });
+  $("y-quit").addEventListener("click", function () { S.code = null; S.role = null; newRoundState(); resetSyncAll(); save(); show("play"); });
 
   /* ================= Settings extras: dates + notifications ================= */
   function renderSettingsExtra() {
@@ -2813,8 +2865,8 @@ select.txt { appearance: auto; }
   var isStandalone = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true;
   var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   var webOrigin = /^https?:$/.test(location.protocol);
-  window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); installEvt = e; if (current === "home") renderInstall(); });
-  window.addEventListener("appinstalled", function () { installEvt = null; isStandalone = true; if (current === "home") renderInstall(); });
+  window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); installEvt = e; if (isTab()) renderInstall(); });
+  window.addEventListener("appinstalled", function () { installEvt = null; isStandalone = true; if (isTab()) renderInstall(); });
   function renderInstall() {
     var show_ = webOrigin && !isStandalone && (!!installEvt || isIOS);
     $("install-card").hidden = !show_;
@@ -2830,7 +2882,7 @@ select.txt { appearance: auto; }
   if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
     window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
   }
-  setInterval(function () { if (current === "home") renderDaily(); }, 60000);
+  setInterval(function () { if (isTab()) renderDaily(); }, 60000);
 
   /* ================= Goodnight: moon crossing + lullaby + soft heartbeat vibration ================= */
   var gnTimer = null;
@@ -2900,7 +2952,7 @@ select.txt { appearance: auto; }
     photoURL = url || null;
     if (photoURL) lsSet("nd-photo", photoURL); else lsDel("nd-photo");
     if (publish && P.couple && OL.db) OL.db.ref(olBase() + "/live/shared/photo").set(photoURL || null).catch(function () {});
-    if (current === "home") renderProfile();
+    if (isTab()) renderProfile();
     if (current === "settings") renderSettingsW1();
   }
   function onSharedPhoto(v) {
@@ -3102,7 +3154,7 @@ select.txt { appearance: auto; }
         .then(function () { setTimeout(function () { if ((S.qzN || 1) === target) local(); }, 4000); }).catch(local);
     } else local();
   });
-  $("qz-quit").addEventListener("click", function () { S.code = null; S.role = null; newRoundState(); resetSyncAll(); save(); show("home"); });
+  $("qz-quit").addEventListener("click", function () { S.code = null; S.role = null; newRoundState(); resetSyncAll(); save(); show("play"); });
 
   /* ================= Wave 2: draw and guess (live strokes through Firebase) ================= */
   var WORDS = [["soleil", "solèy", "sun"], ["lune", "lalin", "moon"], ["maison", "kay", "house"], ["cœur", "kè", "heart"], ["chat", "chat", "cat"], ["voiture", "machin", "car"], ["arbre", "pyebwa", "tree"], ["poisson", "pwason", "fish"], ["mangue", "mango", "mango"], ["avion", "avyon", "plane"], ["fleur", "flè", "flower"], ["téléphone", "telefòn", "phone"], ["guitare", "gita", "guitar"], ["plage", "plaj", "beach"], ["bateau", "bato", "boat"], ["étoile", "zetwal", "star"], ["pizza", "pitza", "pizza"], ["chaussure", "soulye", "shoe"], ["parapluie", "parapli", "umbrella"], ["montagne", "mòn", "mountain"], ["lunettes", "linèt", "glasses"], ["gâteau", "gato", "cake"], ["ballon", "balon", "ball"], ["papillon", "papiyon", "butterfly"], ["clé", "kle", "key"], ["livre", "liv", "book"], ["chapeau", "chapo", "hat"], ["banane", "fig", "banana"], ["oiseau", "zwazo", "bird"], ["bague", "bag", "ring"]];
@@ -3225,8 +3277,8 @@ select.txt { appearance: auto; }
         .then(function () { setTimeout(function () { if ((S.drN || 1) === target) local(); }, 4000); }).catch(local);
     } else local();
   });
-  $("dr-home").addEventListener("click", function () { show("home"); });
-  $("dr-quit").addEventListener("click", function () { S.code = null; S.role = null; newRoundState(); resetSyncAll(); save(); show("home"); });
+  $("dr-home").addEventListener("click", function () { show("home"); setTimeout(function () { $("online-card").scrollIntoView({ block: "center" }); }, 80); });
+  $("dr-quit").addEventListener("click", function () { S.code = null; S.role = null; newRoundState(); resetSyncAll(); save(); show("play"); });
 
   /* ================= Wave 3: scheduled letters ================= */
   var LT_TYPES = ["date", "bday", "night", "sad", "miss"];
@@ -3300,7 +3352,7 @@ select.txt { appearance: auto; }
   }
   $("lt-type").addEventListener("change", function () { $("lt-datef").hidden = this.value !== "date"; });
   $("letter-write").addEventListener("click", function () { sfx("tap"); $("lt-err").textContent = ""; show("letter"); });
-  $("lt-back").addEventListener("click", function () { show("home"); });
+  $("lt-back").addEventListener("click", function () { show("us"); });
   $("lt-send").addEventListener("click", function () {
     var ty = $("lt-type").value, txt = $("lt-text").value.trim(), dt = $("lt-date").value;
     $("lt-err").textContent = "";
@@ -3312,7 +3364,7 @@ select.txt { appearance: auto; }
     if (ty === "date") rec.date = dt;
     myLive().child("letters/" + id).set(rec).then(function () {
       $("lt-text").value = ""; $("lt-date").value = ""; stat("lettersSent"); save();
-      sfx("win"); confetti(false); toast("💌", t("lettersTitle"), t("ltSent")); show("home");
+      sfx("win"); confetti(false); toast("💌", t("lettersTitle"), t("ltSent")); show("us");
     }, function () { $("lt-err").textContent = t("linkNet"); });
   });
 
@@ -3325,7 +3377,7 @@ select.txt { appearance: auto; }
       var local = P.dreams; P.dreams = {}; save();
       Object.keys(local).forEach(function (k) { if (!OL.dreams[k]) OL.db.ref(olBase() + "/live/shared/dreams/" + k).set(local[k]).catch(function () {}); });
     }
-    if (current === "home") renderDreams();
+    if (isTab()) renderDreams();
   }
   function dreamWrite(k, val) {
     if (dreamsOnline()) OL.db.ref(olBase() + "/live/shared/dreams/" + k).set(val).catch(function () {});
@@ -3400,7 +3452,7 @@ select.txt { appearance: auto; }
       var c = j && j.current; if (!c || typeof c.temperature_2m !== "number") return;
       P.wxNow = { t: Math.round(c.temperature_2m * 10) / 10, c: c.weather_code, d: c.is_day === 1, city: P.wx.city, at: Date.now() }; save();
       if (P.wxShare !== false && P.couple && OL.db) myLive().child("wx").set(P.wxNow).catch(function () {});
-      if (current === "home") renderWeather();
+      if (isTab()) renderWeather();
     }).catch(function () {});
   }
   function findCity() {
@@ -3479,7 +3531,7 @@ select.txt { appearance: auto; }
     else if (MU.joined) applyMusic(v, false);
     else if (v.bySlot !== mySlot() && (!prev || prev.id !== v.id) && OL.musicSeen) { toast("🎧", t("muTitle"), t("muStarted")(nameStart())); notifyIfHidden("🎧 Noche Duo", t("muStarted")(nameStart()), "music"); }
     OL.musicSeen = true;
-    if (current === "home") renderMusic();
+    if (isTab()) renderMusic();
   }
   function renderMusic() {
     var on = musicOnline();
@@ -3514,6 +3566,66 @@ select.txt { appearance: auto; }
   });
   $("mu-resync").addEventListener("click", function () { sfx("tap"); applyMusic(OL.music, true); });
   $("mu-stop").addEventListener("click", function () { OL.db.ref(olBase() + "/live/shared/music").set(null).catch(function () {}); sfx("tap"); });
+
+  /* ================= Navigation: tabs, header, phone back button ================= */
+  var TABS = ["home", "play", "us", "together"];
+  var NAV = { lastTab: "home", guarded: false, ignorePop: false };
+  function isTab(n) { return TABS.indexOf(n || current) >= 0; }
+  var PARENT = { letter: "us", created: "play", join: "play", mission: "play", reveal: "play", accuse: "mission", sync: "play", quiz: "play", draw: "play" };
+  function parentOf(n) { return n === "settings" ? (NAV.lastTab || "home") : (PARENT[n] || "home"); }
+  function screenTitle(n) {
+    return { settings: t("settings"), letter: t("letterWrite"), created: t("codeTitle"), join: t("enterCode"), mission: t("mMission"), accuse: t("mMission"), reveal: t("mMission"), sync: t("mSync"), quiz: t("mQuiz"), draw: t("mDraw") }[n] || "Noche Duo";
+  }
+  function updateChrome() {
+    var tab = isTab();
+    document.body.classList.toggle("tabs", tab);
+    $("tabbar").hidden = !tab;
+    $("hdr-back").hidden = tab; $("brand").hidden = !tab;
+    $("hdr-title").hidden = tab; if (!tab) $("hdr-title").textContent = screenTitle(current);
+    $("go-settings").hidden = !tab;
+    $("hdr-back").setAttribute("aria-label", t("back"));
+    document.querySelectorAll(".tabbar button").forEach(function (b) {
+      if (b.getAttribute("data-tab") === current) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+    });
+  }
+  function closeTopOverlay() {
+    if (lockSt && lockSt.mode) { if (lockSt.mode !== "unlock") closeLock(); return true; }
+    var ids = ["modal", "lt-view", "moonx", "moonfx", "heartfx"];
+    for (var i = 0; i < ids.length; i++) { if (!$(ids[i]).hidden) { $(ids[i]).hidden = true; return true; } }
+    if (!$("onb").hidden) return true;
+    if (!$("ol-moodbox").hidden) { $("ol-moodbox").hidden = true; return true; }
+    return false;
+  }
+  function goBack() {
+    if (closeTopOverlay()) return;
+    if (current === "home") return;
+    sfx("tap");
+    show(isTab() ? "home" : parentOf(current));
+  }
+  function syncGuard() {
+    try {
+      if (current !== "home" && !NAV.guarded) { history.pushState({ nd: 1 }, ""); NAV.guarded = true; }
+      else if (current === "home" && NAV.guarded) { NAV.guarded = false; NAV.ignorePop = true; history.back(); }
+    } catch (e) {}
+  }
+  window.addEventListener("popstate", function () {
+    if (NAV.ignorePop) { NAV.ignorePop = false; return; }
+    NAV.guarded = false; goBack(); syncGuard();
+  });
+  $("hdr-back").addEventListener("click", goBack);
+  document.querySelectorAll(".tabbar button").forEach(function (b) {
+    b.addEventListener("click", function () { var tb = b.getAttribute("data-tab"); if (tb !== current) { sfx("tap"); show(tb); } else window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" }); });
+  });
+  function renderGreet() {
+    var d = new Date(), loc = { fr: "fr-FR", kr: "fr-FR", en: "en-US" }[S.lang] || "fr-FR";
+    $("greet").textContent = t("hello")(d.getHours()) + (P.me ? ", " + P.me : "") + " 🌙";
+    var ds = d.toLocaleDateString(loc, { weekday: "long", day: "numeric", month: "long" }); $("greet-date").textContent = ds.charAt(0).toUpperCase() + ds.slice(1);
+  }
+  function renderTogether() {
+    var linked = !!(P.couple && OL.partnerJoined);
+    $("tg-empty").hidden = linked || !$("call-card").hidden;
+  }
+  $("tg-link").addEventListener("click", function () { show("home"); setTimeout(function () { $("online-card").scrollIntoView({ block: "center" }); }, 80); });
 
   /* ================= Night sky with shooting stars ================= */
   var cv = $("stars"), cx = cv.getContext("2d"), stars = [], shoot = null, nextShoot = 2500;
