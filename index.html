@@ -17,7 +17,8 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=DM+Sans:wght@400;500;700&display=optional" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=DM+Sans:wght@400;500;700&display=swap"></noscript>
 <style>
 /* Layout: one narrow column over a living night sky; each screen is a stack of glass cards */
 :root {
@@ -549,6 +550,12 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
 .msg.mine .callb.missed b { color: #b3122a; }
 .callb .recall { margin-left: auto; background: #2fbf63; color: #062611; border: 0; border-radius: 999px; padding: 6px 12px; font: 500 0.82rem var(--body); cursor: pointer; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.mph { width: 200px; height: 200px; border-radius: 12px; display: grid; place-items: center; font-size: 2rem; background: linear-gradient(110deg, rgba(255,255,255,0.05) 30%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.05) 70%); background-size: 200% 100%; animation: mshim 1.4s linear infinite; }
+@keyframes mshim { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.vplay { display: flex; align-items: center; gap: 10px; background: none; border: 0; color: inherit; font: 500 0.92rem var(--body); padding: 6px 8px; cursor: pointer; min-width: 180px; }
+.vplay i { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: rgba(28,22,49,0.15); font-style: normal; }
+.msg.theirs .vplay i { background: rgba(255,255,255,0.12); }
+.older-btn { align-self: center; margin: 4px 0 8px; }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -915,7 +922,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
     </div>
     <button class="btn btn-gold" id="settings-done" data-i="done"></button>
     <div class="card"><button class="btn btn-ghost" id="share-app" data-i="shareApp"></button></div>
-    <p class="small center" id="app-version">Noche Duo · version 25 · <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--muted)">Confidentialité</a> · <a href="delete.html" target="_blank" rel="noopener" style="color:var(--muted)">Supprimer mon compte</a></p>
+    <p class="small center" id="app-version">Noche Duo · version 26 · <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--muted)">Confidentialité</a> · <a href="delete.html" target="_blank" rel="noopener" style="color:var(--muted)">Supprimer mon compte</a></p>
   </section>
 
   <!-- CREATED -->
@@ -1605,7 +1612,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       hugBtn: "Câlin", hugMsg: "Gros câlin", hugBackMsg: "Câlin rendu", hugIn: function (n) { return n + " te fait un gros câlin 🤗"; }, hugBackIn: function (n) { return n + " te rend ton câlin 💞"; },
       hugSent: function (n) { return "Câlin envoyé à " + n + " 🤗"; }, hugBack: "🤗 Lui rendre son câlin", hugPhotoTitle: "Photo câlin", hugPick: "Choisir une photo de vous deux",
       hugPhotoHint: "Une photo où vous vous serrez dans les bras : elle apparaît quand vous vous envoyez un câlin, sur vos deux téléphones.", hugTip: "Ajoute une photo de vous deux dans Réglages → Photo câlin : le câlin sera encore plus réel.",
-      actTitle: "Activité", actEmpty: "Rien de nouveau pour l'instant. Les appels, câlins, pensées et bonnes nuits de ton amour s'affichent ici.", awayTitle: "🔔 Pendant ton absence", awayAll: "Tout voir",
+      chOlder: "Voir les messages plus anciens", chLoadFail: "Impossible de charger", actTitle: "Activité", actEmpty: "Rien de nouveau pour l'instant. Les appels, câlins, pensées et bonnes nuits de ton amour s'affichent ici.", awayTitle: "🔔 Pendant ton absence", awayAll: "Tout voir",
       fPulse: function (n) { return n + " a pensé à toi 💓"; }, fGn: function (n) { return n + " t'a dit bonne nuit 🌙"; }, fHug: function (n) { return n + " t'a fait un gros câlin 🤗"; }, fHugBack: function (n) { return n + " t'a rendu ton câlin 💞"; },
       fWater: function (n) { return n + " a arrosé votre arbre 💧"; }, fLetter: function (n) { return n + " t'a écrit une lettre 💌"; }, fDream: function (n, x) { return n + " a ajouté un rêve : « " + x + " »"; },
       fTouch: function (n) { return n + " voulait te toucher à distance 👆"; }, fMood: function (n, x) { return n + " se sent " + x; }, fMissed: function (n, v) { return (v ? "Appel vidéo manqué de " : "Appel manqué de ") + n; },
@@ -1849,7 +1856,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       hugBtn: "Akolad", hugMsg: "Gwo akolad", hugBackMsg: "Akolad retounen", hugIn: function (n) { return n + " ba w yon gwo akolad 🤗"; }, hugBackIn: function (n) { return n + " remèt ou akolad ou 💞"; },
       hugSent: function (n) { return "Akolad voye bay " + n + " 🤗"; }, hugBack: "🤗 Remèt li akolad li", hugPhotoTitle: "Foto akolad", hugPick: "Chwazi yon foto nou de a",
       hugPhotoHint: "Yon foto kote nou anbrase : li parèt lè nou voye yon akolad, sou de telefòn nou yo.", hugTip: "Mete yon foto nou de nan Paramèt → Foto akolad : akolad la ap pi reyèl.",
-      actTitle: "Aktivite", actEmpty: "Anyen nouvo pou kounye a. Apèl, akolad, panse ak bòn nwit lanmou w ap parèt isit la.", awayTitle: "🔔 Pandan w pa t la", awayAll: "Wè tout",
+      chOlder: "Wè ansyen mesaj yo", chLoadFail: "Pa ka chaje", actTitle: "Aktivite", actEmpty: "Anyen nouvo pou kounye a. Apèl, akolad, panse ak bòn nwit lanmou w ap parèt isit la.", awayTitle: "🔔 Pandan w pa t la", awayAll: "Wè tout",
       fPulse: function (n) { return n + " panse a ou 💓"; }, fGn: function (n) { return n + " di w bòn nwit 🌙"; }, fHug: function (n) { return n + " ba w yon gwo akolad 🤗"; }, fHugBack: function (n) { return n + " remèt ou akolad ou 💞"; },
       fWater: function (n) { return n + " wouze pyebwa nou an 💧"; }, fLetter: function (n) { return n + " ekri w yon lèt 💌"; }, fDream: function (n, x) { return n + " ajoute yon rèv : « " + x + " »"; },
       fTouch: function (n) { return n + " te vle manyen w a distans 👆"; }, fMood: function (n, x) { return n + " santi l " + x; }, fMissed: function (n, v) { return (v ? "Apèl videyo ou rate nan men " : "Apèl ou rate nan men ") + n; },
@@ -2093,7 +2100,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       hugBtn: "Hug", hugMsg: "Big hug", hugBackMsg: "Hug returned", hugIn: function (n) { return n + " sends you a big hug 🤗"; }, hugBackIn: function (n) { return n + " hugs you back 💞"; },
       hugSent: function (n) { return "Hug sent to " + n + " 🤗"; }, hugBack: "🤗 Hug back", hugPhotoTitle: "Hug photo", hugPick: "Choose a photo of you two",
       hugPhotoHint: "A photo of you two hugging: it appears on both phones when you send each other a hug.", hugTip: "Add a photo of you two in Settings → Hug photo to make the hug feel even more real.",
-      actTitle: "Activity", actEmpty: "Nothing new yet. Your love's calls, hugs, thoughts and goodnights show up here.", awayTitle: "🔔 While you were away", awayAll: "See all",
+      chOlder: "See older messages", chLoadFail: "Could not load", actTitle: "Activity", actEmpty: "Nothing new yet. Your love's calls, hugs, thoughts and goodnights show up here.", awayTitle: "🔔 While you were away", awayAll: "See all",
       fPulse: function (n) { return n + " thought of you 💓"; }, fGn: function (n) { return n + " said goodnight 🌙"; }, fHug: function (n) { return n + " sent you a big hug 🤗"; }, fHugBack: function (n) { return n + " hugged you back 💞"; },
       fWater: function (n) { return n + " watered your tree 💧"; }, fLetter: function (n) { return n + " wrote you a letter 💌"; }, fDream: function (n, x) { return n + " added a dream: \"" + x + "\""; },
       fTouch: function (n) { return n + " wanted to touch you 👆"; }, fMood: function (n, x) { return n + " feels " + x; }, fMissed: function (n, v) { return (v ? "Missed video call from " : "Missed call from ") + n; },
@@ -2713,7 +2720,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       watch(base + "/live/shared/quizN", function (s) { onSharedQz(s.val()); });
       watch(base + "/live/shared/dreams", function (s) { onSharedDreams(s.val()); });
       watch(base + "/live/shared/music", function (s) { onSharedMusic(s.val()); });
-      (function () { var r = OL.db.ref(base + "/live/chat"); if (r.limitToLast) r = r.limitToLast(200); var cb = r.on("value", function (s) { onChat(s.val()); }, olPermErr); OL.refs.push([r, cb]); })();
+      attachChat();
       watch(base + "/live/" + mySlot() + "/letters", function (s) { OL.myLetters = s.val() || {}; if (isTab()) renderLetters(); });
       watch(base + "/live/shared/drawN", function (s) { onSharedDr(s.val()); });
       watch(base + "/live/shared/dates", function (s) { onSharedDates(s.val()); });
@@ -4279,7 +4286,8 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       if (nr && nr !== or) { buzz(20); if (current !== "chat" || document.hidden) { toast("💬", t("chReacted")(nameStart(), nr), msgPreview(m)); notifyIfHidden("Noche Duo", t("chReacted")(nameStart(), nr), "chatrx"); } }
     });
     CH.keys = Object.keys(CH.msgs).sort();
-    var added = CH.seenKeys ? CH.keys.filter(function (k) { return CH.seenKeys.indexOf(k) < 0; }) : [];
+    var maxSeen = CH.seenKeys && CH.seenKeys.length ? CH.seenKeys[CH.seenKeys.length - 1] : "";
+    var added = CH.seenKeys ? CH.keys.filter(function (k) { return CH.seenKeys.indexOf(k) < 0 && k > maxSeen; }) : [];
     var fresh = added.filter(function (k) { return CH.msgs[k].from !== mySlot(); });
     CH.seenKeys = CH.keys.slice();
     if (fresh.length) {
@@ -4334,7 +4342,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
     if (mine) return [c.v ? t("clVideo") : t("clVoice"), c.s === "declined" ? t("clDeclined") : t("clNoAnswer")];
     return [c.v ? t("clMissedVideo") : t("clMissed"), ""];
   }
-  function msgPreview(m) { if (m.call) { var cl = callLabel(m, m.from === mySlot()); return "📞 " + cl[0] + (cl[1] ? " · " + cl[1] : ""); } return m.t ? m.t.slice(0, 90) : m.img ? t("chPhoto") : m.aud ? t("chVoice") : m.hug ? "🤗 " + t(m.back ? "hugBackMsg" : "hugMsg") : ""; }
+  function msgPreview(m) { if (m.mid) return m.mk === "img" ? t("chPhoto") : t("chVoice"); if (m.call) { var cl = callLabel(m, m.from === mySlot()); return "📞 " + cl[0] + (cl[1] ? " · " + cl[1] : ""); } return m.t ? m.t.slice(0, 90) : m.img ? t("chPhoto") : m.aud ? t("chVoice") : m.hug ? "🤗 " + t(m.back ? "hugBackMsg" : "hugMsg") : ""; }
   function whoName(slot) { return slot === mySlot() ? t("chYou") : nameStart(); }
   function padChat() { var c = $("composer"); if (!c.hidden) $("chat-list").style.paddingBottom = (c.offsetHeight + 90) + "px"; }
   function setReply(k) {
@@ -4368,6 +4376,11 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
     var list = $("chat-list"); list.innerHTML = "";
     if (!on) return;
     if (!CH.keys.length) { var e = document.createElement("p"); e.className = "small center"; e.textContent = t("chFirst") + " · " + t("chHint"); list.appendChild(e); }
+    if (CH.keys.length >= CH.limit) {
+      var ob = document.createElement("button"); ob.type = "button"; ob.className = "btn btn-ghost older-btn"; ob.textContent = t("chOlder");
+      ob.addEventListener("click", function () { CH.keepFrom = document.body.scrollHeight - window.scrollY; CH.limit += 60; sfx("tap"); attachChat(); });
+      list.appendChild(ob);
+    }
     var readTheirs = (OL.partner && OL.partner.chatRead) || 0, lastDay = "", me = mySlot();
     CH.keys.forEach(function (k, idx) {
       var m = CH.msgs[k], mine = m.from === me, at = m.at || 0, dl = dayLabel(at);
@@ -4401,6 +4414,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
         else { var hc = document.createElement("span"); hc.className = "hugico"; hc.textContent = "🤗"; b.appendChild(hc); }
         var hb = document.createElement("b"); hb.textContent = (m.back ? "💞 " : "🤗 ") + t(m.back ? "hugBackMsg" : "hugMsg"); b.appendChild(hb);
         b.addEventListener("click", function () { if (!CH.dragged) playHug("replay"); });
+      } else if (m.mid) { b.className = "bubble media"; mediaBubble(b, m);
       } else if (m.img) { var im = document.createElement("img"); im.src = m.img; im.alt = t("chPhoto"); im.draggable = false; im.addEventListener("click", function (ev) { ev.stopPropagation(); if (CH.dragged) return; $("iv-img").src = m.img; $("iv-close").textContent = t("close"); $("img-view").hidden = false; }); b.appendChild(im); }
       else if (m.aud) { var au = document.createElement("audio"); au.controls = true; au.preload = "none"; au.src = m.aud; b.appendChild(au); }
       else b.appendChild(document.createTextNode(m.t || ""));
@@ -4469,13 +4483,14 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
           try { navigator.clipboard.writeText(m.t).then(done, function () {}); } catch (x) {}
           CH.sel = null; renderChat(false);
         });
-        if (mine) mk("🗑️ " + t("chDel"), function () { OL.db.ref(chatPath() + "/" + k).remove().catch(function () {}); CH.sel = null; sfx("tap"); }, "var(--bad)");
+        if (mine) mk("🗑️ " + t("chDel"), function () { if (m.mid) OL.db.ref(olBase() + "/live/media/" + m.mid).remove().catch(function () {}); OL.db.ref(chatPath() + "/" + k).remove().catch(function () {}); CH.sel = null; sfx("tap"); }, "var(--bad)");
         mk(t("chCancel"), function () { CH.sel = null; CH.reactFor = null; renderChat(false); });
         row.appendChild(act);
       }
       list.appendChild(row);
     });
     padChat();
+    if (CH.keepFrom) { var kf = CH.keepFrom; CH.keepFrom = 0; requestAnimationFrame(function () { window.scrollTo(0, document.body.scrollHeight - kf); }); return; }
     if (scroll) requestAnimationFrame(function () { window.scrollTo({ top: document.body.scrollHeight, behavior: reduce ? "auto" : "smooth" }); });
   }
   (function () {
@@ -4538,7 +4553,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
         var url = c.toDataURL("image/jpeg", P.lite ? 0.6 : 0.72);
         if (url.length > 390000) url = c.toDataURL("image/jpeg", 0.5);
         if (url.length > 390000) { toast("⚠️", t("tabChat"), t("chTooBig")); return; }
-        sendMsg({ img: url }); sfx("tap");
+        sendMedia("img", url); sfx("tap");
       };
       img.src = rd.result;
     };
@@ -4554,7 +4569,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
         st.getTracks().forEach(function (tr) { tr.stop(); });
         if (!mr.__send) return;
         var blob = new Blob(chunks, { type: mr.mimeType || mt || "audio/webm" }), fr = new FileReader();
-        fr.onload = function () { if (fr.result.length > 690000) { toast("⚠️", t("tabChat"), t("chTooBig")); return; } sendMsg({ aud: fr.result, dur: Math.round((Date.now() - CH.recStart) / 1000) }); };
+        fr.onload = function () { if (fr.result.length > 690000) { toast("⚠️", t("tabChat"), t("chTooBig")); return; } sendMedia("aud", fr.result, { dur: Math.round((Date.now() - CH.recStart) / 1000) }); };
         fr.readAsDataURL(blob);
       };
       CH.rec = mr; CH.recStart = Date.now(); mr.start(); sfx("tap"); buzz(30);
@@ -4823,6 +4838,74 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
     $("tc-time").textContent = both ? t("tcSecs")(Math.floor((Date.now() - TC.bothStart) / 1000)) : "";
   }
 
+  /* ================= Chat media: stored apart, fetched only when seen, cached on the phone ================= */
+  var MEDIA = { mem: {}, pending: {}, idbP: null };
+  CH.limit = 60;
+  function attachChat() {
+    if (!OL.db || !P.couple) return;
+    if (CH.ref) { try { CH.ref.off("value", CH.cb); } catch (e) {} }
+    var r = OL.db.ref(olBase() + "/live/chat"); if (r.limitToLast) r = r.limitToLast(CH.limit);
+    CH.cb = r.on("value", function (s) { onChat(s.val()); }, olPermErr); CH.ref = r; OL.refs.push([r, CH.cb]);
+  }
+  function idb() {
+    if (MEDIA.idbP) return MEDIA.idbP;
+    MEDIA.idbP = new Promise(function (res) {
+      try { var rq = indexedDB.open("nd-media", 1); rq.onupgradeneeded = function () { rq.result.createObjectStore("m"); }; rq.onsuccess = function () { res(rq.result); }; rq.onerror = function () { res(null); }; }
+      catch (e) { res(null); }
+    });
+    return MEDIA.idbP;
+  }
+  function idbGet(k) { return idb().then(function (db) { if (!db) return null; return new Promise(function (res) { try { var r = db.transaction("m").objectStore("m").get(k); r.onsuccess = function () { res(r.result || null); }; r.onerror = function () { res(null); }; } catch (e) { res(null); } }); }); }
+  function idbPut(k, v) { idb().then(function (db) { if (!db) return; try { db.transaction("m", "readwrite").objectStore("m").put(v, k); } catch (e) {} }); }
+  function mediaKey(id) { return (P.couple ? P.couple.code : "") + "/" + id; }
+  function getMedia(id) {
+    if (MEDIA.mem[id]) return Promise.resolve(MEDIA.mem[id]);
+    if (MEDIA.pending[id]) return MEDIA.pending[id];
+    MEDIA.pending[id] = idbGet(mediaKey(id)).then(function (v) {
+      if (v || !OL.db) return v;
+      return OL.db.ref(olBase() + "/live/media/" + id).once("value").then(function (s) { var d = s.val(); d = d && d.d; if (d) idbPut(mediaKey(id), d); return d; });
+    }).then(function (d) { delete MEDIA.pending[id]; if (d) MEDIA.mem[id] = d; return d || null; }, function () { delete MEDIA.pending[id]; return null; });
+    return MEDIA.pending[id];
+  }
+  function sendMedia(kind, dataURL, extra) {
+    if (!chatOnline()) return Promise.resolve();
+    var id = "x" + msgKey().slice(1);
+    MEDIA.mem[id] = dataURL; idbPut(mediaKey(id), dataURL);
+    return OL.db.ref(olBase() + "/live/media/" + id).set({ d: dataURL, k: kind, from: mySlot(), at: TS() }).then(function () {
+      var rec = { mid: id, mk: kind }; if (extra) Object.keys(extra).forEach(function (x) { rec[x] = extra[x]; });
+      return sendMsg(rec);
+    }, function () { toast("⚠️", t("tabChat"), t("linkNet")); });
+  }
+  function showImg(holder, d) {
+    var im = document.createElement("img"); im.src = d; im.alt = t("chPhoto"); im.draggable = false;
+    im.addEventListener("click", function (ev) { ev.stopPropagation(); if (CH.dragged) return; $("iv-img").src = d; $("iv-close").textContent = t("close"); $("img-view").hidden = false; });
+    holder.replaceWith(im);
+  }
+  var MIO = ("IntersectionObserver" in window) ? new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (!e.isIntersecting) return; MIO.unobserve(e.target); var h = e.target;
+      getMedia(h.getAttribute("data-mid")).then(function (d) { if (d && h.isConnected) showImg(h, d); else if (h.isConnected) { h.style.animation = "none"; h.textContent = "⚠️"; h.title = t("chLoadFail"); } }); });
+  }, { rootMargin: "400px" }) : null;
+  function mediaBubble(b, m) {
+    if (m.mk === "img") {
+      if (MEDIA.mem[m.mid]) { var tmp = document.createElement("span"); b.appendChild(tmp); showImg(tmp, MEDIA.mem[m.mid]); return; }
+      var h = document.createElement("div"); h.className = "mph"; h.textContent = "📷"; h.setAttribute("data-mid", m.mid); b.appendChild(h);
+      if (MIO) MIO.observe(h); else getMedia(m.mid).then(function (d) { if (d) showImg(h, d); });
+    } else {
+      var v = document.createElement("button"); v.type = "button"; v.className = "vplay";
+      var ic = document.createElement("i"); ic.textContent = "▶"; v.appendChild(ic);
+      var lb = document.createElement("span"); lb.textContent = t("chVoice").replace(/^🎙️ /, "") + (m.dur ? " · " + Math.floor(m.dur / 60) + ":" + String(m.dur % 60).padStart(2, "0") : ""); v.appendChild(lb);
+      v.addEventListener("click", function (ev) {
+        ev.stopPropagation(); ic.textContent = "…";
+        getMedia(m.mid).then(function (d) {
+          if (!d) { ic.textContent = "⚠️"; return; }
+          var au = document.createElement("audio"); au.controls = true; au.src = d; v.replaceWith(au);
+          var pr = au.play(); if (pr && pr.catch) pr.catch(function () {});
+        });
+      });
+      b.appendChild(v);
+    }
+  }
+
   /* ================= Activity: what your love did while you were away ================= */
   var FEED = { items: [], keys: [] };
   function feed(type, x) {
@@ -4851,6 +4934,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
     var old = FEED.keys, firstLoad = !FEED.loaded;
     FEED.keys = Object.keys(v || {}).sort(); FEED.items = FEED.keys.map(function (k) { var it = v[k]; it.k = k; return it; });
     FEED.loaded = true;
+    if (firstLoad && OL.db) { var old60 = srvNow() - 60 * 864e5; FEED.items.forEach(function (it) { if ((it.at || 0) < old60) OL.db.ref(olBase() + "/live/feed/" + it.k).remove().catch(function () {}); }); }
     if (!firstLoad) {
       FEED.keys.filter(function (k) { return old.indexOf(k) < 0; }).forEach(function (k) {
         var it = v[k]; if (it.from === mySlot()) return;

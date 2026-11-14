@@ -65,6 +65,11 @@
             "$id": {
               ".validate": "newData.child('from').isString() && newData.child('type').isString() && newData.child('type').val().length <= 12 && (!newData.child('x').exists() || newData.child('x').val().length <= 120)"
             }
+          },
+          "media": {
+            "$id": {
+              ".validate": "newData.child('d').isString() && newData.child('d').val().length < 700000 && newData.child('k').isString()"
+            }
           }
         }
       }
