@@ -288,6 +288,13 @@ select.txt { appearance: auto; }
 .dt small { display: block; color: var(--muted); font-size: 0.75rem; }
 .dream.done .dt > span { text-decoration: line-through; color: var(--muted); }
 .xdel { background: none; border: 0; color: var(--muted); font-size: 1.3rem; cursor: pointer; padding: 2px 8px; line-height: 1; }
+/* Wave 4: video call */
+#vlayer { position: fixed; inset: 0; z-index: 64; background: #000; }
+#vlayer.mini { inset: auto; right: 12px; bottom: 150px; width: 120px; height: 170px; border-radius: 16px; overflow: hidden; border: 2px solid var(--gold); box-shadow: 0 12px 30px -10px rgba(0,0,0,0.8); cursor: pointer; }
+#remote-video { width: 100%; height: 100%; object-fit: cover; display: block; background: #000; }
+#local-video { position: absolute; right: 12px; top: 12px; width: 96px; height: 136px; object-fit: cover; border-radius: 12px; border: 2px solid rgba(255,255,255,0.7); transform: scaleX(-1); background: #111; }
+#vlayer.mini #local-video, #vlayer.mini #v-size { display: none; }
+#v-size { position: absolute; left: 12px; top: 12px; width: auto; padding: 9px 14px; font-size: 0.85rem; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.4); color: #fff; }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -435,6 +442,7 @@ select.txt { appearance: auto; }
     <div class="card" id="call-card" hidden>
       <h3 data-i="callTitle"></h3>
       <button class="btn btn-rose" id="call-start" hidden></button>
+      <button class="btn btn-ghost" id="call-video" hidden></button>
       <div class="btnrow" id="call-direct" hidden>
         <a class="btn btn-ghost" id="call-tel" data-i="callPhone"></a>
         <a class="btn btn-ghost" id="call-wa" target="_blank" rel="noopener" data-i="callWa"></a>
@@ -753,11 +761,13 @@ select.txt { appearance: auto; }
   <div class="cb-info"><span class="dot on"></span><span id="cb-text"></span><span class="cb-time" id="cb-time"></span></div>
   <div class="cb-btns">
     <button class="btn btn-gold" id="cb-accept"></button>
+    <button class="btn btn-ghost" id="cb-cam" hidden></button>
     <button class="btn btn-ghost" id="cb-mute"></button>
     <button class="btn btn-rose" id="cb-end"></button>
   </div>
 </div>
 <audio id="remote-audio" autoplay playsinline></audio>
+<div id="vlayer" hidden><video id="remote-video" autoplay playsinline muted></video><video id="local-video" autoplay playsinline muted></video><button class="btn" id="v-size"></button></div>
 
 <!-- SHARE MODAL -->
 <div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
@@ -1101,7 +1111,9 @@ select.txt { appearance: auto; }
       ltNew: function (n) { return n + " t'a écrit une lettre 💌"; },
       dreamsTitle: "Notre liste de rêves ✨", dreamAdd: "Ajouter", dreamPh: "Ex. Voir le coucher de soleil à Jacmel",
       dreamsEmpty: "Ajoutez les choses à faire ensemble quand vous vous verrez.", dreamDone: "Rêve réalisé ! ✨",
-      dreamBy: function (n) { return "ajouté par " + n; }, dreamDel: "Supprimer"
+      dreamBy: function (n) { return "ajouté par " + n; }, dreamDel: "Supprimer",
+      callVideo: function (n) { return "📹 Appel vidéo avec " + n; }, callInVideo: function (n) { return n + " t'appelle en vidéo 📹"; },
+      camOff: "Caméra off", camOn: "Caméra on", vMin: "Réduire la vidéo", videoLite: "Coupe l'économie de données dans les réglages pour la vidéo."
     },
     kr: {
       modeLabel: "Mòd · Misyon Sekrè",
@@ -1288,7 +1300,9 @@ select.txt { appearance: auto; }
       ltNew: function (n) { return n + " ekri w yon lèt 💌"; },
       dreamsTitle: "Lis rèv nou ✨", dreamAdd: "Ajoute", dreamPh: "Egz. Gade solèy kouche Jakmèl",
       dreamsEmpty: "Mete bagay nou vle fè ansanm lè nou wè.", dreamDone: "Rèv reyalize ! ✨",
-      dreamBy: function (n) { return "se " + n + " ki mete l"; }, dreamDel: "Efase"
+      dreamBy: function (n) { return "se " + n + " ki mete l"; }, dreamDel: "Efase",
+      callVideo: function (n) { return "📹 Apèl videyo ak " + n; }, callInVideo: function (n) { return n + " ap rele w an videyo 📹"; },
+      camOff: "Fèmen kamera", camOn: "Limen kamera", vMin: "Fè videyo a piti", videoLite: "Fèmen ekonomi done nan paramèt yo pou videyo."
     },
     en: {
       modeLabel: "Mode · Secret Mission",
@@ -1475,7 +1489,9 @@ select.txt { appearance: auto; }
       ltNew: function (n) { return n + " wrote you a letter 💌"; },
       dreamsTitle: "Our dream list ✨", dreamAdd: "Add", dreamPh: "E.g. Watch the sunset in Jacmel",
       dreamsEmpty: "Add the things to do together when you meet.", dreamDone: "Dream come true! ✨",
-      dreamBy: function (n) { return "added by " + n; }, dreamDel: "Delete"
+      dreamBy: function (n) { return "added by " + n; }, dreamDel: "Delete",
+      callVideo: function (n) { return "📹 Video call with " + n; }, callInVideo: function (n) { return n + " is video calling you 📹"; },
+      camOff: "Camera off", camOn: "Camera on", vMin: "Shrink video", videoLite: "Turn off Data saver in Settings to use video."
     }
   };
 
@@ -2292,6 +2308,9 @@ select.txt { appearance: auto; }
     var hasNum = phoneDigits().replace(/\+/g, "").length >= 6;
     $("call-card").hidden = !(inGame || hasNum || (P.couple && OL.partnerJoined));
     $("call-start").hidden = !inGame;
+    $("call-video").hidden = !inGame;
+    $("call-video").textContent = P.lite ? t("videoLite") : t("callVideo")(nameMid());
+    $("call-video").disabled = !!P.lite;
     $("call-start").textContent = t("callInGame")(nameMid());
     $("call-direct").hidden = !hasNum;
     if (hasNum) { $("call-tel").href = "tel:" + phoneDigits(); $("call-wa").href = "https://wa.me/" + phoneDigits().replace(/\+/g, ""); }
@@ -2310,7 +2329,10 @@ select.txt { appearance: auto; }
     document.body.classList.toggle("incall", st !== "idle");
     if (st === "idle") return;
     bar.classList.toggle("ringing", st === "incoming");
-    $("cb-text").textContent = st === "calling" ? t("callOut")(n) : st === "incoming" ? t("callIn")(n) : st === "connecting" ? t("callConnecting") : t("callWith")(n);
+    $("cb-text").textContent = st === "calling" ? t("callOut")(n) : st === "incoming" ? (CALL.video ? t("callInVideo") : t("callIn"))(n) : st === "connecting" ? t("callConnecting") : t("callWith")(n);
+    var vid = hasVideo(CALL.stream) && st !== "incoming";
+    $("cb-cam").hidden = !vid;
+    if (vid) { var vt = CALL.stream.getVideoTracks()[0]; $("cb-cam").textContent = vt && vt.enabled ? t("camOff") : t("camOn"); }
     $("cb-time").textContent = st === "incall" && CALL.t0 ? fmtDur(Date.now() - CALL.t0) : "";
     $("cb-accept").hidden = st !== "incoming";
     $("cb-accept").textContent = t("accept");
@@ -2332,15 +2354,27 @@ select.txt { appearance: auto; }
   }
   function stopRing() { clearInterval(CALL.ringI); CALL.ringI = null; }
 
-  function getMic() {
-    return navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }, video: false })
+  function getMic(video) {
+    var audio = { echoCancellation: true, noiseSuppression: true, autoGainControl: true };
+    var asked = video ? navigator.mediaDevices.getUserMedia({ audio: audio, video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } } }).catch(function () { return navigator.mediaDevices.getUserMedia({ audio: audio, video: false }); })
+      : navigator.mediaDevices.getUserMedia({ audio: audio, video: false });
+    return asked.then(function (st) { showLocalVideo(st); return st; })
       .catch(function (e) { var err = new Error("mic"); err.mic = true; err.orig = e; throw err; });
+  }
+  function hasVideo(st) { return !!(st && st.getVideoTracks && st.getVideoTracks().length); }
+  function showLocalVideo(st) { var lv = $("local-video"); if (hasVideo(st)) { lv.srcObject = st; var pr = lv.play(); if (pr && pr.catch) pr.catch(function () {}); } }
+  function showVideoLayer(on) {
+    var L2 = $("vlayer"); L2.hidden = !on;
+    if (on) { L2.classList.remove("mini"); $("v-size").textContent = t("vMin"); }
   }
   function makePC() {
     var pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
     CALL.stream.getTracks().forEach(function (tr) { pc.addTrack(tr, CALL.stream); });
     pc.onicecandidate = function (e) { if (e.candidate && P.couple) iceRef(mySlot()).child(rid()).set(e.candidate.toJSON()).catch(function () {}); };
-    pc.ontrack = function (e) { var a = $("remote-audio"); a.srcObject = e.streams[0]; var pr = a.play(); if (pr && pr.catch) pr.catch(function () {}); };
+    pc.ontrack = function (e) {
+      var st = e.streams[0], a = $("remote-audio"); a.srcObject = st; var pr = a.play(); if (pr && pr.catch) pr.catch(function () {});
+      if (e.track.kind === "video") { var rv = $("remote-video"); rv.srcObject = st; var pv = rv.play(); if (pv && pv.catch) pv.catch(function () {}); showVideoLayer(true); }
+    };
     function watchState() {
       var cs = pc.connectionState || pc.iceConnectionState;
       if (cs === "connected" || cs === "completed") { if (CALL.state !== "incall") { setCallState("incall"); liteBitrate(pc); } }
@@ -2356,10 +2390,11 @@ select.txt { appearance: auto; }
     Object.keys(v).forEach(function (k) { if (!CALL.seen[k]) { CALL.seen[k] = true; addIce(v[k]); } });
   }
 
-  function startCall() {
+  function startCall(video) {
     if (!canCallInGame() || CALL.state !== "idle") return;
     sfx("tap");
-    getMic().then(function (stream) {
+    CALL.video = video === true && !P.lite;
+    getMic(CALL.video).then(function (stream) {
       CALL.stream = stream; CALL.id = rid(); CALL.role = "caller"; CALL.answered = false; CALL.handled = CALL.id;
       setCallState("calling"); startRing(false);
       return Promise.all([iceRef("a").set(null), iceRef("b").set(null)]);
@@ -2369,7 +2404,7 @@ select.txt { appearance: auto; }
     }).then(function (off) {
       return CALL.pc.setLocalDescription(off).then(function () { return off; });
     }).then(function (off) {
-      return callRef().set({ id: CALL.id, from: mySlot(), state: "ringing", offer: { type: off.type, sdp: off.sdp }, at: TS() });
+      return callRef().set({ id: CALL.id, from: mySlot(), state: "ringing", video: hasVideo(CALL.stream), offer: { type: off.type, sdp: off.sdp }, at: TS() });
     }).then(function () {
       clearTimeout(CALL.ringT);
       CALL.ringT = setTimeout(function () { if (CALL.state === "calling") endCall("missed"); }, 45000);
@@ -2378,7 +2413,7 @@ select.txt { appearance: auto; }
   function acceptCall() {
     stopRing(); sfx("tap");
     var offer = CALL.offer;
-    getMic().then(function (stream) {
+    getMic(CALL.video && !P.lite).then(function (stream) {
       CALL.stream = stream; setCallState("connecting");
       var pc = makePC();
       return pc.setRemoteDescription(offer);
@@ -2403,6 +2438,7 @@ select.txt { appearance: auto; }
     try { if (CALL.pc) CALL.pc.close(); } catch (e) {}
     if (CALL.stream) CALL.stream.getTracks().forEach(function (tr) { tr.stop(); });
     var a = $("remote-audio"); a.srcObject = null;
+    $("remote-video").srcObject = null; $("local-video").srcObject = null; showVideoLayer(false);
     var handled = CALL.handled;
     CALL = { pc: null, stream: null, id: null, role: null, state: "idle", offer: null, seen: CALL.seen, pending: [], muted: false, t0: 0, tick: null, ringT: null, ringI: null, handled: handled, answered: false };
     setCallState("idle");
@@ -2421,7 +2457,7 @@ select.txt { appearance: auto; }
     var mine = v.id === CALL.id;
     if (v.state === "ringing" && v.from !== mySlot()) {
       if (CALL.state === "idle" && v.id !== CALL.handled && (!v.at || srvNow() - v.at < 60000)) {
-        CALL.handled = v.id; CALL.id = v.id; CALL.role = "callee"; CALL.offer = v.offer;
+        CALL.handled = v.id; CALL.id = v.id; CALL.role = "callee"; CALL.offer = v.offer; CALL.video = !!v.video;
         setCallState("incoming"); startRing(true);
         notifyIfHidden("📞 Noche Duo", t("nCall")(nameStart()), "call");
       }
@@ -2433,8 +2469,16 @@ select.txt { appearance: auto; }
     }
   }
 
-  $("call-start").addEventListener("click", startCall);
-  $("call-start-m").addEventListener("click", startCall);
+  $("call-start").addEventListener("click", function () { startCall(false); });
+  $("call-video").addEventListener("click", function () { startCall(true); });
+  $("cb-cam").addEventListener("click", function () {
+    if (!hasVideo(CALL.stream)) return;
+    CALL.stream.getVideoTracks().forEach(function (tr) { tr.enabled = !tr.enabled; });
+    sfx("tap"); renderCallbar();
+  });
+  $("v-size").addEventListener("click", function (e) { e.stopPropagation(); $("vlayer").classList.add("mini"); });
+  $("vlayer").addEventListener("click", function () { if ($("vlayer").classList.contains("mini")) { $("vlayer").classList.remove("mini"); $("v-size").textContent = t("vMin"); } });
+  $("call-start-m").addEventListener("click", function () { startCall(false); });
   $("cb-accept").addEventListener("click", acceptCall);
   $("cb-end").addEventListener("click", function () { if (CALL.state === "incoming") declineCall(); else endCall("ended"); });
   $("cb-mute").addEventListener("click", function () {
