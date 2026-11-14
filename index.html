@@ -517,6 +517,12 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
 @keyframes hugheart { 0% { opacity: 0; transform: translate(0, 0) scale(.6); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--dx), -230px) scale(1.25); } }
 .hug-t { font-family: var(--display); font-size: 1.5rem; line-height: 1.25; margin: 0; opacity: 0; animation: hugshow .5s ease 1.3s forwards; }
 .hug-in .btnrow { width: 100%; opacity: 0; animation: hugshow .5s ease 1.8s forwards; }
+.face-row { display: flex; justify-content: space-around; gap: 12px; }
+.face-slot { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; text-align: center; font-size: 0.88rem; color: var(--muted); }
+.face-slot input { position: absolute; left: -9999px; }
+.face-circle { width: 104px; height: 104px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: linear-gradient(135deg, var(--gold), var(--rose)); border: 3px solid var(--line); font-family: var(--display); font-size: 2.6rem; color: #1c1631; }
+.face-circle img { width: 100%; height: 100%; object-fit: cover; }
+.face-slot b { color: var(--gold); font-weight: 500; }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -798,6 +804,14 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       <label class="btn btn-ghost filelbl" for="in-photo"><span data-i="photoPick"></span><input type="file" id="in-photo" accept="image/*"></label>
       <p class="small" data-i="photoShared"></p>
       <button class="linkbtn" id="photo-remove" data-i="photoRemove" hidden></button>
+    </div>
+    <div class="card" id="faces-card" hidden>
+      <h2 data-i="faceTitle"></h2>
+      <div class="face-row">
+        <label class="face-slot" for="in-face-me"><span class="face-circle" id="face-me"></span><b id="face-me-l"></b><span data-i="faceChange"></span><input type="file" id="in-face-me" accept="image/*"></label>
+        <label class="face-slot" for="in-face-love"><span class="face-circle" id="face-love"></span><b id="face-love-l"></b><span data-i="faceChange"></span><input type="file" id="in-face-love" accept="image/*"></label>
+      </div>
+      <p class="small" data-i="faceHint" style="margin:0"></p>
     </div>
     <div class="card">
       <h2 data-i="hugPhotoTitle"></h2>
@@ -1549,6 +1563,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       hugBtn: "Câlin", hugMsg: "Gros câlin", hugBackMsg: "Câlin rendu", hugIn: function (n) { return n + " te fait un gros câlin 🤗"; }, hugBackIn: function (n) { return n + " te rend ton câlin 💞"; },
       hugSent: function (n) { return "Câlin envoyé à " + n + " 🤗"; }, hugBack: "🤗 Lui rendre son câlin", hugPhotoTitle: "Photo câlin", hugPick: "Choisir une photo de vous deux",
       hugPhotoHint: "Une photo où vous vous serrez dans les bras : elle apparaît quand vous vous envoyez un câlin, sur vos deux téléphones.", hugTip: "Ajoute une photo de vous deux dans Réglages → Photo câlin : le câlin sera encore plus réel.",
+      faceTitle: "Vos visages", faceChange: "Changer", faceHint: "Une photo de ton visage et une du sien : elles s'affichent dans les appels, le chat et les câlins, sur vos deux téléphones.", faceMe: "Toi",
       csLock: "Chiffré de bout en bout", csRinging: "Sonnerie…", csConnecting: "Connexion…", csInVoice: "Appel vocal entrant", csInVideo: "Appel vidéo entrant", csMute: "Muet", csCam: "Caméra", csFlip: "Retourner", csChat: "Message", csEnd: "Raccrocher", csDecline: "Refuser", csAccept: "Répondre", csMin: "Réduire l'appel",
       tabChat: "Messages", chEmpty: "Reliez vos deux téléphones pour discuter en privé.", chFirst: "Dis-lui quelque chose de doux 💬",
       chPh: "Écris un message…", chTyping: function (n) { return n + " écrit…"; }, chToday: "Aujourd'hui", chYesterday: "Hier",
@@ -1786,6 +1801,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       hugBtn: "Akolad", hugMsg: "Gwo akolad", hugBackMsg: "Akolad retounen", hugIn: function (n) { return n + " ba w yon gwo akolad 🤗"; }, hugBackIn: function (n) { return n + " remèt ou akolad ou 💞"; },
       hugSent: function (n) { return "Akolad voye bay " + n + " 🤗"; }, hugBack: "🤗 Remèt li akolad li", hugPhotoTitle: "Foto akolad", hugPick: "Chwazi yon foto nou de a",
       hugPhotoHint: "Yon foto kote nou anbrase : li parèt lè nou voye yon akolad, sou de telefòn nou yo.", hugTip: "Mete yon foto nou de nan Paramèt → Foto akolad : akolad la ap pi reyèl.",
+      faceTitle: "Figi nou", faceChange: "Chanje", faceHint: "Yon foto figi w ak yon foto figi l : yo parèt nan apèl yo, chat la ak akolad yo, sou de telefòn nou yo.", faceMe: "Ou",
       csLock: "Chifre de bout an bout", csRinging: "L ap sonnen…", csConnecting: "Koneksyon…", csInVoice: "Apèl vokal k ap antre", csInVideo: "Apèl videyo k ap antre", csMute: "Bèbè", csCam: "Kamera", csFlip: "Vire", csChat: "Mesaj", csEnd: "Rakwoche", csDecline: "Refize", csAccept: "Reponn", csMin: "Redwi apèl la",
       tabChat: "Mesaj", chEmpty: "Konekte de telefòn nou yo pou nou pale an prive.", chFirst: "Di l yon bagay dous 💬",
       chPh: "Ekri yon mesaj…", chTyping: function (n) { return n + " ap ekri…"; }, chToday: "Jodi a", chYesterday: "Yè",
@@ -2023,6 +2039,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       hugBtn: "Hug", hugMsg: "Big hug", hugBackMsg: "Hug returned", hugIn: function (n) { return n + " sends you a big hug 🤗"; }, hugBackIn: function (n) { return n + " hugs you back 💞"; },
       hugSent: function (n) { return "Hug sent to " + n + " 🤗"; }, hugBack: "🤗 Hug back", hugPhotoTitle: "Hug photo", hugPick: "Choose a photo of you two",
       hugPhotoHint: "A photo of you two hugging: it appears on both phones when you send each other a hug.", hugTip: "Add a photo of you two in Settings → Hug photo to make the hug feel even more real.",
+      faceTitle: "Your faces", faceChange: "Change", faceHint: "A photo of your face and one of theirs: they show in calls, chat and hugs, on both phones.", faceMe: "You",
       csLock: "End-to-end encrypted", csRinging: "Ringing…", csConnecting: "Connecting…", csInVoice: "Incoming voice call", csInVideo: "Incoming video call", csMute: "Mute", csCam: "Camera", csFlip: "Flip", csChat: "Message", csEnd: "End", csDecline: "Decline", csAccept: "Accept", csMin: "Minimize call",
       tabChat: "Messages", chEmpty: "Link your two phones to chat privately.", chFirst: "Say something sweet 💬",
       chPh: "Write a message…", chTyping: function (n) { return n + " is typing…"; }, chToday: "Today", chYesterday: "Yesterday",
@@ -2630,6 +2647,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
       watch(base + "/live/shared/syncN", function (s) { onSharedSync(s.val()); });
       watch(base + "/live/shared/photo", function (s) { onSharedPhoto(s.val()); });
       watch(base + "/live/shared/hug", function (s) { onSharedHug(s.val()); });
+      watch(base + "/live/shared/faces", function (s) { onSharedFaces(s.val()); });
       watch(base + "/live/shared/quizN", function (s) { onSharedQz(s.val()); });
       watch(base + "/live/shared/dreams", function (s) { onSharedDreams(s.val()); });
       watch(base + "/live/shared/music", function (s) { onSharedMusic(s.val()); });
@@ -2887,9 +2905,10 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
     var vid = !$("vlayer").hidden;
     $("vlayer").classList.toggle("mini", vid && !!CALL.min);
     scr.className = (vid ? "video" : "") + (st === "incoming" || st === "calling" ? " ringing" : "") + (vid && CALL.hideCtl ? " hidectl" : "");
-    $("cs-bg").style.backgroundImage = photoURL ? "url(" + photoURL + ")" : "";
-    $("cs-photo").hidden = !photoURL; if (photoURL && $("cs-photo").src !== photoURL) $("cs-photo").src = photoURL;
-    $("cs-init").hidden = !!photoURL; $("cs-init").textContent = (partnerName() || "♥").charAt(0).toUpperCase();
+    var cf = loveFace() || photoURL;
+    $("cs-bg").style.backgroundImage = cf ? "url(" + cf + ")" : "";
+    $("cs-photo").hidden = !cf; if (cf && $("cs-photo").src !== cf) $("cs-photo").src = cf;
+    $("cs-init").hidden = !!cf; $("cs-init").textContent = (partnerName() || "♥").charAt(0).toUpperCase();
     $("cs-name").textContent = n; $("cs-lock").textContent = t("csLock");
     var dur = st === "incall" && CALL.t0 ? fmtDur(Date.now() - CALL.t0) : "";
     $("cs-status").textContent = st === "calling" ? t("csRinging") : st === "incoming" ? (CALL.video ? t("csInVideo") : t("csInVoice")) : st === "connecting" ? t("csConnecting") : dur;
@@ -3454,7 +3473,7 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
     $("set-photo").hidden = !photoURL; if (photoURL) $("set-photo").src = photoURL;
     $("photo-remove").hidden = !photoURL;
     $("in-photo").parentNode.querySelector("span").textContent = t("photoPick");
-    $("in-hug").parentNode.querySelector("span").textContent = t("hugPick"); renderHugSettings();
+    $("in-hug").parentNode.querySelector("span").textContent = t("hugPick"); renderHugSettings(); renderFaces();
     $("sw-lite").setAttribute("aria-checked", String(!!P.lite));
     $("pin-set").textContent = P.pinHash ? t("pinRemoveBtn") : t("pinSet");
     $("pin-note").textContent = P.pinHash ? t("pinOn") : t("pinOff");
@@ -4229,7 +4248,8 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
   }
   function renderChatHead() {
     $("ch-name").textContent = nameStart();
-    $("ch-photo").hidden = !photoURL; $("ch-ph").hidden = !!photoURL; if (photoURL) $("ch-photo").src = photoURL;
+    var hp = loveFace() || photoURL;
+    $("ch-photo").hidden = !hp; $("ch-ph").hidden = !!hp; if (hp && $("ch-photo").src !== hp) $("ch-photo").src = hp;
     var p = OL.partner || {}, st = $("ch-status");
     var typing = p.typing && srvNow() - p.typing < 6000;
     st.className = typing ? "typing" : "";
@@ -4715,6 +4735,48 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
     $("tc-time").textContent = both ? t("tcSecs")(Math.floor((Date.now() - TC.bothStart) / 1000)) : "";
   }
 
+  /* ================= Faces: one portrait per partner, shared ================= */
+  var FACES = {};
+  try { FACES = JSON.parse(lsGet("nd-faces") || "{}") || {}; } catch (e) { FACES = {}; }
+  function myFace() { return P.couple ? FACES[mySlot()] || null : null; }
+  function loveFace() { return P.couple ? FACES[otherSlot()] || null : null; }
+  function onSharedFaces(v) {
+    v = v || {};
+    if (JSON.stringify(v) === JSON.stringify(FACES)) return;
+    FACES = { a: v.a || null, b: v.b || null }; lsSet("nd-faces", JSON.stringify(FACES));
+    renderFaces(); if (current === "chat") renderChatHead(); if (CALL.state !== "idle") renderCallbar();
+  }
+  function renderFaces() {
+    $("faces-card").hidden = !P.couple; if (!P.couple) return;
+    [["face-me", myFace(), P.me || t("faceMe")], ["face-love", loveFace(), nameStart()]].forEach(function (f) {
+      var el = $(f[0]); el.innerHTML = "";
+      if (f[1]) { var im = document.createElement("img"); im.src = f[1]; im.alt = ""; el.appendChild(im); }
+      else el.textContent = (f[2] || "♥").charAt(0).toUpperCase();
+      $(f[0] + "-l").textContent = f[2];
+    });
+  }
+  function pickFace(slotFn) {
+    return function () {
+      var f = this.files && this.files[0]; this.value = ""; if (!f || !P.couple || !OL.db) return;
+      var rd = new FileReader();
+      rd.onload = function () {
+        var img = new Image();
+        img.onload = function () {
+          var S2 = 256, c = document.createElement("canvas"); c.width = S2; c.height = S2;
+          var side = Math.min(img.width, img.height), sx = (img.width - side) / 2, sy = img.height > img.width ? Math.max(0, (img.height - side) * 0.25) : (img.height - side) / 2;
+          c.getContext("2d").drawImage(img, sx, sy, side, side, 0, 0, S2, S2);
+          var url = c.toDataURL("image/jpeg", 0.82), slot = slotFn();
+          FACES[slot] = url; lsSet("nd-faces", JSON.stringify(FACES)); renderFaces(); sfx("badge");
+          OL.db.ref(olBase() + "/live/shared/faces/" + slot).set(url).catch(function () {});
+        };
+        img.src = rd.result;
+      };
+      rd.readAsDataURL(f);
+    };
+  }
+  $("in-face-me").addEventListener("change", pickFace(function () { return mySlot(); }));
+  $("in-face-love").addEventListener("change", pickFace(function () { return otherSlot(); }));
+
   /* ================= Big hug: full-screen embrace with the couple's own photo ================= */
   var hugURL = null, HUG = { t: null, last: 0, mode: null };
   function setHugPhoto(url, publish) {
@@ -4772,8 +4834,11 @@ body.incall .composer { bottom: calc(160px + env(safe-area-inset-bottom)); }
     HUG.mode = mode;
     var st = $("hug-stage"); st.innerHTML = hugStageHTML();
     if (!hugURL) {
-      var sp = st.querySelectorAll(".hug-duo span");
-      sp[0].textContent = HUG.duo[0]; sp[1].textContent = HUG.duo[1];
+      var sp = st.querySelectorAll(".hug-duo span"), fs = [myFace(), loveFace()];
+      [0, 1].forEach(function (i) {
+        if (fs[i]) { var im = document.createElement("img"); im.src = fs[i]; im.alt = ""; sp[i].appendChild(im); }
+        else sp[i].textContent = HUG.duo[i];
+      });
     }
     var n = nameStart();
     $("hug-t").textContent = mode === "in" ? t("hugIn")(n) : mode === "back" ? t("hugBackIn")(n) : mode === "sent" ? t("hugSent")(n) : "🤗 " + t("hugMsg");

@@ -32,6 +32,11 @@
             },
             "hug": {
               ".validate": "newData.isString() && newData.val().length < 200000"
+            },
+            "faces": {
+              "$s": {
+                ".validate": "newData.isString() && newData.val().length < 100000 && ($s === 'a' || $s === 'b')"
+              }
             }
           },
           "chat": {
