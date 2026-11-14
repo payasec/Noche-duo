@@ -270,6 +270,24 @@ a.btn { display: block; text-decoration: none; text-align: center; }
 .guessrow { display: flex; gap: 8px; }
 .guessrow .txt { flex: 1; }
 .guessrow .btn { width: auto; padding: 12px 18px; }
+/* Wave 3: letters + dreams */
+.lt { display: flex; align-items: center; gap: 12px; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; background: rgba(255,255,255,0.03); }
+.lt .lt-l { flex: 1; min-width: 0; }
+.lt b { display: block; font-family: var(--display); font-weight: 500; font-size: 1rem; line-height: 1.3; }
+.lt small { color: var(--muted); font-size: 0.8rem; }
+.lt .btn { width: auto; padding: 8px 14px; font-size: 0.88rem; flex: none; }
+.lt.locked { opacity: 0.75; }
+.letter { white-space: pre-wrap; text-align: left; font-family: var(--display); font-size: 1.15rem; line-height: 1.55; background: rgba(255,255,255,0.05); border: 1px solid var(--line); border-radius: 16px; padding: 20px; margin: 0; max-height: 50vh; overflow-y: auto; }
+textarea.txt { resize: vertical; font: 400 1rem var(--body); line-height: 1.5; }
+select.txt { appearance: auto; }
+.dream { display: flex; align-items: center; gap: 10px; }
+.chk { width: 28px; height: 28px; border-radius: 8px; border: 1.5px solid var(--gold); background: none; flex: none; color: var(--sky); font-weight: 700; cursor: pointer; padding: 0; }
+.chk[aria-pressed="true"] { background: var(--gold); }
+.chk:focus-visible, .xdel:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.dt { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.dt small { display: block; color: var(--muted); font-size: 0.75rem; }
+.dream.done .dt > span { text-decoration: line-through; color: var(--muted); }
+.xdel { background: none; border: 0; color: var(--muted); font-size: 1.3rem; cursor: pointer; padding: 2px 8px; line-height: 1; }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -350,6 +368,20 @@ a.btn { display: block; text-decoration: none; text-align: center; }
     <button class="btn btn-ghost" id="go-join" data-i="join"></button>
     <button class="btn btn-ghost" id="go-resume" data-i="resume2" hidden></button>
     <p class="small center" data-i="howTo"></p>
+    <div class="card" id="letters-card">
+      <div class="rowb"><h3 data-i="lettersTitle"></h3><span class="small" id="letters-count"></span></div>
+      <div class="stack" id="letters-list" style="gap:10px"></div>
+      <button class="btn btn-ghost" id="letter-write" data-i="letterWrite"></button>
+    </div>
+    <div class="card" id="dreams-card">
+      <h3 data-i="dreamsTitle"></h3>
+      <div class="stack" id="dreams-list" style="gap:10px"></div>
+      <div class="guessrow">
+        <label for="dream-in" class="small" style="position:absolute;left:-9999px" data-i="dreamsTitle"></label>
+        <input id="dream-in" class="txt" maxlength="80" autocomplete="off">
+        <button class="btn btn-gold" id="dream-add" data-i="dreamAdd"></button>
+      </div>
+    </div>
     <div class="card" id="story-card">
       <h3 data-i="storyTitle"></h3>
       <div class="stack" id="story-lines" style="gap:10px"></div>
@@ -608,6 +640,19 @@ a.btn { display: block; text-decoration: none; text-align: center; }
     <button class="linkbtn" id="dr-quit" data-i="quit"></button>
   </section>
 
+  <!-- WRITE A LETTER -->
+  <section id="s-letter" class="screen stack" hidden>
+    <h2 data-i="letterWrite"></h2>
+    <div class="card">
+      <div class="field"><label for="lt-type" data-i="ltWhen"></label><select id="lt-type" class="txt"></select></div>
+      <div class="field" id="lt-datef"><label for="lt-date" data-i="ltDate"></label><input id="lt-date" type="date" class="txt"></div>
+      <div class="field"><label for="lt-text" data-i="ltText"></label><textarea id="lt-text" class="txt" rows="8" maxlength="1500"></textarea></div>
+      <button class="btn btn-gold" id="lt-send" data-i="ltSend"></button>
+      <p class="err" id="lt-err" aria-live="polite"></p>
+      <button class="linkbtn" id="lt-back" data-i="back"></button>
+    </div>
+  </section>
+
   <!-- REVEAL -->
   <section id="s-reveal" class="screen stack" hidden>
     <div class="meta"><span id="r-round"></span><span id="r-code"></span></div>
@@ -649,6 +694,16 @@ a.btn { display: block; text-decoration: none; text-align: center; }
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.2 0 3.6 1.2 5.3 3.1 1.7-1.9 3.1-3.1 5.3-3.1 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z" fill="#ff7a93"/></svg>
   <p id="heartfx-t"></p>
 </div></div>
+<div class="ovl" id="lt-view" hidden role="dialog" aria-modal="true" aria-labelledby="lv-from">
+  <div class="ovl-in">
+    <svg viewBox="0 0 24 24" aria-hidden="true" style="width:56px;height:56px;margin:0 auto"><rect x="3" y="6" width="18" height="12" rx="1.5" fill="none" stroke="#f0c674" stroke-width="1.3"/><path d="M3.5 6.8l8.5 6.4 8.5-6.4" fill="none" stroke="#f0c674" stroke-width="1.3" stroke-linejoin="round"/><circle cx="12" cy="13" r="2.2" fill="#ff7a93"/></svg>
+    <span class="pill" id="lv-label" style="align-self:center"></span>
+    <h2 id="lv-from"></h2>
+    <p class="letter" id="lv-text"></p>
+    <p class="small" id="lv-date"></p>
+    <button class="btn btn-gold" id="lv-close" data-i="close"></button>
+  </div>
+</div>
 <div class="ovl" id="lock" hidden role="dialog" aria-modal="true" aria-labelledby="lock-title">
   <div class="ovl-in">
     <svg class="onb-moon" viewBox="0 0 32 32" aria-hidden="true" style="width:56px;height:56px"><path d="M21 4a12 12 0 1 0 7 21A10 10 0 0 1 21 4z" fill="#f0c674"/></svg>
@@ -1031,7 +1086,22 @@ a.btn { display: block; text-decoration: none; text-align: center; }
       drYouDraw: "C'est toi qui dessines !", drWordIs: function (w) { return "Dessine : " + w; }, drGuessRole: function (n) { return n + " dessine… devine le mot !"; },
       drGuessPh: "Ta réponse", drSend: "Valider", drClear: "Effacer", drPass: "Passer", drWrong: "Non… essaie encore !",
       drTheyTry: function (n, x) { return n + " propose : « " + x + " »"; }, drFound: function (w) { return "Trouvé ! Le mot était « " + w + " » 🎉"; }, drSkipped: function (w) { return "Passé. Le mot était « " + w + " »"; },
-      drScore: function (n) { return "Trouvés : " + n; }, drWaitDraw: "Le dessin arrive…"
+      drScore: function (n) { return "Trouvés : " + n; }, drWaitDraw: "Le dessin arrive…",
+      lettersTitle: "Lettres 💌", letterWrite: "Écrire une lettre", ltWhen: "Elle s'ouvre…",
+      ltT_date: "à une date précise", ltT_bday: "le jour de son anniversaire", ltT_night: "ce soir, avant de dormir", ltT_sad: "quand il ou elle est triste", ltT_miss: "quand je lui manque",
+      ltL_date: function (d) { return "Ouvre-moi le " + d; }, ltL_bday: "Ouvre-moi le jour de ton anniversaire", ltL_night: "Ouvre-moi avant de dormir", ltL_sad: "Ouvre-moi quand tu es triste", ltL_miss: "Ouvre-moi quand je te manque",
+      ltDate: "Date d'ouverture", ltText: "Ta lettre", ltSend: "Envoyer la lettre 💌",
+      ltErrEmpty: "Écris quelques mots avant d'envoyer.", ltErrDate: "Choisis une date à venir.", ltSent: "Lettre envoyée 💌",
+      ltNone: "Pas encore de lettre. Écris la première !", ltOffline: "Reliez vos téléphones pour échanger des lettres.",
+      ltOpen: "Ouvrir", ltReread: "Relire",
+      ltIn: function (d, h, m) { return "🔒 S'ouvre dans " + (d > 0 ? d + " j" : h > 0 ? h + " h" : Math.max(1, m) + " min"); },
+      ltNeedBday: "🔒 Ajoute ton anniversaire dans les réglages pour l'ouvrir.",
+      ltFrom: function (n) { return "De " + n; }, ltWritten: function (d) { return "Écrite le " + d; },
+      ltSentCount: function (a, b) { return a + (a > 1 ? " envoyées" : " envoyée") + " · " + b + (b > 1 ? " lues" : " lue"); },
+      ltNew: function (n) { return n + " t'a écrit une lettre 💌"; },
+      dreamsTitle: "Notre liste de rêves ✨", dreamAdd: "Ajouter", dreamPh: "Ex. Voir le coucher de soleil à Jacmel",
+      dreamsEmpty: "Ajoutez les choses à faire ensemble quand vous vous verrez.", dreamDone: "Rêve réalisé ! ✨",
+      dreamBy: function (n) { return "ajouté par " + n; }, dreamDel: "Supprimer"
     },
     kr: {
       modeLabel: "Mòd · Misyon Sekrè",
@@ -1203,7 +1273,22 @@ a.btn { display: block; text-decoration: none; text-align: center; }
       drYouDraw: "Se ou k ap desinen !", drWordIs: function (w) { return "Desinen : " + w; }, drGuessRole: function (n) { return n + " ap desinen… devine mo a !"; },
       drGuessPh: "Repons ou", drSend: "Voye", drClear: "Efase", drPass: "Pase", drWrong: "Non… eseye ankò !",
       drTheyTry: function (n, x) { return n + " di : « " + x + " »"; }, drFound: function (w) { return "Jwenn ! Mo a se te « " + w + " » 🎉"; }, drSkipped: function (w) { return "Pase. Mo a se te « " + w + " »"; },
-      drScore: function (n) { return "Jwenn : " + n; }, drWaitDraw: "Desen an ap vini…"
+      drScore: function (n) { return "Jwenn : " + n; }, drWaitDraw: "Desen an ap vini…",
+      lettersTitle: "Lèt 💌", letterWrite: "Ekri yon lèt", ltWhen: "L ap louvri…",
+      ltT_date: "nan yon dat presi", ltT_bday: "jou anivèsè l", ltT_night: "aswè a, anvan l dòmi", ltT_sad: "lè l tris", ltT_miss: "lè m manke l",
+      ltL_date: function (d) { return "Louvri m nan dat " + d; }, ltL_bday: "Louvri m jou anivèsè w", ltL_night: "Louvri m anvan w dòmi", ltL_sad: "Louvri m lè w tris", ltL_miss: "Louvri m lè m manke w",
+      ltDate: "Dat pou l louvri", ltText: "Lèt ou", ltSend: "Voye lèt la 💌",
+      ltErrEmpty: "Ekri kèk mo anvan w voye.", ltErrDate: "Chwazi yon dat ki poko rive.", ltSent: "Lèt la pati 💌",
+      ltNone: "Poko gen lèt. Ekri premye a !", ltOffline: "Konekte telefòn nou yo pou nou voye lèt.",
+      ltOpen: "Louvri", ltReread: "Li ankò",
+      ltIn: function (d, h, m) { return "🔒 L ap louvri nan " + (d > 0 ? d + " jou" : h > 0 ? h + " è" : Math.max(1, m) + " min"); },
+      ltNeedBday: "🔒 Mete anivèsè w nan paramèt yo pou w ka louvri l.",
+      ltFrom: function (n) { return "Soti nan " + n; }, ltWritten: function (d) { return "Ekri " + d; },
+      ltSentCount: function (a, b) { return a + " voye · " + b + " li"; },
+      ltNew: function (n) { return n + " ekri w yon lèt 💌"; },
+      dreamsTitle: "Lis rèv nou ✨", dreamAdd: "Ajoute", dreamPh: "Egz. Gade solèy kouche Jakmèl",
+      dreamsEmpty: "Mete bagay nou vle fè ansanm lè nou wè.", dreamDone: "Rèv reyalize ! ✨",
+      dreamBy: function (n) { return "se " + n + " ki mete l"; }, dreamDel: "Efase"
     },
     en: {
       modeLabel: "Mode · Secret Mission",
@@ -1375,7 +1460,22 @@ a.btn { display: block; text-decoration: none; text-align: center; }
       drYouDraw: "You're drawing!", drWordIs: function (w) { return "Draw: " + w; }, drGuessRole: function (n) { return n + " is drawing… guess the word!"; },
       drGuessPh: "Your answer", drSend: "Send", drClear: "Clear", drPass: "Skip", drWrong: "Nope… try again!",
       drTheyTry: function (n, x) { return n + " tried: “" + x + "”"; }, drFound: function (w) { return "Got it! The word was “" + w + "” 🎉"; }, drSkipped: function (w) { return "Skipped. The word was “" + w + "”"; },
-      drScore: function (n) { return "Found: " + n; }, drWaitDraw: "The drawing is coming…"
+      drScore: function (n) { return "Found: " + n; }, drWaitDraw: "The drawing is coming…",
+      lettersTitle: "Letters 💌", letterWrite: "Write a letter", ltWhen: "It opens…",
+      ltT_date: "on a specific date", ltT_bday: "on their birthday", ltT_night: "tonight, before bed", ltT_sad: "when they feel sad", ltT_miss: "when they miss me",
+      ltL_date: function (d) { return "Open me on " + d; }, ltL_bday: "Open me on your birthday", ltL_night: "Open me before bed", ltL_sad: "Open me when you're sad", ltL_miss: "Open me when you miss me",
+      ltDate: "Opening date", ltText: "Your letter", ltSend: "Send the letter 💌",
+      ltErrEmpty: "Write a few words before sending.", ltErrDate: "Pick a future date.", ltSent: "Letter sent 💌",
+      ltNone: "No letters yet. Write the first one!", ltOffline: "Link your phones to exchange letters.",
+      ltOpen: "Open", ltReread: "Read again",
+      ltIn: function (d, h, m) { return "🔒 Opens in " + (d > 0 ? d + " d" : h > 0 ? h + " h" : Math.max(1, m) + " min"); },
+      ltNeedBday: "🔒 Add your birthday in Settings to open it.",
+      ltFrom: function (n) { return "From " + n; }, ltWritten: function (d) { return "Written " + d; },
+      ltSentCount: function (a, b) { return a + " sent · " + b + " read"; },
+      ltNew: function (n) { return n + " wrote you a letter 💌"; },
+      dreamsTitle: "Our dream list ✨", dreamAdd: "Add", dreamPh: "E.g. Watch the sunset in Jacmel",
+      dreamsEmpty: "Add the things to do together when you meet.", dreamDone: "Dream come true! ✨",
+      dreamBy: function (n) { return "added by " + n; }, dreamDel: "Delete"
     }
   };
 
@@ -1589,7 +1689,8 @@ a.btn { display: block; text-decoration: none; text-align: center; }
 
   function render() {
     applyText();
-    if (current === "home") { renderProfile(); renderOnline(); renderCallCard(); renderModes(); renderDaily(); renderStory(); renderInstall(); }
+    if (current === "home") { renderProfile(); renderOnline(); renderCallCard(); renderModes(); renderDaily(); renderStory(); renderInstall(); renderLetters(); renderDreams(); }
+    if (current === "letter") renderLetterForm();
     if (current === "settings") { renderSettingsExtra(); renderSettingsW1(); }
     if (current === "sync") renderSync();
     if (current === "quiz") renderQuiz();
@@ -1970,6 +2071,8 @@ a.btn { display: block; text-decoration: none; text-align: center; }
       watch(base + "/live/shared/syncN", function (s) { onSharedSync(s.val()); });
       watch(base + "/live/shared/photo", function (s) { onSharedPhoto(s.val()); });
       watch(base + "/live/shared/quizN", function (s) { onSharedQz(s.val()); });
+      watch(base + "/live/shared/dreams", function (s) { onSharedDreams(s.val()); });
+      watch(base + "/live/" + mySlot() + "/letters", function (s) { OL.myLetters = s.val() || {}; if (current === "home") renderLetters(); });
       watch(base + "/live/shared/drawN", function (s) { onSharedDr(s.val()); });
       watch(base + "/live/shared/dates", function (s) { onSharedDates(s.val()); });
       watch(base + "/live/callIce/" + otherSlot(), function (s) { onRemoteIce(s.val()); });
@@ -1995,7 +2098,7 @@ a.btn { display: block; text-decoration: none; text-align: center; }
     if (OL.basePulse !== undefined && pn && pn !== OL.basePulse && v.pulse.at && srvNow() - v.pulse.at < 120000) receivePulse();
     OL.basePulse = pn;
     OL.partner = v;
-    checkGN(); checkSync(); checkQz(); onPartnerDraw(v); renderOnlineSafe(); renderPartnerGame();
+    checkGN(); checkSync(); checkQz(); onPartnerDraw(v); checkNewLetters(v); renderOnlineSafe(); renderPartnerGame();
   }
   function onSharedRound(r) {
     OL.sharedRound = r;
@@ -2096,7 +2199,7 @@ a.btn { display: block; text-decoration: none; text-align: center; }
     Array.prototype.forEach.call($("moods").children, function (b, i) { b.setAttribute("aria-pressed", OL.moodPick === i); });
     $("ol-musicfield").hidden = OL.moodPick !== 5;
   }
-  function renderOnlineSafe() { if (current === "home") { renderProfile(); renderOnline(); renderCallCard(); renderDaily(); renderStory(); } if (current === "sync") renderSync(); renderCallMission(); }
+  function renderOnlineSafe() { if (current === "home") { renderProfile(); renderOnline(); renderCallCard(); renderDaily(); renderStory(); renderLetters(); renderDreams(); } if (current === "sync") renderSync(); renderCallMission(); }
 
   function renderPartnerGame() {
     var pg = $("partner-game"), duel = $("duel");
@@ -2997,6 +3100,139 @@ a.btn { display: block; text-decoration: none; text-align: center; }
   });
   $("dr-home").addEventListener("click", function () { show("home"); });
   $("dr-quit").addEventListener("click", function () { S.code = null; S.role = null; newRoundState(); resetSyncAll(); save(); show("home"); });
+
+  /* ================= Wave 3: scheduled letters ================= */
+  var LT_TYPES = ["date", "bday", "night", "sad", "miss"];
+  function ltLoc() { return { fr: "fr-FR", kr: "fr-FR", en: "en-US" }[S.lang] || "fr-FR"; }
+  function fmtDay(ms) { return new Date(ms).toLocaleDateString(ltLoc(), { day: "numeric", month: "long" }); }
+  function ltDateMs(str) { if (!str || !/^\d{4}-\d{2}-\d{2}$/.test(str)) return null; var a = str.split("-"); return new Date(+a[0], +a[1] - 1, +a[2]).getTime(); }
+  function letterOpenAt(lt) {
+    var now = new Date();
+    if (lt.type === "date") return ltDateMs(lt.date) || 0;
+    if (lt.type === "bday") { var d = daysUntilYearly(P.bdayMe); if (d === null) return null; return new Date(now.getFullYear(), now.getMonth(), now.getDate() + d).getTime(); }
+    if (lt.type === "night") { var at = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 20, 0, 0).getTime(); return lt.at && lt.at > at ? 0 : at; }
+    return 0;
+  }
+  function ltLabel(lt) { return lt.type === "date" ? t("ltL_date")(fmtDay(ltDateMs(lt.date) || Date.now())) : t("ltL_" + lt.type); }
+  function lettersOnline() { return !!(P.couple && OL.db && OL.partnerJoined); }
+  function checkNewLetters(v) {
+    var keys = Object.keys(v.letters || {});
+    if (OL.seenLetters === undefined) { OL.seenLetters = keys; return; }
+    var fresh = keys.filter(function (k) { return OL.seenLetters.indexOf(k) < 0; });
+    OL.seenLetters = keys;
+    if (fresh.length) { toast("💌", t("lettersTitle"), t("ltNew")(nameStart())); confetti(false); notifyIfHidden("💌 Noche Duo", t("ltNew")(nameStart()), "letter"); }
+  }
+  function renderLetters() {
+    var box = $("letters-list"); box.innerHTML = "";
+    var online = lettersOnline();
+    $("letter-write").hidden = !online;
+    var mine = OL.myLetters || {}, mk = Object.keys(mine);
+    $("letters-count").textContent = online && mk.length ? t("ltSentCount")(mk.length, mk.filter(function (k) { return mine[k] && mine[k].opened; }).length) : "";
+    if (!online) { box.appendChild(storyLine(t("ltOffline"), "small")); return; }
+    var got = (OL.partner && OL.partner.letters) || {};
+    var keys = Object.keys(got).sort(function (a, b) { return (got[b].at || 0) - (got[a].at || 0); });
+    if (!keys.length) { box.appendChild(storyLine(t("ltNone"), "small")); return; }
+    var now = Date.now();
+    keys.forEach(function (k) {
+      var lt = got[k], at = letterOpenAt(lt), locked = at === null || at > now;
+      var row = document.createElement("div"); row.className = "lt" + (locked ? " locked" : "");
+      var l = document.createElement("div"); l.className = "lt-l";
+      var b = document.createElement("b"); b.textContent = "💌 " + ltLabel(lt);
+      var sm = document.createElement("small");
+      if (at === null) sm.textContent = t("ltNeedBday");
+      else if (locked) { var ms = at - now; sm.textContent = t("ltIn")(ms >= 86400000 ? Math.ceil(ms / 86400000) : 0, Math.floor(ms / 3600000), Math.ceil(ms / 60000)); }
+      else sm.textContent = t("ltFrom")(nameStart());
+      l.appendChild(b); l.appendChild(sm); row.appendChild(l);
+      if (!locked) {
+        var btn = document.createElement("button"); btn.className = "btn " + (lt.opened ? "btn-ghost" : "btn-gold");
+        btn.textContent = lt.opened ? t("ltReread") : t("ltOpen");
+        btn.addEventListener("click", function () { openLetter(k, lt); });
+        row.appendChild(btn);
+      }
+      box.appendChild(row);
+    });
+  }
+  function openLetter(k, lt) {
+    $("lv-label").textContent = ltLabel(lt);
+    $("lv-from").textContent = t("ltFrom")(nameStart());
+    $("lv-text").textContent = lt.text || "";
+    $("lv-date").textContent = lt.at ? t("ltWritten")(fmtDay(lt.at)) : "";
+    $("lv-close").textContent = t("close");
+    $("lt-view").hidden = false;
+    if (!lt.opened) { lullaby(); buzz([90, 120, 90]); stat("letters"); save(); OL.db.ref(olBase() + "/live/" + otherSlot() + "/letters/" + k + "/opened").set(TS()).catch(function () {}); }
+    else sfx("reveal");
+  }
+  $("lv-close").addEventListener("click", function () { $("lt-view").hidden = true; });
+  function renderLetterForm() {
+    var sel = $("lt-type"), cur = sel.value || "date";
+    sel.innerHTML = "";
+    LT_TYPES.forEach(function (ty) { var o = document.createElement("option"); o.value = ty; o.textContent = t("ltT_" + ty); sel.appendChild(o); });
+    sel.value = cur;
+    $("lt-datef").hidden = sel.value !== "date";
+    $("lt-text").placeholder = "…";
+  }
+  $("lt-type").addEventListener("change", function () { $("lt-datef").hidden = this.value !== "date"; });
+  $("letter-write").addEventListener("click", function () { sfx("tap"); $("lt-err").textContent = ""; show("letter"); });
+  $("lt-back").addEventListener("click", function () { show("home"); });
+  $("lt-send").addEventListener("click", function () {
+    var ty = $("lt-type").value, txt = $("lt-text").value.trim(), dt = $("lt-date").value;
+    $("lt-err").textContent = "";
+    if (txt.length < 2) { $("lt-err").textContent = t("ltErrEmpty"); return; }
+    if (ty === "date") { var ms = ltDateMs(dt); if (!ms || ms <= Date.now() - 86400000) { $("lt-err").textContent = t("ltErrDate"); return; } }
+    if (!lettersOnline()) { $("lt-err").textContent = t("ltOffline"); return; }
+    var id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    var rec = { type: ty, text: txt.slice(0, 1500), at: TS() };
+    if (ty === "date") rec.date = dt;
+    myLive().child("letters/" + id).set(rec).then(function () {
+      $("lt-text").value = ""; $("lt-date").value = ""; stat("lettersSent"); save();
+      sfx("win"); confetti(false); toast("💌", t("lettersTitle"), t("ltSent")); show("home");
+    }, function () { $("lt-err").textContent = t("linkNet"); });
+  });
+
+  /* ================= Wave 3: shared dream list ================= */
+  function dreamsOnline() { return !!(P.couple && OL.db); }
+  function dreamsMap() { return dreamsOnline() ? (OL.dreams || {}) : (P.dreams || {}); }
+  function onSharedDreams(v) {
+    OL.dreams = v || {};
+    if (P.dreams && Object.keys(P.dreams).length && OL.db) {
+      var local = P.dreams; P.dreams = {}; save();
+      Object.keys(local).forEach(function (k) { if (!OL.dreams[k]) OL.db.ref(olBase() + "/live/shared/dreams/" + k).set(local[k]).catch(function () {}); });
+    }
+    if (current === "home") renderDreams();
+  }
+  function dreamWrite(k, val) {
+    if (dreamsOnline()) OL.db.ref(olBase() + "/live/shared/dreams/" + k).set(val).catch(function () {});
+    else { P.dreams = P.dreams || {}; if (val === null) delete P.dreams[k]; else P.dreams[k] = val; save(); renderDreams(); }
+  }
+  function renderDreams() {
+    var map = dreamsMap(), box = $("dreams-list"); box.innerHTML = "";
+    $("dream-in").placeholder = t("dreamPh");
+    var keys = Object.keys(map).sort(function (a, b) { var x = map[a], y = map[b]; if (!!x.done !== !!y.done) return x.done ? 1 : -1; return (x.at || 0) - (y.at || 0); });
+    if (!keys.length) { box.appendChild(storyLine(t("dreamsEmpty"), "small")); return; }
+    keys.forEach(function (k) {
+      var d = map[k], row = document.createElement("div"); row.className = "dream" + (d.done ? " done" : "");
+      var c = document.createElement("button"); c.className = "chk"; c.type = "button"; c.setAttribute("aria-pressed", String(!!d.done)); c.textContent = d.done ? "✓" : ""; c.setAttribute("aria-label", d.t);
+      c.addEventListener("click", function () {
+        var nd = Object.assign({}, d, { done: !d.done });
+        if (!d.done) { confetti(false); sfx("badge"); toast("✨", t("dreamsTitle"), t("dreamDone")); stat("dreams"); save(); } else sfx("tap");
+        dreamWrite(k, nd);
+      });
+      var tx = document.createElement("div"); tx.className = "dt";
+      var sp = document.createElement("span"); sp.textContent = d.t; tx.appendChild(sp);
+      if (d.by) { var sm = document.createElement("small"); sm.textContent = t("dreamBy")(d.by); tx.appendChild(sm); }
+      var x = document.createElement("button"); x.className = "xdel"; x.type = "button"; x.textContent = "×"; x.setAttribute("aria-label", t("dreamDel"));
+      x.addEventListener("click", function () { sfx("tap"); dreamWrite(k, null); });
+      row.appendChild(c); row.appendChild(tx); row.appendChild(x); box.appendChild(row);
+    });
+  }
+  function addDream() {
+    var v = $("dream-in").value.trim(); if (!v) return;
+    var k = Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+    dreamWrite(k, { t: v.slice(0, 80), done: false, by: P.me || t("me"), at: Date.now() });
+    $("dream-in").value = ""; sfx("tap");
+  }
+  $("dream-add").addEventListener("click", addDream);
+  $("dream-in").addEventListener("keydown", function (e) { if (e.key === "Enter") addDream(); });
 
   /* ================= Night sky with shooting stars ================= */
   var cv = $("stars"), cx = cv.getContext("2d"), stars = [], shoot = null, nextShoot = 2500;
